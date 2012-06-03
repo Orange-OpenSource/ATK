@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Android-config>
+    <!-- Samsung Galaxy Spica Android v2.1 -->        
+    <!-- Validated with ATK 2.10.4 -->
+	<KeyMapping>
+        <Key name="UP" code="202" />
+        <Key name="DOWN" code="210" />
+        <Key name="LEFT" code="218" />
+        <Key name="RIGHT" code="203" />
+        <Key name="CENTER" code="204" />
+    
+    
+        <Key name="MENU" code="211" />
+        <Key name="BACK" code="212" />
+        <Key name="CALL" code="219" />
+        <Key name="END_CALL" code="249" />
+    
+        <Key name="VOLUME_UP" code="201" />
+        <Key name="VOLUME_DOWN" code="209" />
+        <Key name="CAMERA" code="250" />
+        
+        <Key name="RETURN" code="204" />
+        <Key name="HOME" code="227" />
+        <Key name="WORLD" code="226" />
+        <Key name="HOLD" code="251" />
+        
+        
+	</KeyMapping>
+
+	<CanalPattern>
+
+        <Pattern canal="keyboard" value="keypad" />
+        <Pattern canal="touchscreen" value="ts_input" />
+	</CanalPattern>
+
+	<Touchscreen>
+        <Pattern name="Y" value="3 1 " />
+        <Pattern name="X" value="3 0 " />
+        <Pattern name="down" value="1 330 1" />
+        <Pattern name="up" value="1 330 0" />
+        <Pattern name="flush" value="0 0 0" />
+        <Pattern name="ratio" value="1" />
+        <Threshold name="move" value="15" />
+        <Threshold name="longPressTime" value="1000" />
+        <!-- Indicate if a long pressed should be simulated with multiple mouse move event-->
+        <Option name="longPressMultiple" value="true" />
+	</Touchscreen>
+
+</Android-config>

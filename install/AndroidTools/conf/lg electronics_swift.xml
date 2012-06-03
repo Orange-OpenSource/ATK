@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Android-config>
+    <!-- LG GT 540 Swift -->    
+	<KeyMapping canal="keyboard"> 
+        
+        
+        <Key name="VOLUME_UP" code="115" />
+        <Key name="VOLUME_DOWN" code="114" />
+        <Key name="SEARCH" code="217" />
+        <Key name="CAMERA" code="242" />
+        <Key name="HOME" code="102" />       
+        <Key name="CALL" code="231" />
+
+	</KeyMapping>
+	
+    <KeyMapping canal="keyboard2"> 
+        <Key name="POWER" code="107" />
+    </KeyMapping>
+
+    <KeyMapping canal="keyboard3"> 
+        <Key name="MENU" code="139" />
+        <Key name="BACK" code="158" />
+    </KeyMapping>
+    
+	<CanalPattern>
+        <Pattern canal="keyboard" value="swift_keypad" />
+        <Pattern canal="keyboard2" value="7k_handset" />
+        <Pattern canal="keyboard3" value="msm_touchscreen" />
+        <Pattern canal="touchscreen" value="msm_touchscreen" />
+	</CanalPattern>
+        
+	<Touchscreen>
+        <Pattern name="Y" value="3 1 " />
+        <Pattern name="X" value="3 0 " />
+        <Pattern name="down" value="1 330 1" />
+        <Pattern name="up" value="1 330 0" />
+        <Pattern name="flush" value="0 0 0" />
+        <Pattern name="ratioX" value="4.7375" />
+        <Pattern name="ratioY" value="5.3229166" />
+        <Threshold name="move" value="15" />
+	</Touchscreen>
+
+</Android-config>

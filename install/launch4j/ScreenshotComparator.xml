@@ -1,0 +1,34 @@
+<launch4jConfig>
+  <dontWrapJar>true</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar></jar>
+  <outfile>..\ScreenshotComparator.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl></supportUrl>
+  <customProcName>false</customProcName>
+  <stayAlive>false</stayAlive>
+  <manifest></manifest>
+  <icon>..\img\atk.ico</icon>
+  <classPath>
+    <mainClass>com.orange.atk.compUI.launchScreenShotComparison</mainClass>
+    <cp>.\jar\ATK.jar</cp>
+    <cp>.\jar\jcommon-1.0.12.jar</cp>
+    <cp>.\jar\jfreechart-1.0.9.jar</cp>
+    <cp>.\jar\log4j-1.2.15.jar</cp>
+    <cp>.\jar\swtgraphics2d.jar</cp>
+    <cp>.\jar\ddmlib.jar</cp>
+    <cp>.\jar\jai_codec.jar</cp>
+    <cp>.\jar\jai_core.jar</cp>
+    <cp>.\jar\iText-2.0.8.jar</cp>
+  </classPath>
+  <jre>
+    <path></path>
+    <minVersion>1.6.0</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+  </jre>
+</launch4jConfig>

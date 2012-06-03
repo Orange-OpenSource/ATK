@@ -1,0 +1,13 @@
+http://tango.freedesktop.org/
+http://tango.freedesktop.org/releases/tango-icon-theme-0.8.90.tar.gz
+
+Terms Of Use
+------------
+The Tango base icon theme is released to the Public Domain. The palette is in public domain. 
+Developers, feel free to ship it along with your application. 
+The icon naming utilities are licensed under the GPL.
+
+Though the tango-icon-theme package is released to the Public Domain, we ask that you still please 
+attribute the Tango Desktop Project, for all the hard work we've done. Thanks.
+
+http://openiconlibrary.sourceforge.net/gallery2/?./Icons/devices/phone-3.png

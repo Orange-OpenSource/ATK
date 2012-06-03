@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Nexus S v2.3.4 -->
+<!-- Only monkey method works, but the four soft key touch press does not work -->
+<!-- We should find a way to convert it in key events, and not touch events -->
+<Android-config>
+  <CanalPattern>
+    <Pattern canal="keyboard" value="herring-keypad"/>
+    <Pattern canal="touchscreen" value="mxt224_ts_input"/>
+  </CanalPattern>
+  <KeyMapping canal="keyboard">
+    <Key name="POWER" code="116"/>
+    <Key name="VOLUME_UP" code="115"/>
+    <Key name="VOLUME_DOWN" code="114"/>
+  </KeyMapping>
+  <SoftKeyMapping>
+    <Key name="HOME" avgX="430" avgY="850"/>
+    <Key name="MENU" avgX="185" avgY="850"/>
+    <Key name="SEARCH" avgX="315" avgY="850"/>
+    <Key name="BACK" avgX="75" avgY="850"/>
+  </SoftKeyMapping>
+  <Touchscreen>
+    <Pattern name="X" value="3 53 "/>
+    <Pattern name="Y" value="3 54 "/>
+    <Pattern name="down" value="3 48 1"/>
+    <Pattern name="downmax" value="3 48 255"/>
+    <Pattern name="up" value="3 48 0"/>
+    <Pattern name="flush" value="0 0 0" />
+    <Pattern name="flush2" value="0 2 0" />
+    <Pattern name="ratioX" value="2.13"/>
+    <Pattern name="ratioY" value="1.18"/>
+    <Threshold name="move" value="15"/>
+  </Touchscreen>
+</Android-config>

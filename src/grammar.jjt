@@ -1,0 +1,215 @@
+/*******************************
+***** SECTION 1 - OPTIONS *****
+*******************************/
+
+options {
+  MULTI=true;
+  VISITOR=true;
+  NODE_DEFAULT_VOID=true;
+  STATIC=false;
+  NODE_PACKAGE="com.orange.atk.interpreter.ast";
+  DEBUG_PARSER = false;
+  DEBUG_LOOKAHEAD = false;
+  DEBUG_TOKEN_MANAGER = false;
+}
+
+/*******************************
+***** SECTION 2 - USER CODE *****
+*******************************/
+
+PARSER_BEGIN(ATKScriptParser)
+package com.orange.atk.interpreter.parser;
+import com.orange.atk.interpreter.ast.*;
+
+public class ATKScriptParser
+{
+    public static void main(String args[]) throws ParseException 
+    {
+    	try{
+    	  
+			ATKScriptParser parser = new ATKScriptParser(new java.io.FileReader(args[0]));
+			ASTStart expr = parser.start();
+			expr.dump("");
+			}catch(Exception e){
+			e.printStackTrace();
+		}
+    }
+}
+PARSER_END(ATKScriptParser)
+
+/*****************************************
+***** SECTION 3 - TOKEN DEFINITIONS  *****
+*****************************************/
+
+/*  Character not to be passed on to the parser*/
+SKIP : 
+{
+" " | "\t" 
+}
+
+
+/* Reserved words */
+/*
+|   < MOUSEDOWN:	"MouseDown" >
+|   < MOUSEUP:		"MouseUp" >
+|   < MOUSE:		"Mouse" >
+|   < CLICK:		"Click" >
+|   < KEYUP:		"KeyUp" >
+|   < KEYDOWN:		"KeyDown" >
+|   < KEY:		"Key" >
+|   < SETORIENTATION:	"SetOrientation" >
+|   < SLEEP:		"Sleep" >
+|   < WAITWINDOW:	"WaitWindow" >
+|   < INCLUDE:		"Include" >
+|   < REGISTRY:		"Registry" >
+|   < LOG:		"Log" >
+|   < RUN:		"Run" >
+|   < USECPU:		"UseCpu" >
+|   < SETVAR:		"SetVar" >
+|   < STARTMAINLOG:	"StartMainLog" >
+|   < STOPONKEY:	"StopOnKey" >
+|   < FILLSTORAGE:	"FillStorage" >
+|   < KILLWINDOW:	"KillWindow" >
+|   < BEEP:		"Beep" >
+|   < SETRESET:		"SetReset" >
+|   < SCREENSHOT:	"ScreenShot" >
+|   < STOPMAINLOG:	"StopMainLog" >
+|   < STARTMAINLOG:	"StartMainLog" >
+
+("Log"|"Sleep"|"MouseDown"|"MouseUp"|"Mouse"|"Click"|"KeyUp"|"KeyDown"|
+			"Key"|"WaitWindow"|"Include"|"Registry"|"Run"|"UseCpu"|"Beep"|
+			"KillWindow"|"SetReset"|"StartMainLog"|"StartMainLog"|"StopMainLog"|
+			"StopOnKey"|"FillStorage"|"ScreenShot") >
+*/
+
+TOKEN [IGNORE_CASE]:
+{
+   < LOOP:		"loop" > |  
+   < ENDL: 		"endloop" > |  
+   < INCLUDE:   "Include" > |  
+   < SETVAR:    "SetVar" >
+}
+
+/* */
+TOKEN :
+{
+   < NUMBER: ("-")?(<DIGIT>)+ >
+|   < #DIGIT: ["0"-"9"] >
+|   < EOL: ("\n"|"\r" | "\r\n") >
+|   < VARNAME: "_"<STRING> >
+|   < STRING: ((<CHAR>|<DIGIT>)(<CHAR>|["_"]|" "|<DIGIT>)*)?<CHAR>(<CHAR>|["_"]|" "|<DIGIT>)* >
+|   < #CHAR: ["a"-"z","A"-"Z","\\",".","+","!",">","<","#","*","'","\"",":","]","[","^" ,"@","-","?","!","&","$","£","€" ]>
+|   <SINGLE_LINE_COMMENT: ("//") (~["\n", "\r"])* >
+}
+
+/*****************************************
+***** SECTION 4 - THE GRAMMAR        *****
+*****************************************/
+
+ASTStart start() #Start : {}
+{
+	parseFile()  { return jjtThis; }
+}
+
+void parseFile() : {}
+{
+  	(
+		(statement())? (comment())? (<EOF> {return;} |<EOL>) 
+	)*  
+
+}
+
+void statement() : {}
+{
+	function()
+    | loop()
+    | setvar()
+    | include()
+}
+
+void comment() #COMMENT : {Token value;}
+{
+   value=<SINGLE_LINE_COMMENT>
+   {
+   jjtThis.setValue(value.image);
+   }
+  
+}
+
+void function() #FUNCTION :{Token value;}
+{	
+	value=<STRING>("("listeArgs()")")?
+	{
+		jjtThis.setValue(value.image);	
+	}
+}
+
+void include() #INCLUDE : {Token value;}
+{
+    value=<INCLUDE>("("string()")")?
+    {
+        jjtThis.setValue( value.image );
+    }
+}
+
+
+void listeArgs() : {}
+{
+	(litteral()(","litteral())*)?
+}
+
+void setvar() #SETVAR : {}
+{
+	<SETVAR>"("string()","value()")" 
+}
+
+void loop() #LOOP : {}
+{
+	<LOOP> "(" litteral() ")" 
+		parseFile()
+	<ENDL>
+}
+
+void litteral() :{}
+{	
+	table()
+    | value()
+    | variable()
+}
+
+void value()  :{}
+{
+	string()
+    | number()
+}
+
+
+void table() #TABLE:{}
+{
+  "{"(value())*"}"
+}
+
+void string() #STRING :{Token value;}
+{
+	value = <STRING>
+	{
+		jjtThis.setValue( value.image );
+	}
+}
+
+void number() #NUMBER : {Token value;}
+{
+	value = <NUMBER> 
+	{
+		jjtThis.setValue( value.image );
+	}
+}
+
+void variable() #VARIABLE : {Token value;}
+{
+	value = <VARNAME> 
+	{
+		jjtThis.setValue( value.image );
+	}
+}
+

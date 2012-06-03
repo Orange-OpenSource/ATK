@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- LG GT540 - Android version 2.1-update1 -->
+<!--  Android LGE swift configuration file   -->
+<!--   Screen resolution 320x480   -->
+<Android-config>
+  <CanalPattern>
+    <Pattern canal="keyboard" value="7k_handset"/>
+    <Pattern canal="keyboard2" value="swift_keypad"/>
+    <Pattern canal="keyboard3" value="msm_touchscreen"/>
+    <Pattern canal="touchscreen" value="msm_touchscreen"/>
+  </CanalPattern>
+  <KeyMapping canal="keyboard">
+    <Key name="POWER" code="107"/>
+  </KeyMapping>
+  <KeyMapping canal="keyboard2">
+    <Key name="HOME" code="102"/>
+    <Key name="SEARCH" code="217"/>
+    <Key name="CALL" code="231"/>
+    <Key name="VOLUME_UP" code="114"/>
+    <Key name="FOCUS" code="212"/>
+    <Key name="CAMERA" code="242"/>
+    <Key name="VOLUME_DOWN" code="115"/>
+  </KeyMapping>
+  <KeyMapping canal="keyboard3">
+    <Key name="MENU" code="139"/>
+    <Key name="BACK" code="158"/>
+  </KeyMapping>
+  <SoftKeyMapping/>
+  <Touchscreen>
+    <!--!!! THIS IS JUST TOUCHSCREEN Elements TEMPLATE !!!-->
+    <!--!!! SEE ATK User Guide - Configuration section - and UPDATE following values !!!-->
+    <!--!!! Please check following X Y ratioX and ratioY patterns-->
+    <Pattern name="X" value="3 0 "/>
+    <Pattern name="Y" value="3 1 "/>
+	<Pattern name="ratioX" value="4.78"/>
+    <Pattern name="ratioY" value="4.87"/>
+    <!--!!! Please update following patterns-->
+    <Pattern name="down" value="1 330 1"/>
+    <Pattern name="up" value="1 330 0"/>
+    <Pattern name="flush" value="0 0 0"/>
+    <Threshold name="move" value="15"/>
+	<Option name="dontUseMonkey" value="true"/>
+  </Touchscreen>
+</Android-config>

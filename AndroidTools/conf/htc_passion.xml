@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Nexus One v2.2.1 -->
+<!-- Only monkey method works, but the four soft key touch press does not work -->
+<!-- We should find a way to convert it in key events, and not touch events -->
+<Android-config>
+  <CanalPattern>
+    <Pattern canal="keyboard" value="mahimahi-keypad"/>
+    <Pattern canal="touchscreen" value="synaptics-rmi-touchscreen"/>
+  </CanalPattern>
+  <KeyMapping canal="keyboard">
+    <Key name="POWER" code="116"/>
+    <Key name="VOLUME_UP" code="115"/>
+    <Key name="VOLUME_DOWN" code="114"/>
+  </KeyMapping>
+  <SoftKeyMapping>
+    <Key name="HOME" avgX="339" avgY="800"/>
+    <Key name="MENU" avgX="212" avgY="800"/>
+    <Key name="SEARCH" avgX="449" avgY="800"/>
+    <Key name="BACK" avgX="76" avgY="800"/>
+  </SoftKeyMapping>
+  <Touchscreen>
+    <Pattern name="X" value="3 0 "/>
+    <Pattern name="Y" value="3 1 "/>
+    <Pattern name="down" value="1 330 1"/>
+    <Pattern name="flush" value="0 0 0" />
+    <Pattern name="flush2" value="0 2 0" />
+    <Pattern name="up" value="1 330 0"/>
+    <Pattern name="ratioX" value="8.33"/>
+    <Pattern name="ratioY" value="8.53"/>
+    <Threshold name="move" value="15"/>
+	<Option name="useMonkeyForPress" value="true" />
+ 	
+  </Touchscreen>
+</Android-config>

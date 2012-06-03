@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Android-config>         
+	<KeyMapping canal="keyboard">
+        <Key name="CENTER" code="28" />
+        <Key name="CALL" code="231" />
+        <Key name="END_CALL" code="107" />  
+        <Key name="VOLUME_UP" code="115" />
+        <Key name="VOLUME_DOWN" code="114" />
+        <Key name="CAMERA_FOCUS" code="183" />
+        <Key name="CAMERA_SCREENSHOT" code="212" />
+    </KeyMapping>
+
+    <KeyMapping canal="keyboard2">
+        <Key name="BACK" code="158" />
+        <Key name="HOME" code="102" />
+        <Key name="MENU" code="229" />
+        <Key name="WEB" code="192" />
+	</KeyMapping>
+
+
+	<CanalPattern>
+
+        <Pattern canal="keyboard" value="kybd" />
+        <Pattern canal="keyboard2" value="Touchscreen" />-->
+        <Pattern canal="touchscreen" value="Touchscreen" />
+	</CanalPattern>
+        
+    <Touchscreen>
+        <Pattern name="Y" value="3 54 " />
+        <Pattern name="X" value="3 53 " />
+        <Pattern name="down" value="3 48 255" />
+        <Pattern name="up" value="3 54 0" />
+        <Pattern name="flush" value="0 0 0" />
+        <Pattern name="flush2" value="0 2 0" />
+        <Pattern name="ratioX" value="5.6" />
+        <Pattern name="ratioY" value="5.9" />
+        <Option name="sendMouseEventFirst" value="true" />
+        <Threshold name="move" value="15" />
+    </Touchscreen>
+
+</Android-config>

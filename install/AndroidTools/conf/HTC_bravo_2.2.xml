@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Android-config>     
+    <!-- v2.2-update1 -->
+       
+	<KeyMapping>
+    
+        <Key name="VOLUME_UP" code="115" />
+        <Key name="VOLUME_DOWN" code="114" />
+        <Key name="BACK" code="158" />
+        <Key name="HOME" code="102" />
+        <Key name="MENU" code="139" />
+        <Key name="SEARCH" code="217" />
+        
+        
+	</KeyMapping>
+
+	<CanalPattern>
+
+        <Pattern canal="keyboard" value="bravo-keypad" />
+       <!--  <Pattern canal="keyboard2" value="/dev/input/event3" />-->
+        <Pattern canal="touchscreen" value="touchscreen" />
+	</CanalPattern>
+        
+		<Touchscreen>
+        <Pattern name="XY" value="3 42 " />
+        <Pattern name="down" value="3 43 65536" />
+        <Pattern name="downmax" value="3 43 16711935" />
+        <Pattern name="up" value="3 43 0" />
+        <Pattern name="ratioX" value="8.4" />
+        <Pattern name="ratioY" value="8.2" />
+        <Threshold name="move" value="15" />
+        <Option name="sendMouseDownForMove" value="true" />
+        <Option name="sendMouseEventFirst" value="true" />
+        <Option name="useMonkeyForPress" value="true" />
+    </Touchscreen>
+		
+</Android-config>

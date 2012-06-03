@@ -1,0 +1,20 @@
+<confile>
+<graphlist>
+<graph  name="Memory"  color="red" xcomment="Time (min)" ycomment="Free Memory" unit="KBytes" scale="1024"  sampled ="true"/>
+<graph  name="Power"  color="green"  xcomment="Time (min)" ycomment="Power usage" unit="mW" scale="1"  sampled ="true"/>
+<graph  name="Cpu"  color="cyan"  xcomment="Time (min)" ycomment="Cpu load" unit="%" scale="1"  sampled ="true"/>
+</graphlist>
+
+<markerlist>
+<marker  name="StartTest" color="gray" position="0.2"/>
+<marker  name="keypress" color="gray" position="0.3"/>
+<marker  name="wait" color="gray" position="0.4"  />
+<marker  name="EndofScript" color="gray" position="0.5" />
+<marker  name="ScreenShot" color="gray" position="0.6"  />
+<marker  name="pointerevent" color="gray" position="0.7" />
+<marker  name="app" color="gray" position="0.8"  />
+<marker  name="view" color="gray" position="0.9"  />
+<marker  name="closeapp" color="gray" position="0.9"  />
+<marker  name="debug" color="gray" position="0.5"  />
+</markerlist>
+</confile>

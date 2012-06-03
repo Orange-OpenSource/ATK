@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Android-config>     
+
+       
+	<KeyMapping>
+    
+    
+        <Key name="CALL" code="231" />
+        <Key name="END_CALL" code="107" />
+    
+        <Key name="VOLUME_UP" code="115" />
+        <Key name="VOLUME_DOWN" code="114" />
+        
+        <Key name="BACK" code="158" />
+        <Key name="HOME" code="102" />
+        <Key name="MENU" code="139" />
+        <Key name="SEARCH" code="217" />
+        
+        
+	</KeyMapping>
+
+	<CanalPattern>
+
+        <Pattern canal="keyboard" value="keypad" />
+       <!--  <Pattern canal="keyboard2" value="/dev/input/event3" />-->
+        <Pattern canal="touchscreen" value="touchscreen" />
+	</CanalPattern>
+        
+	<Touchscreen>
+        <Pattern name="Y" value="3 1 " />
+        <Pattern name="X" value="3 0 " />
+        <Pattern name="down" value="1 330 1" />
+        <Pattern name="up" value="1 330 0" />
+		<Pattern name="flush" value="0 0 0" />
+        <Pattern name="ratio" value="11" />
+        <Threshold name="move" value="15" />
+        <Threshold name="longPressTime" value="2000" />
+        <!-- Indicate if a long pressed should be simulated with multiple mouse move event-->
+        <Option name="longPressMultiple" value="true" />
+        <Option name="sendSeparateFlush" value="true" />
+	</Touchscreen>
+
+</Android-config>

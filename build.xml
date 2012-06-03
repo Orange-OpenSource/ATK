@@ -1,0 +1,252 @@
+<project name="atk" default="dist" basedir=".">
+
+	<!-- import distrib directory properties-->
+	<property file="build.properties" />
+
+	
+	
+	<!-- compile all plugins -->
+	<target name="build" >
+        <mkdir dir="${build.dir}" />
+        <javac srcdir="${src.dir}" destdir="${build.dir}"
+        	verbose="no" debug="yes" encoding="UTF-8" >
+
+        	<classpath>
+            	<fileset dir="${lib.dir}">
+            	        <include name="*.jar"/>
+            	 </fileset>
+            </classpath>
+            <exclude name="com/orange/atk/tests/**"/>
+        </javac>
+	</target>
+
+
+	<!-- deploy all plugins and lib into dist. directory-->
+	<target name="dist" depends="build">
+		<!--copie ressource injar-->
+        <copy todir="${build.dir}/com/orange/atk/scriptRecorder">
+           <fileset dir="${src.dir}/com/orange/atk/scriptRecorder">
+            <include name="*.png"/>
+            <include name="*.PNG"/>
+            <include name="*.gif"/>
+            <include name="*.jpeg"/>
+            <include name="*.jpg"/>
+           </fileset>
+        </copy>
+		
+		<!-- UNCOMMENT TO BUILD RELEASE WITH EMULATOR -->
+        <!-- <copy todir="${build.dir}/com/orange/atk/scriptRecorder/keyboard">
+           <fileset dir="${src.dir}/com/orange/atk/scriptRecorder/keyboard">
+            <include name="*.png"/>
+            <include name="*.PNG"/>
+            <include name="*.gif"/>
+            <include name="*.jpeg"/>
+            <include name="*.jpg"/>
+           </fileset>
+        </copy> -->
+
+        <copy todir="${build.dir}/com/orange/atk/internationalization">
+           <fileset dir="${src.dir}/com/orange/atk/internationalization">
+            <include name="*.properties"/>
+           </fileset>
+        </copy>
+		
+            <copy todir="${build.dir}/com/orange/atk/deviceDetectionUI">
+               <fileset dir="${src.dir}/com/orange/atk/deviceDetectionUI">
+                <include name="*.png"/>
+                <include name="*.PNG"/>
+                <include name="*.gif"/>
+                <include name="*.jpeg"/>
+                <include name="*.jpg"/>
+               </fileset>
+            </copy>
+		<copy todir="${build.dir}/com/orange/atk/phone/android/wizard/images">
+               <fileset dir="${src.dir}/com/orange/atk/phone/android/wizard/images">
+                <include name="*.png"/>
+                <include name="*.PNG"/>
+                <include name="*.gif"/>
+                <include name="*.jpeg"/>
+                <include name="*.jpg"/>
+               </fileset>
+        </copy>
+			
+		
+		<mkdir dir="${dist.dir}/jar" />
+		<jar jarfile="${dist.dir}/jar/ATK.jar" basedir="${build.dir}">
+		</jar>
+
+        <!-- create a property containing all .jar files, prefix lib/, and seperated with a space -->  
+        <pathconvert property="libs.project" pathsep=";">     
+            <mapper>       
+                <chainedmapper>                    
+                    <!-- remove absolute path -->        
+                    <flattenmapper /> 
+                    <!-- add lib/ prefix -->
+                    <globmapper from="*" to="C:\Progra~1\ATK\jar\*" />   
+                </chainedmapper>     
+            </mapper>       
+            <path>         
+            <!-- lib.home contains all jar files, in several subdirectories -->      
+            <fileset dir="${dist.dir}/jar">         
+                <include name="**/*.jar" />       
+            </fileset>     
+            </path>   
+        </pathconvert> 
+		<touch file="${dist.dir}/jar/ATK.bat"/>
+		<echo file="${dist.dir}/jar/ATK.bat">
+@ECHO OFF${line.separator}
+SET ATKParam=${line.separator}
+:Loop${line.separator}
+	IF "%1"=="" GOTO Continue${line.separator}
+	SET ATKParam=%ATKParam% %1${line.separator}
+	SHIFT${line.separator}
+GOTO Loop${line.separator}
+:Continue${line.separator}
+${line.separator}
+java -classpath ${libs.project} com.orange.atk.launcher.LaunchJATK %ATKParam%</echo> 
+		
+		<!--copy ressouce out the jar-->
+	       <copy todir="${dist.dir}/jar">
+	           <fileset dir="${lib.dir}">
+	               <include name="*.jar"/>
+	           </fileset>
+	        </copy>
+
+        <copy todir="${dist.dir}/res">
+            <fileset dir="res"/>
+          </copy>
+        
+        <copy todir="${dist.dir}/AndroidTools">
+            <fileset dir="AndroidTools"/>
+          </copy>
+		  
+	</target>
+
+		
+	<!-- Build a zip for installation on windows
+	  	 To be used after a dist* target to build the win_pack zip of this distrib 
+	  -->
+	<target name="win_pack">
+		<mkdir dir="win_dist/windows"/>
+
+		<!-- Copy dist into the windist directory -->
+		<copy todir="win_dist/windows">
+		   <fileset dir="${dist}">
+				<!-- to be sure to not distribute a license this way -->
+				<exclude name="**/*.lic"/>
+		   </fileset>
+		</copy>
+
+		<!-- Copy windows installer files -->
+		<copy todir="win_dist/windows">
+		   <fileset dir="windows_installer/windows"/>
+		</copy>
+		<copy file="windows_installer/matos.nsi" todir="win_dist"/>
+		
+		<xmlproperty file="REVISION.xml"/>
+		<!-- patch matos.nsi with the MATOS VERSION and REVISION -->
+		<replaceregexp file="win_dist/matos.nsi"
+		               match="!define MATOSVERSION .*"
+		               replace="!define MATOSVERSION &quot;${matosVersion}&quot;"
+                       byline="true"/>
+		<replaceregexp file="win_dist/matos.nsi"
+		               match="!define MATOSREVISION .*"
+		               replace="!define MATOSREVISION &quot;rev.${info.entry(revision)}&quot;"
+                       byline="true"/>
+		
+		<zip destfile="matos_win_pack_r${info.entry(revision)}.zip" update="no">
+			<zipfileset dir="win_dist" prefix="matos_win_pack_r${info.entry(revision)}"/>   
+		</zip>
+	</target>
+	
+	<!-- clean all builded artifacts -->
+	<target name="clean">
+		<delete file="REVISION.xml"/>
+		<!-- call plugin's build.xml-->
+		<iterate target="clean"/>
+	</target>
+
+	<!-- clean dist artifacts -->
+	<target name="clean_dist">
+		<delete dir="${dist}/plugins" />
+	</target>
+
+	<!-- clean dist_zip artifacts -->
+	<target name="clean_dist_zip">
+		<xmlproperty file="REVISION.xml"/>
+		<delete>
+		    <fileset dir="." includes="matos_r${info.entry(revision)}.zip"/>
+		</delete>
+	</target>
+
+	<!-- clean win_pack artifacts -->
+	<target name="clean_win_pack">
+		<xmlproperty file="REVISION.xml"/>
+		<delete>
+		    <fileset dir="." includes="matos_win_pack_r${info.entry(revision)}.zip"/>
+		</delete>
+		<delete dir="win_dist"/>
+	</target>
+
+	<!-- clean jpf's temp directory -->
+	<target name="clean_temp">
+		<delete dir="temp" />
+	</target>
+
+	<!-- clean all eclipse's builds -->
+	<target name="clean_eclipse_build">
+		<!-- call plugin's build.xml-->
+		<iterate target="clean_eclipse_build"/>
+
+		<delete dir="classes" />
+	</target>
+
+	<!-- clean all test's artifacts -->
+	<target name="clean_test">
+		<!-- call plugin's build.xml-->
+		<iterate target="clean_test"/>
+
+		<delete includeEmptyDirs="true">
+			<fileset dir="${basedir}" includes="testreport*/**" />
+		</delete>
+	</target>
+
+	<!-- clean all want can be rebuilded -->
+	<target name="clean_all" depends="clean_dist, clean_dist_zip, clean_win_pack, clean, clean_eclipse_build, clean_temp"/>
+
+	<!-- run tests -->
+	<target name="test">
+		<mkdir dir="temp" /> <!-- used by FileResolver to store downloaded files -->
+		<!-- call plugin's build.xml-->
+		<iterate target="test"/>
+
+		<tstamp>
+			<format property="PRECISE_TIMESATMP" pattern="yyyy-MM-dd_H:mm:ss" locale="en,FR" />
+		</tstamp>
+		<property name="testreport_now" value="${basedir}/testreport_${PRECISE_TIMESATMP}" />
+		<mkdir dir="${testreport_now}" />
+
+		<junitreport todir="${testreport_now}">
+			<fileset dir="plugins">
+				<include name="**/TEST-*.xml" />
+			</fileset>
+		<report format="frames" todir="${basedir}/testreport/html" />
+		</junitreport>
+		<echo>Test report generated in ${basedir}/testreport/html/index.html</echo>
+
+	</target>
+
+	<!-- print some help -->
+	<target name="help">
+		<echo>Matos's build.xml:</echo>
+		<echo>--- Main targets ---</echo>
+		<echo>clean      : clean artifacts builded with ant</echo>
+		<echo>clean_dist : remove distrib. directory</echo>
+		<echo>clean_all  : clean all builded artifacts (including eclipse's ones) and clean_dist</echo>
+		<echo>build      : compile all plugins</echo>
+		<echo>dist       : create distrib directories and copy all builded artifacts (jar files, xml files, ...) (distrib directory is defined in build.properties)</echo>
+		<echo>test       : runs junit tests</echo>
+		<echo>help       : print this help</echo>
+	</target>
+
+</project>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+   <!-- Tablet Samsung Galaxy TAB Android v2.2 -->
+
+<Android-config>
+  <CanalPattern>
+    <Pattern canal="keyboard" value="AT42QT602240 Touchscreen"/>
+    <Pattern canal="keyboard2" value="gpio-keys"/>
+    <Pattern canal="touchscreen" value="AT42QT602240 Touchscreen"/>
+  </CanalPattern>
+  <KeyMapping canal="keyboard">
+    <Key name="HOME" code="102"/>
+    <Key name="MENU" code="139"/>
+    <Key name="BACK" code="158"/>
+    <Key name="SEARCH" code="217"/>
+  </KeyMapping>
+  <KeyMapping canal="keyboard2">
+    <Key name="POWER" code="116"/>
+    <Key name="VOLUME_UP" code="115"/>
+    <Key name="VOLUME_DOWN" code="114"/>
+  </KeyMapping>
+  <Touchscreen>
+    <Pattern name="X" value="3 54 "/>
+    <Pattern name="Y" value="3 53 "/>
+    <Pattern name="down" value="3 48 40"/>
+    <Pattern name="up" value="3 48 0"/>
+    <Pattern name="flush" value="0 0 0"/>
+    <Pattern name="flush2" value="0 2 0"/>
+    <Pattern name="ratioX" value="0.78"/>
+    <Pattern name="ratioY" value="0.8"/>
+    <Threshold name="move" value="10"/>
+    <Option name="sendMouseDownForMove" value="true"/>
+	<Option name="dontUseMonkey" value="true"/>
+  </Touchscreen>
+</Android-config>

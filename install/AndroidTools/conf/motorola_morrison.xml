@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Android-config>
+     <!-- Dex -->   
+	<KeyMapping canal="keyboard"> 
+
+        <Key name="A" code="43" />
+        <Key name="B" code="7" />
+        <Key name="C" code="56" />
+        <Key name="D" code="14" />
+        <Key name="E" code="41" />
+        <Key name="F" code="34" />
+        <Key name="G" code="54" />
+        <Key name="H" code="74" />
+        <Key name="I" code="72" />
+        <Key name="J" code="5" />
+        <Key name="K" code="25" />
+        <Key name="L" code="45" />
+        <Key name="M" code="47" />
+        <Key name="N" code="27" />
+        <Key name="O" code="3" />
+        <Key name="P" code="23" />
+        <Key name="Q" code="1" />
+        <Key name="R" code="61" />
+        <Key name="S" code="63" />
+        <Key name="T" code="12" />
+        <Key name="U" code="52" />
+        <Key name="V" code="76" />
+        <Key name="W" code="21" />
+        <Key name="X" code="36" />
+        <Key name="Y" code="32" />
+        <Key name="Z" code="16" />
+        <Key name="COMMA" code="65" />
+        <Key name="POINT" code="67" />
+        
+        <Key name="ALT_L" code="71" />
+        <Key name="SHIFT_L" code="64" />
+        <Key name="SHIFT_R" code="44" />
+        
+    
+        <Key name="SPACE" code="73" />
+        <Key name="SYM" code="62" />
+        
+        <Key name="ENTER" code="75" />
+        <Key name="DEL" code="77" />
+        
+        
+        <Key name="UP" code="15" />
+        <Key name="DOWN" code="17" />
+        <Key name="LEFT" code="35" />
+        <Key name="RIGHT" code="37" />
+        <Key name="CENTER" code="55" />
+    
+    
+        <Key name="MENU" code="211" />
+        <Key name="BACK" code="212" />
+        <Key name="CALL" code="219" />
+        <Key name="END_CALL" code="249" />
+    
+        <Key name="VOLUME_UP" code="51" />
+        <Key name="VOLUME_DOWN" code="53" />
+        <Key name="CAMERA" code="27" />
+        
+        <Key name="CANCEL" code="42" />
+        <Key name="SEARCH" code="57" />
+        
+        
+	</KeyMapping>
+	
+    <KeyMapping canal="keyboard2"> 
+        <Key name="BACK" code="158" />
+        <Key name="HOME" code="102" />
+        <Key name="MENU" code="139" />
+    </KeyMapping>
+
+	<CanalPattern>
+
+        <Pattern canal="keyboard" value="adp5588" />
+       <Pattern canal= "keyboard2" value="kpd" />
+        <Pattern canal="touchscreen" value="touchscreen" />
+	</CanalPattern>
+        
+	<Touchscreen>
+        <Pattern name="Y" value="3 1 " />
+        <Pattern name="X" value="3 0 " />
+        <Pattern name="down" value="1 330 1" />
+        <Pattern name="up" value="1 330 0" />
+        <Pattern name="flush" value="0 0 0" />
+        <Pattern name="ratio" value="1" />
+        <Threshold name="move" value="15" />
+	</Touchscreen>
+
+</Android-config>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<confile>
+  <graphlist>
+    <graph name="Storage" color="blue" xcomment="time (min)" ycomment="Storage usage" unit="KBytes" scale="1024" sampled="true"/>
+    <graph name="Cpu" color="cyan" xcomment="time (min)" ycomment="Cpu usage" unit="% of Cpu max" scale="1" sampled="false"/>
+    <graph name="Free_java_mem" color="black" xcomment="time (min)" ycomment="free java mem" unit="KBytes" scale="1024" sampled="false"/>
+    <graph name="Used_java_mem" color="orange" xcomment="time (min)" ycomment="used java mem" unit="KBytes" scale="1024" sampled="false"/>
+    <graph name="Free_native_mem" color="magenta" xcomment="time (min)" ycomment="free native mem" unit="KBytes" scale="1024" sampled="false"/>
+    <graph name="Used_native_mem" color="blue" xcomment="time (min)" ycomment="used native mem" unit="KBytes" scale="1024" sampled="false"/>
+    <graph name="Power" color="green" xcomment="time (min)" ycomment="Power usage" unit="mW" scale="1" sampled="true"/>
+
+  </graphlist>
+  <markerlist>
+    <marker name="keyPress" color="gray" position="0.2"/>
+    <marker name="log" color="gray" position="0.4"/>
+    <marker name="Action" color="gray" position="0.5"/>
+    <marker name="Standard Out/Err" color="gray" position="0.7"/>
+    <marker name="ScreenShot" color="gray" position="0.9"/>
+    <marker name="Error JATK" color="gray" position="0.9"/>
+    <marker name="Monkey" color="gray" position="0.9"/>
+  </markerlist>
+</confile>

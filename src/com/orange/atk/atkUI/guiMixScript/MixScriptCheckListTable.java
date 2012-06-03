@@ -1,0 +1,1091 @@
+/*
+ * Software Name : ATK
+ *
+ * Copyright (C) 2007 - 2012 France Télécom
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * ------------------------------------------------------------------
+ * File Name   : MixScriptCheckListTable.java
+ *
+ * Created     : 28/05/2007
+ * Author(s)   : Aurore PENAULT
+ */
+package com.orange.atk.atkUI.guiMixScript;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.Vector;
+
+import javax.swing.BorderFactory;
+import javax.swing.DefaultCellEditor;
+import javax.swing.DropMode;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JViewport;
+import javax.swing.ListSelectionModel;
+import javax.swing.ToolTipManager;
+import javax.swing.TransferHandler;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+
+import com.orange.atk.atkUI.anaMixScript.MixScriptCampaign;
+import com.orange.atk.atkUI.anaMixScript.MixScriptStep;
+import com.orange.atk.atkUI.anaMixScript.MixScriptStepAnalysisResult;
+import com.orange.atk.atkUI.corecli.Campaign;
+import com.orange.atk.atkUI.corecli.Configuration;
+import com.orange.atk.atkUI.corecli.Step;
+import com.orange.atk.atkUI.corecli.StepAnalysisResult;
+import com.orange.atk.atkUI.corecli.Step.Verdict;
+import com.orange.atk.atkUI.corecli.utils.Out;
+import com.orange.atk.atkUI.corecli.utils.StringUtilities;
+import com.orange.atk.atkUI.coregui.CheckListTable;
+import com.orange.atk.atkUI.coregui.CheckListTableModel;
+import com.orange.atk.atkUI.coregui.CoreGUIPlugin;
+import com.orange.atk.atkUI.coregui.JATKcomboBoxListener;
+import com.orange.atk.atkUI.coregui.actions.MatosAction;
+import com.orange.atk.atkUI.coregui.tasks.LoadCheckListTask;
+import com.orange.atk.atkUI.guiMixScript.actions.MixScriptGUIAction;
+import com.orange.atk.phone.PhoneInterface;
+import com.orange.atk.phone.detection.AutomaticPhoneDetection;
+
+
+
+/**
+ *
+ * @author Aurore PENAULT
+ * @since JDK5.0
+ */
+public class MixScriptCheckListTable extends CheckListTable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	//First columns defined in CheckListTable
+	public static final int COLUMN_COMMENTS = COLUMN_VERDICT + 1;
+	public static final int COLUMN_SCREENSHOT = COLUMN_COMMENTS + 1;
+	public static final int COLUMN_ANALYSER = COLUMN_SCREENSHOT + 1;
+
+	private Object[] longValues = {"1000",
+			"ALongWordForAFlashFile.swf",
+			"*",
+			"Passed***",
+	"A long comment"};
+
+	boolean completeView = false;
+
+	//	-- Table management --
+	private TableColumn screenShotsColumn;
+	private TableColumn analyserColumn;
+	private TableColumn commentsColumn;
+
+	static public JMenu submenuLaunchInExternalTool;
+
+	/**
+	 * Builds and initialize a new CheckList Table for Flash content.
+	 *
+	 */
+	@SuppressWarnings("serial")
+	public MixScriptCheckListTable() {
+		super();
+		campaign = new MixScriptCampaign();
+
+		ToolTipManager.sharedInstance().setDismissDelay(10000); //10sec
+		model = new FlashCheckListTableModel();
+		model.setLongValues(longValues);
+
+		table = new JTable(model) {
+			public boolean getScrollableTracksViewportHeight(){
+				if (getParent() instanceof JViewport){
+					return (((JViewport)getParent()).getHeight() > getPreferredSize().height);
+				}
+				return false;
+			}
+		};
+
+		table.setRowSelectionAllowed(true);
+		table.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		
+		// On met en place le D&D sur la JTable
+		table.setDropMode(DropMode.INSERT_ROWS);
+		table.setDragEnabled(true);
+		table.setTransferHandler(new MyTransfertHandler());
+		table.setPreferredScrollableViewportSize(new Dimension(500, 200));
+		tablePane = new JScrollPane(table);
+
+		model.addColumn("#");
+		model.addColumn("Test FILE");
+		model.addColumn("Monitoring Config");
+		model.addColumn("M");
+		model.addColumn("Verdict");
+		model.addColumn("Comments");
+		model.addColumn("ScreenShots Comparison");
+		model.addColumn("Analyser");
+
+		constructTable();
+
+		//Set up column sizes.
+		model.initColumnSizes(model, table, 5);
+
+		setRenderer();
+
+		table.setRowHeight(25);
+
+
+		ListSelectionModel rowSM = table.getSelectionModel();
+		rowSM.addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				CoreGUIPlugin.mainFrame.updateButtons();
+			}
+		});
+
+		givePopupMenuToTable(table);
+
+		this.setLayout(new BorderLayout());
+		this.add(BorderLayout.CENTER, tablePane);
+		this.setBorder(BorderFactory.createEmptyBorder(20,10,10,10));
+
+	}
+
+	/**
+	 * Associates a popup menu to a table.
+	 * @param table the target table
+	 */
+	public void givePopupMenuToTable(JTable table) {
+		JPopupMenu popUp = createTablePopUp();
+		table.addMouseListener(new MixScriptMouseListener(popUp,this));
+	}
+
+	/**
+	 * Creates the popup menu.
+	 * @return the popup menu
+	 */
+	private JPopupMenu createTablePopUp() {
+		JPopupMenu popup = new JPopupMenu();
+
+		submenuLaunchInExternalTool = new JMenu("Run external tool");
+		submenuLaunchInExternalTool.setToolTipText("Launch an external tool one the selected step");
+		//	initLaunchExternalTool();
+
+		popup.add(MixScriptGUIAction.ANALYSESELECTIONFLASH.getAsMenuItem("Launch selection"));
+		popup.add(MatosAction.VIEWREPORT.getAsMenuItem("Open latest report"));
+		popup.add(MixScriptGUIAction.SETSCREENSHOTREFERENCEDIR.getAsMenuItem("Set Reference Screenshots"));
+		//popup.add(submenuLaunchInExternalTool);
+		popup.addSeparator();
+		popup.add(MatosAction.COPY.getAsMenuItem("Copy"));
+		popup.add(MatosAction.PASTE.getAsMenuItem("Paste under"));
+		popup.add(MatosAction.REMOVE.getAsMenuItem("Remove"));
+		popup.addSeparator();
+		//popup.add(MatosAction.CONFIRMVERDICT.getAsMenuItem("Confirm the verdict"));
+		//popup.add(MatosAction.MODIFYVERDICT.getAsMenuItem("Modify the verdict"));
+		popup.addSeparator();
+		popup.add(MatosAction.PROPERTIES.getAsMenuItem("Properties..."));
+
+		return popup;
+	}
+
+
+	/**
+	 * Associates a renderer to this table.
+	 */
+	protected void setRenderer() {
+		nbStepColumn = table.getColumnModel().getColumn(COLUMN_NBROW);
+		GeneralRenderer nbStepRenderer = new GeneralRenderer();
+		nbStepColumn.setMinWidth(30);
+		nbStepColumn.setMaxWidth(70);
+		nbStepColumn.setCellRenderer(nbStepRenderer);
+
+		flashfileColumn= table.getColumnModel().getColumn(COLUMN_TESTNAME);
+		GeneralRenderer flashRenderer = new GeneralRenderer();
+		flashfileColumn.setCellRenderer(flashRenderer);
+
+		phoneconfigColumn = table.getColumnModel().getColumn(COLUMN_PHONECONFIG);
+		phoneconfigColumn.setCellEditor(new DefaultCellEditor(comboBoxPhoneConfig));
+		JATKcomboBoxListener comboBoxListener = new JATKcomboBoxListener(comboBoxPhoneConfig,this);
+		comboBoxPhoneConfig.addActionListener(comboBoxListener);
+		comboBoxPhoneConfig.addMouseListener(comboBoxListener);
+
+		modifiedColumn = table.getColumnModel().getColumn(COLUMN_MODIFIED);
+		modifiedColumn.setMinWidth(30);
+		modifiedColumn.setMaxWidth(50);
+		GeneralRenderer modifiedRenderer = new GeneralRenderer();
+		modifiedColumn.setCellRenderer(modifiedRenderer);
+
+		verdictColumn = table.getColumnModel().getColumn(COLUMN_VERDICT);
+		GeneralRenderer verdictRenderer = new GeneralRenderer();
+		verdictColumn.setCellRenderer(verdictRenderer);
+
+		commentsColumn = table.getColumnModel().getColumn(COLUMN_COMMENTS);
+		GeneralRenderer commentsRenderer = new GeneralRenderer();
+		commentsColumn.setCellRenderer(commentsRenderer);
+		screenShotsColumn= table.getColumnModel().getColumn(COLUMN_SCREENSHOT);
+		GeneralRenderer screenShotsRenderer = new GeneralRenderer();
+		screenShotsColumn.setCellRenderer(screenShotsRenderer);
+
+		analyserColumn= table.getColumnModel().getColumn(COLUMN_ANALYSER);
+		GeneralRenderer AnalyserRenderer = new GeneralRenderer();
+		analyserColumn.setCellRenderer(AnalyserRenderer);
+
+	}
+
+
+
+	/**Implémentation De transfertHandler correspondant à la JTable.
+	 *
+	 * @author
+	 *
+	 */
+	static class MyTransfertHandler extends TransferHandler {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+
+		@Override
+		public int getSourceActions(JComponent c) {
+			// TODO Auto-generated method stub
+			return TransferHandler.MOVE;
+		}
+
+		private static final String URI_LIST_MIME_TYPE = "text/uri-list;class=java.lang.String";
+
+
+		@Override
+		protected Transferable createTransferable(JComponent c) {
+
+			// on récupère la donnée qui nous intéresse (c'est a dire l'emplacement de la ligne que l'on veut bouger)
+			//Puis on l'enveloppe dans un Objet héritant de transferable. (une StringSelection en l'occurence)
+			JTable t = (JTable) c;
+			StringSelection s = new StringSelection(String.valueOf(t.getSelectedRow()));
+			return s;
+		}
+
+		public boolean canImport(TransferHandler.TransferSupport info) {
+
+			// pour ne gérer que le drop et pas le paste
+			//if (!info.isDrop()) {
+			//      return false;
+			//  }
+
+
+			if(Campaign.isExecute())
+				return false;
+
+			// On ne supporte que les string et les file en entree
+			if (!((info.isDataFlavorSupported(DataFlavor.stringFlavor))||(info.isDataFlavorSupported(DataFlavor.javaFileListFlavor)))) {
+				return false;
+			}
+
+			// On recherche l'emplacement du drop
+			JTable.DropLocation dl = (JTable.DropLocation)info.getDropLocation();
+
+			// On ne supporte que les emplacements de drop valides
+			return dl.getDropPoint() != null;
+		}
+
+
+
+
+		public boolean importData(TransferHandler.TransferSupport info) {
+			// dans le cas ou l'on ne pourrait supporter l'import
+
+			if (!canImport(info)) {
+				return false;
+			}
+
+			Transferable transferable = info.getTransferable();
+
+			DataFlavor uriListFlavor = null;
+			try {
+				uriListFlavor = new DataFlavor(URI_LIST_MIME_TYPE);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+
+			try {
+				Vector<File> dd_flashPathVect = new Vector<File>();
+				// 1. get back files
+				if (transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) { // windows's way 
+					List<File> list = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
+					Iterator<File> it = list.iterator();
+					while (it.hasNext()){
+						File f = it.next();
+						String extension=".tst";
+
+						if(AutomaticPhoneDetection.getInstance()
+								.isNokia())
+							extension=".xml";	
+						if (f.getAbsolutePath().endsWith(extension)){
+							dd_flashPathVect.add(new File(f.getAbsolutePath()));
+						}
+					}
+
+				} else if (transferable.isDataFlavorSupported(uriListFlavor)) { // gnome & KDE's way
+					String s = (String)transferable.getTransferData(uriListFlavor);
+					String [] uris = s.split(System.getProperty("line.separator"));
+					for (int i=0; i<uris.length; i++){
+						if (uris[i].trim().length()>0) {
+							File f = new File(new URI(uris[i].trim()));
+							String extension=".tst";
+
+							if(AutomaticPhoneDetection.getInstance()
+									.isNokia())
+								extension=".xml";	
+							if (f.exists() && f.getAbsolutePath().endsWith(extension)){
+								dd_flashPathVect.add(new File(f.getAbsolutePath()));
+							}
+						}
+					}
+				} else {
+					// On récupère l'emplacement du Drop
+					JTable.DropLocation dl = (JTable.DropLocation)info.getDropLocation();
+
+					// On récupère la ligne de destinatop du drop
+					int dstRow = dl.getRow();
+
+					// on récupère l'objet de transfert
+					Transferable trans = info.getTransferable();
+
+					// On récupère la donnée utile depuis l'objet de transfert (l'emplacement d'origine de la ligne à bouger)
+					try {
+						Integer.parseInt((String)trans.getTransferData(DataFlavor.stringFlavor));
+					} catch (UnsupportedFlavorException e) {
+						e.printStackTrace();
+						return false;
+					} catch (IOException e) {
+						e.printStackTrace();
+						return false;
+					}
+
+
+					// on effectue les modifications sur la JTable
+					JTable table = (JTable) info.getComponent();
+					FlashCheckListTableModel m = (FlashCheckListTableModel) table.getModel();
+
+					if (dstRow < 0) {
+						dstRow = 0;
+					}
+					if (dstRow > m.getRowCount()-1) {
+						dstRow = m.getRowCount()-1;
+					}
+
+					SortedSet <Integer> campaignIndexRemovedRows = new TreeSet<Integer>();
+					int[] temp = table.getSelectedRows();
+
+					for(int i=0;i<temp.length;i++)
+					{
+						campaignIndexRemovedRows.add(temp[i]);  
+					}
+
+					m.moveRow(campaignIndexRemovedRows, dstRow);
+					return true;
+				}
+
+				JTable.DropLocation dl = (JTable.DropLocation)info.getDropLocation();
+
+				// On récupère la ligne de destinatop du drop
+				dl.getRow();
+
+
+				// 2. add droped files into the check list 
+				if (dd_flashPathVect.size()>0) {
+					Campaign tmpCamp = new Campaign();
+					Iterator<File> itSWF = dd_flashPathVect.iterator();
+					while (itSWF.hasNext()) {
+						File swfFile = itSWF.next();
+						String swfPath = swfFile.getAbsolutePath();
+						MixScriptStep flashStep = new MixScriptStep(swfPath, swfFile);
+						tmpCamp.add(flashStep);
+					}
+					new LoadCheckListTask(CoreGUIPlugin.mainFrame.statusBar, tmpCamp, -1, false, tmpCamp.size());
+
+
+					return true;
+				}
+
+			} catch (UnsupportedFlavorException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+
+			return false;
+
+
+		}
+
+
+	}
+
+	/**
+	 * The renderer for this check-list table.
+	 */
+	public class GeneralRenderer extends JLabel implements TableCellRenderer {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private	ImageIcon[]	suitImages;
+
+		/**
+		 * Creates the renderer.
+		 *
+		 */
+		public GeneralRenderer() {
+			setOpaque(true);
+			suitImages = new ImageIcon[5];
+			java.net.URL passedURL = CoreGUIPlugin.getIconURL("tango/apply.png");
+			java.net.URL failedURL = CoreGUIPlugin.getIconURL("tango/messagebox_warning.png");
+			java.net.URL skippedURL = CoreGUIPlugin.getIconURL("tango/cache.png");
+			suitImages[0] = new ImageIcon( passedURL, Step.verdictAsString.get(Verdict.PASSED));
+			suitImages[1] = new ImageIcon( failedURL, Step.verdictAsString.get(Verdict.FAILED));
+			suitImages[2] = new ImageIcon( skippedURL, Step.verdictAsString.get(Verdict.SKIPPED));
+			suitImages[3] = new ImageIcon( failedURL, Step.verdictAsString.get(Verdict.INITFAILED));
+			suitImages[4] = new ImageIcon( failedURL, Step.verdictAsString.get(Verdict.TESTFAILED));
+
+		}
+
+		/**
+		 * Gets the renderer for each cell of the table.
+		 */
+		public Component getTableCellRendererComponent(JTable table, Object color, boolean isSelected, boolean hasFocus, int row, int column) {
+			if (isSelected) {
+				this.setBackground(table.getSelectionBackground());
+			} else {
+				if (column == COLUMN_TESTNAME){
+					this.setBackground(new Color(253,245,230));
+				}else{
+					this.setBackground(table.getBackground());
+				}
+			}
+			try {
+				this.setText((String)model.getValueAt(row, column));
+				int	numRow = new Integer((String)model.getValueAt(row, COLUMN_NBROW)).intValue() - 1;
+				if (column == COLUMN_TESTNAME){
+					this.setToolTipText((String)toolTipFlashFile.get(numRow));
+				}
+				if (column == COLUMN_MODIFIED){
+					this.setToolTipText((String)toolTipModified.get(numRow));
+					this.setHorizontalAlignment(JLabel.CENTER);
+				}
+				if (column == COLUMN_VERDICT){
+					this.setToolTipText((String)toolTipReport.get(numRow));
+					Verdict verdict = Verdict.NONE;
+					Verdict userVerdict = Verdict.NONE;
+					if (numRow<campaign.size()) {
+						verdict = ((Step)campaign.get(numRow)).getVerdict();
+						userVerdict = ((Step)campaign.get(numRow)).getUserVerdict();
+					}
+					if (userVerdict != Verdict.NONE) {
+						if (userVerdict == Verdict.PASSED){
+							this.setIcon(suitImages[0]);
+						}else if (userVerdict == Verdict.FAILED){
+							this.setIcon(suitImages[1]);
+						}else if (userVerdict == Verdict.SKIPPED){
+							this.setIcon(suitImages[2]);
+						}
+					} else {
+						if (verdict == Verdict.PASSED){
+							this.setIcon(suitImages[0]);
+						}else if (verdict == Verdict.FAILED){
+							this.setIcon(suitImages[1]);
+						}else if (verdict == Verdict.SKIPPED){
+							this.setIcon(suitImages[2]);
+						}else if (verdict == Verdict.NONE){
+							this.setIcon(null);
+						} else {
+							this.setIcon(null);
+						}
+					}
+					if (userVerdict == verdict && verdict != Verdict.NONE){
+						this.setBackground(new Color(224, 238, 224));
+					}else if (userVerdict != verdict && userVerdict != Verdict.NONE){
+						this.setBackground(new Color(238, 213, 210));
+					}
+					if (verdict == Verdict.SKIPPED){
+						this.setBackground(new Color(255, 250, 205));
+					}
+				}
+				if (column == COLUMN_COMMENTS){
+					this.setToolTipText((String)model.getValueAt(row, column));
+
+					table.getCellEditor(row, column).addCellEditorListener(
+							new CellEditorListener() {
+								public void editingCanceled(ChangeEvent e) {
+								}
+								public void editingStopped(ChangeEvent e) {
+									int row = MixScriptCheckListTable.this.table.getSelectedRow();
+									Step c = (Step)campaign.get(row);
+									c.setUserComment((String)model.getValueAt(row, COLUMN_COMMENTS));
+								}
+							});
+				}
+				if (column == COLUMN_SCREENSHOT){
+					//					JButton button =new JButton("OK");
+					//					
+					this.setIcon(new ImageIcon(CoreGUIPlugin.getIconURL("tango/camera_icon.jpg"), "Launch ScreenShot Comparison"));
+					//					button.addMouseListener(new MouseListener(){
+					//
+					//						public void mouseClicked(MouseEvent arg0) {
+					//						 Logger.getLogger(this.getClass() ).debug("mouse clik");
+					//						 if(arg0.getClickCount() == 1)
+					//						   {
+					//							 launchScreenShotComparison compScreenShot= new launchScreenShotComparison("C:\\Documents and Settings\\bvqj2105\\workspace\\prototype\\src\\images\\ref1","C:\\Documents and Settings\\bvqj2105\\workspace\\prototype\\src\\images\\test1");
+					//						   }
+					//						}
+					//
+					//						public void mousePressed(MouseEvent arg0) {
+					//							Logger.getLogger(this.getClass() ).debug("mouse pressed");
+					//						}
+					//
+					//						public void mouseReleased(MouseEvent arg0) {
+					//
+					//						}
+					//
+					//						public void mouseEntered(MouseEvent arg0) {
+					//
+					//						}
+					//
+					//						public void mouseExited(MouseEvent arg0) {
+					//
+					//						}
+					//
+					//					});
+					//					button.setVisible(true);
+					//					this.add(button);
+
+					//					 GeneralRenderer buttonColumn = new GeneralRenderer();
+				}
+
+				if (column == COLUMN_ANALYSER){
+					this.setIcon(new ImageIcon(CoreGUIPlugin.getIconURL("tango/imageCompare.jpg"), "Launch Analyser"));
+				}
+				if (completeView){
+					if (column == COLUMN_COMMENTS){
+						this.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.BLACK));
+					}
+				}
+				return this;
+			} catch (ArrayIndexOutOfBoundsException ae) {
+				// throwed when table is modified (cleared,...) and repainted at same time...
+				// when numRow becomes > nb row in table
+				//ae.printStackTrace(Out.log);
+			} catch (NumberFormatException nfe) {
+				// case numRow retriving get a null (see overwritten method MyTableModel.getValueAt(..))
+				//nfe.printStackTrace(Out.log);
+			}
+			return null;
+		}
+	}
+
+	//	 class ButtonRenderer extends AbstractCellEditor
+	//     implements TableCellRenderer, TableCellEditor, ActionListener
+	// {
+	//     JTable table;
+	//     JButton renderButton;
+	//     JButton editButton;
+	//     String text;
+	//	private int nbclick=0;
+	//
+	//     public ButtonRenderer(JTable table, int column)
+	//     {
+	//         super();
+	//         this.table = table;
+	//         renderButton = new JButton("render");
+	//         //renderButton.addActionListener( this );
+	//         editButton = new JButton("edit");
+	//         editButton.setFocusPainted( false );
+	//        // editButton.addActionListener( this );
+	//
+	//         TableColumnModel columnModel = table.getColumnModel();
+	//         columnModel.getColumn(column).setCellRenderer( this );
+	//         columnModel.getColumn(column).setCellEditor( this );
+	//     }
+	//
+	//     public Component getTableCellRendererComponent(
+	//         JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
+	//     {
+	//         if (hasFocus)
+	//         {
+	//             renderButton.setForeground(table.getForeground());
+	//             renderButton.setBackground(UIManager.getColor("Button.background"));
+	//         }
+	//         else if (isSelected)
+	//         {
+	//             renderButton.setForeground(table.getSelectionForeground());
+	//              renderButton.setBackground(table.getSelectionBackground());
+	//              Logger.getLogger(this.getClass() ).debug("isselected"+row+","+column);
+	////             
+	////              if (nbclick>0){
+	////            	  launchScreenShotComparison compScreenShot= new launchScreenShotComparison("C:\\Documents and Settings\\bvqj2105\\workspace\\prototype\\src\\images\\ref1","C:\\Documents and Settings\\bvqj2105\\workspace\\prototype\\src\\images\\test1");
+	////              } nbclick++;
+	//         }
+	//         else
+	//         {
+	//             renderButton.setForeground(table.getForeground());
+	//             renderButton.setBackground(UIManager.getColor("Button.background"));
+	//         }
+	//
+	//         //renderButton.setText( (value == null) ? "" : value.toString() );
+	//         java.net.URL passedURL = CoreGUIPlugin.getIconURL("tango/apply.png");
+	//			
+	//         renderButton.setIcon(new ImageIcon( passedURL, Step.verdictAsString.get(Verdict.PASSED)));
+	////         renderButton.addMouseListener(new MouseListener(){
+	////
+	////						public void mouseClicked(MouseEvent arg0) {
+	////						 Logger.getLogger(this.getClass() ).debug("mouse clik");
+	////						 if(arg0.getClickCount() == 1)
+	////						   {
+	////							 launchScreenShotComparison compScreenShot= new launchScreenShotComparison("C:\\Documents and Settings\\bvqj2105\\workspace\\prototype\\src\\images\\ref1","C:\\Documents and Settings\\bvqj2105\\workspace\\prototype\\src\\images\\test1");
+	////						   }
+	////						}
+	////
+	////						public void mousePressed(MouseEvent arg0) {
+	////							Logger.getLogger(this.getClass() ).debug("mouse pressed");
+	////						}
+	////
+	////						public void mouseReleased(MouseEvent arg0) {
+	////
+	////						}
+	////
+	////						public void mouseEntered(MouseEvent arg0) {
+	////
+	////						}
+	////
+	////						public void mouseExited(MouseEvent arg0) {
+	////
+	////						}
+	////
+	////					});
+	//         return renderButton;
+	//     }
+	//
+	//     public Component getTableCellEditorComponent(
+	//         JTable table, Object value, boolean isSelected, int row, int column)
+	//     {
+	//         text = (value == null) ? "" : value.toString();
+	//         editButton.setText( text );
+	//         return editButton;
+	//     }
+	//
+	//     public Object getCellEditorValue()
+	//     {
+	//         return text;
+	//     }
+	//
+	//     public void actionPerformed(ActionEvent e)
+	//     {
+	//         fireEditingStopped();
+	//         Logger.getLogger(this.getClass() ).debug( e.getActionCommand() + " : " + table.getSelectedRow());
+	//     }
+	// }
+
+	/* (non-Javadoc)
+	 * @see com.orange.atk.atkUI.coregui.CheckListTable#addRow(com.orange.atk.atkUI.corecli.Step, int, boolean, boolean)
+	 */
+	@Override
+	public void addRow(Step step, int rowNumberInGUI, boolean selectIt,	boolean checkPreviousResults) {
+		if (!(step instanceof MixScriptStep)) {
+			//Out.log.println("addRow(..): Warning, trying to add a non FlashStep into FlashCheckListTable... step skipped.");
+			return;
+		}
+		MixScriptStep flashStep = (MixScriptStep)step;
+		String flashURI = flashStep.getFlashFilePath();
+		String flashName = "";
+		if (flashURI.endsWith("tst")) {
+			flashName = StringUtilities.guessName(flashURI, "tst");
+		} else {//.sis
+			flashName = StringUtilities.guessName(flashURI, "xml");
+		}
+		Vector<String> rowData = new Vector<String>();
+		if (rowNumberInGUI == -1){
+			rowNumberInGUI = model.getRowCount();
+		}
+		String numRowInNumbers = Integer.valueOf(table.getRowCount()+1).toString();
+		int numRowInCampaign = campaign.size();
+		rowData.add(numRowInNumbers);//rowNumber
+
+		rowData.add(flashName);
+		toolTipFlashFile.add(numRowInCampaign, flashURI);
+
+		if (checkPreviousResults) {
+			// check for previous results
+			//			List<MixScriptStepAnalysisResult> results = new ArrayList<MixScriptStepAnalysisResult>();
+			//			List<IAnalysisResultsManager> arManagers= Matos.getInstance().getAnalysisResultsManagers();
+			//			for (IAnalysisResultsManager arManager : arManagers) {
+			//				MixScriptStepAnalysisResult rs = (MixScriptStepAnalysisResult)arManager.getPreviousAnalysisResult(flashStep);
+			//				if (rs!=null) {
+			//					results.add(rs);
+			//				}
+			//			}
+
+			// looking at retreived results
+			StepAnalysisResult sar = null;
+			/*		if (results.size()==1) {
+				sar = results.get(0);
+			} else if (results.size()>1) { 
+				// case of several Analysis Results Manager. Should not arrived...
+				// TODO sort dy date and use the younger
+				Out.log.println("More than one previous analysis result retreived. Nothing done...");
+				//javastep.updateLastAnalysisResult(results.get(0));
+			} else {
+				// no results... 
+			}*/
+
+			if (sar!=null) {
+				flashStep.updateLastAnalysisResult(sar);
+				String toolTip =sar.toHTML(flashStep);
+				boolean modified = toolTip.indexOf("red")>0;
+				rowData.add(modified?"M":""); //Modified column
+				toolTipModified.add(numRowInCampaign, toolTip);
+
+				if (   sar.getVerdict().equals(Step.verdictAsString.get(Verdict.PASSED)) 
+						|| sar.getVerdict().equals(Step.verdictAsString.get(Verdict.FAILED)) ) { 
+					rowData.add( sar.getVerdict() ); //Verdict column
+					rowData.add( sar.getComment() ); //Comments column
+					String repPath = sar.getReportPath();
+					//					if ((repPath==null)||(repPath.equals(""))) {
+					//					repPath = rs.report.getAbsolutePath();
+					//					}
+					toolTipReport.add(numRowInCampaign, repPath);
+				} else { // verdict is 'Skipped'
+					rowData.add( sar.getVerdict()+": "+sar.getReason());
+					toolTipReport.add(numRowInCampaign, sar.getReason());
+				}
+			} else {
+				//Configuration column
+				if(null != flashStep.getXmlfilepath()){
+					File configfile = new File(flashStep.getXmlfilepath());
+					rowData.add(configfile.getName()); 
+				}
+				else {
+					PhoneInterface phone = AutomaticPhoneDetection.getInstance().getDevice();
+					String defaultConfigFileName = Configuration.getInstance().getDefaultConfig().get(phone.getClass().getName());
+					if (defaultConfigFileName != null){
+						rowData.add(defaultConfigFileName);
+						File file = new File(Configuration.defaultPhoneConfigPath+defaultConfigFileName);
+						flashStep.setXmlfilepath(file.toString());
+					}
+					else 
+						rowData.add(NOT_SELECTED);
+				}
+				rowData.add(""); //Modified column
+				toolTipModified.add(numRowInCampaign, "");
+				rowData.add(""); //Verdict column
+				rowData.add( "" ); //Comments column
+				toolTipReport.add(numRowInCampaign, "");
+			}
+		}
+
+		// TODO implementation of complete view
+		/*if (completeView){
+			int numCid = CoreGUI.cidTable.getNumCIDFromGUI(flashstep.id_cid);
+			if (numCid == -1){
+				rowData.add("");//editor's list number
+			}else{
+				rowData.add(new Integer(numCid).toString());//editor's list number
+			}
+			rowData.add(flashStep.cidName);
+			rowData.add(flashStep.sms);
+			rowData.add(flashStep.httpAuthorized);
+			rowData.add(flashStep.service);
+			rowData.add(flashStep.version);
+			rowData.add(flashStep.terminal);
+		}*/
+		model.insertRow(rowNumberInGUI, rowData);
+		campaign.add(numRowInCampaign, flashStep);
+		if (selectIt) {
+			selectARow(rowNumberInGUI);
+		}
+
+	}
+
+	/* (non-Javadoc)
+	 * @see com.orange.atk.atkUI.coregui.CheckListTable#clear()
+	 */
+	@Override
+	public void clear() {
+		if (table.getRowCount()>0) { /// if needed ...
+			campaign = new MixScriptCampaign();
+
+			model = new FlashCheckListTableModel();
+			model.setLongValues(longValues);
+
+			table.removeAll();
+			table.setModel(model);
+
+			model.addColumn("#");
+			model.addColumn("Test FILE");
+			model.addColumn("Monitoring Config");
+			model.addColumn("M");
+			model.addColumn("Verdict");
+			model.addColumn("Comments");
+			model.addColumn("Analyser");
+
+			//Set up column sizes.
+			model.initColumnSizes(model, table, 5);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see com.orange.atk.atkUI.coregui.CheckListTable#updateAllAfterRemoving(java.util.Vector)
+	 */
+	@Override
+	public void updateAllAfterRemoving(Vector<Integer> campRemovedRows) {
+		if (table.getRowCount() == 0) {
+			CoreGUIPlugin.mainFrame.setCheckListFileName(null);
+			campaign = new MixScriptCampaign();
+			toolTipFlashFile.removeAllElements();
+			toolTipModified.removeAllElements();
+			toolTipReport.removeAllElements();
+		} else {
+			updateTableAfterRemoving(campRemovedRows);
+			updateCampaign(campRemovedRows);
+			updateVector(toolTipFlashFile, campRemovedRows);
+			updateVector(toolTipModified, campRemovedRows);
+			updateVector(toolTipReport, campRemovedRows);
+		}
+		model.fireTableDataChanged();
+		CoreGUIPlugin.mainFrame.updateButtons();
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see com.orange.atk.atkUI.coregui.CheckListTable#updateStep(com.orange.atk.atkUI.corecli.Step)
+	 */
+	@Override
+	public void updateStep(Step step) {
+		Step flashStep = (Step)step;
+
+		int index_in_campaign = getCampaign().indexOf(step);
+		int index_in_table = getIndexInTable(index_in_campaign);
+		centerRow(index_in_table);
+
+		// gets back previous results for the step
+		List<MixScriptStepAnalysisResult> results = new ArrayList<MixScriptStepAnalysisResult>();
+		/*List<IAnalysisResultsManager> arManagers= Matos.getInstance().getAnalysisResultsManagers();
+		for (IAnalysisResultsManager arManager : arManagers) {
+			MixScriptStepAnalysisResult rs = (MixScriptStepAnalysisResult)arManager.getPreviousAnalysisResult(flashStep);
+			if (rs!=null) {
+				results.add(rs);
+			}
+		}*/
+		// looking at retreived results
+		if (results.size()==1) {
+			flashStep.updateLastAnalysisResult(results.get(0));
+		} else if (results.size()>1) { 
+			// case of several Analysis Results Manager. Should not arrived...
+			// TODO sort dy date and use the younger
+			Out.log.println("More than one previous analysis result retreived. Nothing done...");
+			//flashStep.updateLastAnalysisResult(results.get(0));
+		} else {
+			// no results... nothing to do
+		}
+
+		Verdict userVerdict = flashStep.getUserVerdict();
+		if (userVerdict != Verdict.NONE) {
+			if (userVerdict == Verdict.PASSED || userVerdict == Verdict.FAILED) {
+				model.setValueAt(Step.verdictAsString.get(userVerdict), index_in_table, COLUMN_VERDICT);
+				String repPath = flashStep.getOutFilePath();
+				toolTipReport.set(index_in_campaign, repPath);
+			} else { //verdict is 'skipped'
+				if (flashStep.getSkippedMessage() != null && flashStep.getSkippedMessage().length() != 0) {
+					model.setValueAt(Step.verdictAsString.get(userVerdict) + ": " + flashStep.getSkippedMessage(), index_in_table, COLUMN_VERDICT);
+					toolTipReport.set(index_in_campaign, flashStep.getSkippedMessage());
+				} else {
+					model.setValueAt(Step.verdictAsString.get(userVerdict), index_in_table, COLUMN_VERDICT);
+				}
+			}
+		} else {
+			Verdict verdict = flashStep.getVerdict();
+			if (verdict == Verdict.PASSED || verdict == Verdict.FAILED){
+				model.setValueAt(Step.verdictAsString.get(verdict), index_in_table, COLUMN_VERDICT);
+				String repPath = flashStep.getOutFilePath();
+				toolTipReport.set(index_in_campaign, repPath);
+			} else if (verdict == Verdict.NONE) {
+				model.setValueAt(Step.verdictAsString.get(verdict), index_in_table, COLUMN_VERDICT);
+			} else { // verdict is 'Skipped'
+				if (flashStep.getSkippedMessage() != null && flashStep.getSkippedMessage().length() != 0) {
+					model.setValueAt(Step.verdictAsString.get(verdict) + ": " + flashStep.getSkippedMessage(), index_in_table, COLUMN_VERDICT);
+					toolTipReport.set(index_in_campaign, flashStep.getSkippedMessage());
+				} else {
+					model.setValueAt(Step.verdictAsString.get(verdict), index_in_table, COLUMN_VERDICT);
+				}
+			}
+		}
+
+		StepAnalysisResult sar = flashStep.getLastAnalysisResult();
+		String toolTip = "";
+		if (sar!=null) {
+			toolTip = sar.toHTML(flashStep);
+			boolean modified = toolTip.indexOf("red")>0;
+			model.setValueAt(modified?"M":"", index_in_table, COLUMN_MODIFIED);
+			toolTipModified.set(index_in_campaign, toolTip);
+		}
+
+	}
+
+	/**
+	 * The model for this table for.
+	 */
+	private  class FlashCheckListTableModel extends CheckListTableModel{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public boolean isCellEditable(int row, int col) {
+			if (col == COLUMN_COMMENTS ||col ==COLUMN_PHONECONFIG){
+				return true;
+			}
+			return false;
+		}
+
+		@SuppressWarnings("unchecked")
+		public void moveRow(SortedSet <Integer> campaignIndexRemovedRows, int rowIndexDst) {
+
+			Iterator<Integer> it = campaignIndexRemovedRows.iterator();
+			Vector addvect =new Vector();
+			int index =0;
+			while (it.hasNext()){
+				int rowIndexSrc = it.next();
+				Vector r =(Vector) dataVector.get(rowIndexSrc+index);
+				addvect.add(r);
+				model.removeRow(rowIndexSrc+index);   
+				index--;
+			}
+
+			//add
+			if(rowIndexDst<campaignIndexRemovedRows.first())
+			{
+				for(int i=0;i<addvect.size();i++)
+				{
+					Vector r =(Vector) addvect.get(i);
+					model.insertRow(rowIndexDst+i, r);
+				}
+			}
+			else
+			{
+				for(int i=0;i<addvect.size();i++)
+				{
+					Vector r =(Vector) addvect.get(i);
+					model.insertRow(rowIndexDst-campaignIndexRemovedRows.size()+1+i, r);
+
+				} 
+				//dataVector.addAll(rowIndexDst-campaignIndexRemovedRows.size()+1,addvect);
+			}
+
+			//update campaign
+			campaign.movesample(campaignIndexRemovedRows, rowIndexDst);
+			//order IHM
+			reorderrow();
+
+		}
+
+		public void reorderrow()	    
+		{
+
+			for(int i=0;i<dataVector.size();i++)
+			{
+				model.setValueAt(String.valueOf(i+1), i, COLUMN_NBROW) ;
+			}
+
+		}
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see com.orange.atk.atkUI.coregui.CheckListTable#isRowModified(int)
+	 */
+	@Override
+	public boolean isRowModified(int row) {
+		String m = (String)model.getValueAt(row, COLUMN_MODIFIED );
+		return !m.equals("");
+	}
+
+	public Vector<String> getToolTipFlashFile() {
+		return toolTipFlashFile;
+	}
+
+	public void setToolTipFlashFile(Vector<String> toolTipFlashFile) {
+		this.toolTipFlashFile = toolTipFlashFile;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.orange.atk.atkUI.coregui.CheckListTable#getNumColumnVerdict()
+	 */
+	@Override
+	public int getNumColumnVerdict() {
+		return COLUMN_VERDICT;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.orange.atk.atkUI.coregui.CheckListTable#getValueAt(int)
+	 */
+	public String getValueAt(int numRow) {
+		return (String)model.getValueAt(numRow, COLUMN_NBROW);
+	}
+
+	private boolean enabledUserAction = true;
+	/* (non-Javadoc)
+	 * @see com.orange.atk.atkUI.coregui.CheckListTable#enableUserActions(boolean)
+	 */
+	@Override
+	public void enableUserActions(boolean b) {
+		enabledUserAction = b;
+		table.setEnabled(b);
+		tablePane.setEnabled(b);
+	}
+
+	public boolean isEnableUserActions() {
+		return enabledUserAction;
+	}
+
+}
