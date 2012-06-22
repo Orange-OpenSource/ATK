@@ -602,7 +602,7 @@ public class MixScriptCheckListTable extends CheckListTable {
 				}
 
 				if (column == COLUMN_ANALYSER){
-					this.setIcon(new ImageIcon(CoreGUIPlugin.getIconURL("tango/imageCompare.jpg"), "Launch Analyser"));
+					this.setIcon(new ImageIcon(CoreGUIPlugin.getIconURL("tango/analyser.jpg"), "Launch Analyser"));
 				}
 				if (completeView){
 					if (column == COLUMN_COMMENTS){

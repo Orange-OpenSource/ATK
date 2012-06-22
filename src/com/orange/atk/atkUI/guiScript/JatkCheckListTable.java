@@ -605,7 +605,7 @@ public class JatkCheckListTable extends CheckListTable {
 							this.setIcon(suitImages[2]);
 						}
 					}else{
-						this.setIcon(new ImageIcon(CoreGUIPlugin.getIconURL("tango/camera_icon.jpg"), "Launch ScreenShot Comparison"));
+						this.setIcon(new ImageIcon(CoreGUIPlugin.getIconURL("tango/camera_icon.png"), "Launch ScreenShot Comparison"));
 
 					}
 
@@ -646,7 +646,7 @@ public class JatkCheckListTable extends CheckListTable {
 				}
 
 				if (column == COLUMN_ANALYSER){
-					this.setIcon(new ImageIcon(CoreGUIPlugin.getIconURL("tango/imageCompare.jpg"), "Launch Analyser"));
+					this.setIcon(new ImageIcon(CoreGUIPlugin.getIconURL("tango/analyser.png"), "Launch Analyser"));
 				}
 				if (completeView){
 					if (column == COLUMN_COMMENTS){
