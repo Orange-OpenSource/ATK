@@ -1,0 +1,59 @@
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="styles.css"/>
+  <script type="text/javascript" src="menu.js"></script>
+  <title>ATK User Guide</title>
+</head>
+<body>
+
+<div id="content">
+<h1>ATK Random tests</h1>
+
+The ATK Test Manager "Random Test" tab enables you to perform random testing (also called "monkey" testing)
+of the applications installed on your phone.
+
+<p>Launch ATK Test Manager</p>
+
+Connect the device you want to test with USB cable. Then launch ATK Test Manager : 
+select Start > Programs > ATK > ATK. You may have to click on the "<b><a href="ATK_device_detection.html">Device detection</a></b>" button to select 
+the correct device. Select the "Random Test" tab.<br/>
+
+<br><br>
+<center><img src="images/ATK_random_test_tab.png" alt="ATK Random Test tab" /></center>
+<br><br>
+    
+<p>Adding scripts to the check-list</p>
+
+Click on the <img src="images/ATK_add_button.png" align="bottom"></img> button, to make appear the list of avaible
+applications on your device. If ATK can't find any application automatically, it will let user enter manually the application name.
+Select one or multiple applications that you want to test :
+
+<br><br>
+<center><img src="images/ATK_random_test_apps.png" alt="ATK Random Test applications selection" /></center>
+<br><br>
+	
+For more details on how to manage test check-lists and configurations see <b><a href="ATK_script_tests.html">ATK script tests</a></b>
+section, which is quite analoguous (except we do not manipulate scripts files here).
+
+<p>Running random tests</p>
+
+
+<br><br>
+<center><img src="images/ATK_random_test_checklist.png" alt="ATK Random Test running" /></center>
+<br><br>
+
+The name of the tested applications is used as Random Test name. Select your <a href="ATK_test_configuration.html">Monitoring configuration</a>
+ and indicate the number of events to perform during the test (or time in sec for Nokia phones).
+ Click on <img src="images/ATK_play_button.png" align="bottom"></img> button to launch the random tests.
+
+<p>Viewing random tests results</p>
+In order to view the results of a test, double-click on its "Verdict" case, or select the test line and 
+click on the <img src="images/ATK_report_button.png" align="bottom"></img> button.<br/><br/> 
+
+You can launch the <a href="tool_graph_analyzer.html">Graph analyzer</a> tool, to view the resource
+consumption graphs (the resulting graph datas are stored under 
+<span id="cmd">&lt;result_folder&gt;/&lt;your_random_test_name_folder&gt;</span>).
+<br/><br/>
+</div>	
+</body>
+</html>

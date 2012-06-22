@@ -3,7 +3,7 @@ html {
     padding: 0;
     }
 body { 
-    font: 90% arial, sans-serif;
+    font: 75% arial, sans-serif;
     line-height: 1.5;
     color: #555753; 
     background: #fff; 
@@ -61,9 +61,8 @@ margin-left:250px;
 }
 
 h1 {
-//background: transparent url("images/atk-orange.png") no-repeat top left; 
-//background-color:#ffecce;
-font-size:32px;
+background-color:#ffecce;
+font-size:30px;
 font-weight:700;
 text-transform:uppercase;
 text-align : center;

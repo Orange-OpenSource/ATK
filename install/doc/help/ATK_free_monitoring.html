@@ -1,0 +1,57 @@
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <link rel="stylesheet" type="text/css" href="styles.css"/>
+    <script type="text/javascript" src="menu.js"></script>
+  <title>ATK User Guide</title>
+</head>
+<body>
+<div id="content">
+
+<h1>ATK Free monitoring</h1>
+
+A new feature has been added to enable user to monitor its phone resources without running any script.
+
+<p>Launch ATK Free monitoring</p>
+
+Connect the device you want to monitor with USB cable. Then launch ATK Test Manager : 
+select Start > Programs > ATK > ATK. You may have to click on the "<b><a href="ATK_device_detection.html">Device detection</a></b>" button to select 
+the correct device.<br/>
+
+<br><br>
+<center><img src="images/ATK_free_monitor.png" width="700px" alt="ATK main UI" /></center>
+<br><br>
+	
+
+Click on the <img src="images/ATK_monitor_button.png" align="bottom"></img> button. A new window will appear :<br/>
+
+<br><br>
+<center><img src="images/ATK_free_monitor_start.png" alt="ATK free monitoring launch window" /></center>
+<br><br>
+	
+Select a configuration file. This will define which resources (cpu, memory, storage ...) or process will be measured, and 
+what will be displayed in the resulting graphs report. See <b><a href="ATK_test_configuration.html">Monitoring configuration</a></b> 
+section to understand how to configure your tests with the wizard.<br/>
+
+<ul>
+    <li>Press "Start" button to start monitoring the resources of your phone. You may have to specify the target directory for the results of the monitoring.
+	<li>Press "Stop" button to stop the monitoring : a report will be automatically created and stored in a new folder 
+		called "Manual_&lt;Current_Date_Time&gt;" that you'll find in the result directory you have specified.
+	<li>Press "View Report" if you want to see the last report generated
+	<li>Press "Cancel" button to stop the monitoring and not generate any report.
+	<li>Press "Graph Analyser" button to see the last generated graph analyzer.
+</ul>
+
+<p>Url markers</p>
+
+Url markers are available in real time graphics if you have activated "<b><a href="settings_android.html#networkmonitor">Network Monitor</a></b>" in the settings (if your phone is rooted and has busybox installed). It will show you what web site has been requested and when.</br>
+
+You can choose to show/hide the markers by clicking the "Display Url markers" checkbox.
+
+
+<br><br>
+<center><img src="images/ATK_real_time_graph.png" alt="ATK free monitoring launch window" /></center>
+<br><br>
+
+</body>
+</html>

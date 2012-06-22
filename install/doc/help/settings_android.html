@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <link rel="stylesheet" type="text/css" href="styles.css"/>
+    <script type="text/javascript" src="menu.js"></script>
+  <title>ATK User Guide</title>
+</head>
+
+
+<body>
+<div id="content">
+
+<h1>Android Settings</h1>
+<br>
+<br>
+<p>Enable USB connexion on Android Device</p>
+
+On the Android device press MENU, select <b>Settings &gt; Applications &gt; Development</b>, then enable USB debugging.
+
+<p>Insert SDCard</p>
+
+On Android devices > 1.5, you must insert a SDCard in the phone (otherwise touch events replay will fail). Be careful : the SDCard must be inserted, 
+but NOT mounted (the content of the SDCard should not appear in your explorer).
+
+<p>ATK Monitor</p>
+
+In order to measure resources consumption on Android device, an Android application named "ATK Monitor" is automatically 
+installed and started by ATK on your device. When ATK Monitor is running, you can see a green square on the top left corner
+of your Android phone: <br/><br/>
+<center><img src="images/settings_android_atk_monitor_running.png" width="500px" alt="ATK Monitor is running"></img></center>
+<br/>
+If ATK is not running, go to the "Applications" page on your phone and launch ATK Monitor:<br/><br/>
+<center><img src="images/settings_android_atk_monitor.png" width="500px"  alt="ATK Monitor is running"></img></center>
+<br/>
+If ATK Monitor is not installed, you can find its package under <span id="cmd">&lt;ATK_install_path&gt;/AndroidTools/ATKMonitor.apk</span> 
+and install it manually on your phone.<br/>
+
+<p>Android Debug Bridge</p>
+
+ATK uses ADB (Android Debug Bridge) to communicate with Android phones. The standard adb.exe application is provided with ATK.
+But some phones are using a specific ADB (an adb.exe is provided with the phone drivers). In that case, the standard adb.exe used
+by ATK may not recognize the phone, and when you plug your phone it won't be detected by ATK.<br/><br/>
+
+In such a case, open the <span id="cmd">Edit > Configuration</span> menu of ATK Test Manager, select the External tools tab. Then check the "Use
+specific ADB" checkbox and indicate the path to the specific adb.exe application :
+
+
+<br/><br/>
+<center><img src="images/settings_adb_externaltools.png" alt="Configuring specific ADB"></img></center>
+<br/>
+
+<p><a name="networkmonitor">Network Monitor</p>
+
+ATK provides a network monitor module (available for Android rooted phones with busybox only). 
+The requested Urls will be displayed as markers on the graph analyzer and on the real time graph.
+<br/><br/>
+To enable it check "Use Network Monitor".
+
+<br/><br/>
+<center><img src="images/settings_adb_externaltools1.png" alt="Configuring specific ADB"></img></center>
+<br/>
+
+<p>Android devices support</p>
+
+If your Android device is still not detected by ATK when plugged, check that it is currently supported. Please see the section
+"<a href="config_new_android.html">Configuring a new Android device</a>".
+
+<br/>
+<br/>
+
+</div>
+
+</body>
+</html>
