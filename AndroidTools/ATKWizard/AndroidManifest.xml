@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="com.orange.atk.wizard"
+      android:versionCode="1"
+      android:versionName="1.0">
+    <application android:label="ATK Wizard" android:debuggable="true" android:icon="@drawable/icon">
+        <activity android:name="com.orange.atk.wizard.ATKWizardClient">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />            
+                <action android:name="com.orange.atk.wizard.CLIENT" />
+                <category android:name="android.intent.category.DEFAULT" />                
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <service android:name="com.orange.atk.wizard.ATKWizardService">
+            <intent-filter>
+                <action android:name="com.orange.atk.wizard.WIZARD" />
+            </intent-filter>
+        </service>
+    </application>
+    <uses-permission android:name="android.permission.INTERNET" />
+</manifest> 
