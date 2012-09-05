@@ -5,8 +5,8 @@
 <Android-config>
   <CanalPattern>
     <Pattern canal="keyboard" value="gpio-keys"/>
-    <Pattern canal="keyboard2" value="melfas-touchkey"/>
-    <Pattern canal="touchscreen" value="mxt224_ts_input"/>
+    <Pattern canal="keyboard2" value="sec-touchkey"/>
+    <Pattern canal="touchscreen" value="sec-touchscreen"/>
   </CanalPattern>
   <KeyMapping canal="keyboard">
     <Key name="HOME" code="102"/>
@@ -25,9 +25,9 @@
     <Pattern name="ratioX" value="1.0"/>
     <Pattern name="ratioY" value="1.0"/>
     <!--!!! Please update following patterns-->
-    <Pattern name="down" value="3 48 1"/>
-    <Pattern name="downmax" value="3 48 255"/>
-    <Pattern name="up" value="3 48 0"/>
+    <Pattern name="down" value="3 57 1"/>
+    <Pattern name="downmax" value="3 57 25"/>
+    <Pattern name="up" value="3 57 -1"/>
     <Pattern name="flush" value="0 0 0"/>
     <Pattern name="flush2" value="0 2 0"/>
     <Threshold name="move" value="15"/>
