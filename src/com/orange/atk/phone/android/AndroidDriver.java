@@ -557,13 +557,20 @@ public class AndroidDriver extends AndroidPhone implements PhoneInterface {
 		isScriptRecording = false;
 	}
 
+	protected EventFilter createTouchScreenEventFilter(AndroidDriver d, AndroidConfHandler gestionnaire, HashMap<String,Position> softkeyMap){
+		return new DefaultTouchScreenEventfilter(d,gestionnaire, softkeyMap);
+	}
+	
 	public void startRecordingMode() throws PhoneException {
 		isScriptRecording = true;
 		//touchscreen
 
 		//filter in mouse move at least 10px of difference
 		if (gestionnaire.useSmartTouchDetection()) eventFilter = new SmartTouchScreenEventfilter(this,gestionnaire, softkeyMap);
-		else eventFilter = new DefaultTouchScreenEventfilter(this,gestionnaire, softkeyMap);
+		else{
+			Logger.getLogger(this.getClass() ).debug("Creating touchScreen Event filter");
+			eventFilter = createTouchScreenEventFilter(this,gestionnaire, softkeyMap);
+		}
 		recordingPhoneModethreadTouchscreen = new RecordingThread(adevice,
 				MOUSE_CHANNEL_EVENT,
 				eventFilter);

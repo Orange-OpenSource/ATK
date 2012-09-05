@@ -192,16 +192,26 @@ class DefaultTouchScreenEventfilter extends EventFilter {
 		MOUSE_DOWN, MOUSE_UP, MOUSE_MOVE,UNKNOW_ACTION//,MOUSE_DOWN_SLIDE,MOUSE_DOWN_DRAG
 	}
 
+	protected String splitChar(){
+		return ": ";
+	}
 
-	@Override	
-	public void processline( String line) {
-		Logger.getLogger(this.getClass() ).debug("processline : "+line);
-		String commands[] = line.split(": ");
-		String command = commands[1];
-		String timeTable[] = commands[0].split("-");
+	protected Long parseTimestamp(String s){
+		String timeTable[] = s.split("-");
 		//timeTable[0]: time in s - timeTable[1]: time in microsecond
 		//time in ms:
 		Long time = Long.parseLong(timeTable[0])*1000+Long.parseLong(timeTable[1])/1000;
+		return time;
+		
+	}
+	@Override	
+	public void processline( String line) {
+		Logger.getLogger(this.getClass() ).debug("processline : "+line);
+		String commands[] = line.split(splitChar());
+		String command = commands[1];
+		String timepart = commands[0];
+		
+		Long time = parseTimestamp(timepart);
 		
 		if (command.startsWith(FLUSH_EVENT) ) {
 			if (flushSent) {
