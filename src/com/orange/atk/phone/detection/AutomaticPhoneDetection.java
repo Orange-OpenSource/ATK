@@ -42,6 +42,7 @@ import com.orange.atk.phone.PhoneException;
 import com.orange.atk.phone.PhoneInterface;
 import com.orange.atk.phone.android.AndroidDriver;
 import com.orange.atk.phone.android.AndroidICSDriver;
+import com.orange.atk.phone.android.AndroidJBDriver;
 import com.orange.atk.phone.android.AndroidMonkeyDriver;
 import com.orange.atk.phone.android.AndroidPhone;
 import com.orange.atk.platform.Platform;
@@ -175,10 +176,16 @@ public class AutomaticPhoneDetection {
 						PhoneInterface newPhone;
 						try {
 							float v=Float.parseFloat(version.substring(0, 3)); 
-							if ( v >= 2.0){
-								if (v >= 4.0){
-									//Logger.getLogger(this.getClass()).info("!! ICS !! detected");
-									newPhone = new AndroidICSDriver(vendor+"_"+model, version, androidDevice);
+							Logger.getLogger(this.getClass()).info(v);
+							if ( v >= 2.0f){
+								if (v >= 4.0f){
+									if (v >= 4.1f){
+										Logger.getLogger(this.getClass()).info("Android Jelly bean detected !");
+										newPhone = new AndroidJBDriver(vendor+"_"+model, version, androidDevice);
+									}else{
+										Logger.getLogger(this.getClass()).info("Android ICS detected !");
+										newPhone = new AndroidICSDriver(vendor+"_"+model, version, androidDevice);
+									}
 								}else{
 									newPhone = new AndroidMonkeyDriver(vendor+"_"+model, version, androidDevice);
 								}
