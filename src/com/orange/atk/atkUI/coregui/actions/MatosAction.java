@@ -88,7 +88,7 @@ public enum MatosAction {
 									  "Unselect all items of the the current check-list.")),
 
 	COPY ("copy", new CopyAction("copy",
-								 new ImageIcon(CoreGUIPlugin.getIconURL("tango/editcopy.png")),
+								 new ImageIcon(CoreGUIPlugin.getIconURL("tango/edit_copy.png")),
 	  							 "Copy the selected steps of the current check-list.")),
 
 	PASTE ("paste", new PasteAction("paste",
