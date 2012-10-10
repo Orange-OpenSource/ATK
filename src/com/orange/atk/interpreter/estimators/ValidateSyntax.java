@@ -235,6 +235,8 @@ public class ValidateSyntax implements ATKScriptParserVisitor {
 					+ include
 					+ " could not be include. Possible reasons are : "
 					+ Platform.LINE_SEP
+					+ " - The script must be saved before including other scripts"
+					+ Platform.LINE_SEP
 					+ " - The named file does not exist"
 					+ Platform.LINE_SEP
 					+ " - The named file is a directory rather than a regular file"

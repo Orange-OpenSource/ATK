@@ -269,7 +269,7 @@ public class ActionToExecute {
 		String scriptPath = interpreter.getInternalState().getCurrentScript();
 
 		try {
-			ActionToExecute.fetchIncludeScript(interpreter, node, scriptPath, include);
+			fetchIncludeScript(interpreter, node, scriptPath, include);
 		} catch (FileNotFoundException e) {
 			generateError(
 					node,
@@ -295,7 +295,7 @@ public class ActionToExecute {
 	
 	public static void fetchIncludeScript(ATKScriptParserVisitor interpreter, ASTINCLUDE node, String scriptPath, String include) throws FileNotFoundException, ParseException {
 		String includefile=null;
-
+		if(scriptPath == null) throw new FileNotFoundException();
 		//Test a relative path
 		if(new File(new File(scriptPath).getParent()+Platform.FILE_SEPARATOR+include).exists())
 		{

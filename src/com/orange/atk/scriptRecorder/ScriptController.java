@@ -683,7 +683,7 @@ public class ScriptController {
 
 		try{
 			//The loop Node doesn't respect grammar of the language (No EndLoop)
-			Pattern Pat = Pattern .compile(" *Loop\\( *([0-9])* *\\) *");
+			Pattern Pat = Pattern .compile(" *Loop\\( *([0-9][0-9]*) *\\) *");
 			Matcher mtc = Pat.matcher(text);
 			if( mtc.matches()) {
 				ASTLOOP loop = new ASTLOOP(ATKScriptParserTreeConstants.JJTLOOP);
