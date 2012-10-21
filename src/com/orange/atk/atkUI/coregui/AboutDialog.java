@@ -51,7 +51,7 @@ public class AboutDialog extends JDialog {
 	private JEditorPane editorPane;
 	protected boolean stop=false;
 	private boolean autoscroll = false;
-	private static String version = "2.13";
+	private static String version = "2.14";
 	
 	protected static final String HELP_DOC_PATH=Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"doc"+File.separator+"help"+File.separator;
 

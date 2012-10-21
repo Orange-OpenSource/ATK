@@ -117,11 +117,10 @@ public class Configuration {
 	
 	private Configuration() {
 		defaultConfig = new HashMap<String,String>();
-		defaultConfig.put("com.orange.atk.phone.nokiaS60.NokiaS60Phone","nokia.xml");
 		defaultConfig.put("com.orange.atk.phone.android.AndroidDriver","android.xml");
 		defaultConfig.put("com.orange.atk.phone.android.AndroidMonkeyDriver","android.xml");
-		defaultConfig.put("com.orange.atk.phone.samsung.SamsungPhone","samsung.xml");
-		defaultConfig.put("com.orange.atk.phone.se.SEPhone","se.xml");
+		defaultConfig.put("com.orange.atk.phone.android.AndroidICSDriver","android.xml");
+		defaultConfig.put("com.orange.atk.phone.android.AndroidJBDriver","android.xml");
 		defaultConfig.put("com.orange.atk.phone.mediatek.MediatekPhone","mediatek.xml");
 		defaultPhoneConfigs = new Vector<String>();
 		Iterator<String> configNames = defaultConfig.values().iterator();

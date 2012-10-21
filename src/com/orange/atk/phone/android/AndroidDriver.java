@@ -94,6 +94,7 @@ public class AndroidDriver extends AndroidPhone implements PhoneInterface {
 	protected AndroidConfHandler gestionnaire;
 
 
+
 	/**
 	 * TEST:TODO verify that's the good solution.
 	 * 

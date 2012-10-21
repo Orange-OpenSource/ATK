@@ -5,8 +5,8 @@
 <Android-config>
   <CanalPattern>
     <Pattern canal="keyboard" value="gpio-keys"/>
-    <Pattern canal="keyboard2" value="sec-touchkey"/>
-    <Pattern canal="touchscreen" value="sec-touchscreen"/>
+    <Pattern canal="keyboard2" value="sec_touchkey"/>
+    <Pattern canal="touchscreen" value="sec_touchscreen"/>
   </CanalPattern>
   <KeyMapping canal="keyboard">
     <Key name="HOME" code="102"/>

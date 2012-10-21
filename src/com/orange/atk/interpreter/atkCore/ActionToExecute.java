@@ -474,7 +474,7 @@ public class ActionToExecute {
 			try {
 				getPhoneInterface().keyPress(AT_Cmd, 0, 0);
 
-			} catch (Exception e) {
+			} catch (PhoneException e) {
 				generateWarning(node, e);
 				mainLogger.addInfotoActionLogger("Error JATK","action press key fail"+AT_Cmd, new Date(),new Date());
 			}

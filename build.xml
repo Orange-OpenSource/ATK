@@ -91,7 +91,8 @@
                 <include name="**/*.jar" />       
             </fileset>     
             </path>   
-        </pathconvert> 
+        </pathconvert>
+        <!--  
 		<touch file="${dist.dir}/jar/ATK.bat"/>
 		<echo file="${dist.dir}/jar/ATK.bat">
 @ECHO OFF${line.separator}
@@ -104,7 +105,7 @@ GOTO Loop${line.separator}
 :Continue${line.separator}
 ${line.separator}
 java -classpath ${libs.project} com.orange.atk.launcher.LaunchJATK %ATKParam%</echo> 
-		
+		-->
 		<!--copy ressouce out the jar-->
 	       <copy todir="${dist.dir}/jar">
 	           <fileset dir="${lib.dir}">
@@ -117,7 +118,10 @@ java -classpath ${libs.project} com.orange.atk.launcher.LaunchJATK %ATKParam%</e
           </copy>
         
         <copy todir="${dist.dir}/AndroidTools">
-            <fileset dir="AndroidTools"/>
+            <fileset dir="AndroidTools">
+                <exclude name="ATKMonitor/**"/>
+                <exclude name="ATKWizard/**"/>
+            </fileset>
           </copy>
 		  
 	</target>

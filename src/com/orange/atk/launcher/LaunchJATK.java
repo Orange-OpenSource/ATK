@@ -340,6 +340,7 @@ public class LaunchJATK  implements ErrorListener  {
 			result = currentPhone.startRandomTest(realTestFile,logDir,logger, randomTestParam);
 			
 			logger.interrupt();
+			logger.join();
 			stopExecution();
 			writeLogAndExitPhoneHandling();
 		}
@@ -354,7 +355,10 @@ public class LaunchJATK  implements ErrorListener  {
 		if (currentPhone!=null)  currentPhone.stopTestingMode();
 		if (logger != null) {
 			logger.setStopATK(true);
-			if (logger.isAlive()) logger.interrupt();
+			if (logger.isAlive()){
+				logger.interrupt();
+				logger.join();
+			}
 		}
 	}
 	

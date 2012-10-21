@@ -88,10 +88,14 @@ public class AutomaticPhoneDetection {
 	}
 	
 	public void pauseDetection() {
-		deviceDetectionThread.pauseDetection();
+		if(deviceDetectionThread!=null){
+			deviceDetectionThread.pauseDetection();
+		}
 	}
 	public void resumeDetection() {
-		deviceDetectionThread.resumeDetection();
+		if(deviceDetectionThread!=null){
+			deviceDetectionThread.resumeDetection();
+		}
 	}
 
 	public void stopDetection(DeviceDetectionListener listener) {
@@ -162,6 +166,14 @@ public class AutomaticPhoneDetection {
 						if (phone.getCnxStatus()!=PhoneInterface.CNX_STATUS_AVAILABLE) {
 							phone.setCnxStatus(PhoneInterface.CNX_STATUS_AVAILABLE);
 							changed = true;
+							if(phone instanceof AndroidMonkeyDriver){
+								Logger.getLogger(this.getClass()).info("refresh ddmlib handler for MonkeyDriver enabled device");
+								try {
+									((AndroidMonkeyDriver)phone).setDevice(androidDevice);
+								} catch (PhoneException e) {
+									Logger.getLogger(this.getClass()).error("unable to refresh ddmlib handler");
+								}
+							}
 						}
 					}
 				}

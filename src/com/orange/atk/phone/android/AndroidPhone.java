@@ -49,6 +49,7 @@ import javax.swing.event.EventListenerList;
 import org.apache.log4j.Logger;
 
 import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.DdmPreferences;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.IShellOutputReceiver;
 import com.android.ddmlib.InstallException;
@@ -80,7 +81,7 @@ import com.orange.atk.util.Position;
 public class AndroidPhone implements PhoneInterface {
 
 	private final static EventListenerList listeners = new EventListenerList();
-	private final static String ATK_MONITOR_VERSION = "2.7";
+	private final static String ATK_MONITOR_VERSION = "2.8";
 	private boolean isInitResDone = false;
 	//	private Boolean ispm = false;
 
@@ -89,7 +90,8 @@ public class AndroidPhone implements PhoneInterface {
 	protected boolean isFailed = false;
 	protected boolean isStarted = false;
 	protected boolean isScriptRecording = false;
-	private ArrayList<Socket> listSocket;
+	//private ArrayList<Socket> listSocket;
+	private Socket socket=null;
 	protected final static int PORT_ATK_MONITOR = 1357; 
 
 	private String name;
@@ -133,7 +135,6 @@ public class AndroidPhone implements PhoneInterface {
 		};
 	};
 	protected static final HashMap<String,KeyValue> keysAssociations = new HashMap<String, KeyValue>();
-
 
 	//only use by child class 
 	protected AndroidPhone(){} ;
@@ -470,7 +471,7 @@ public class AndroidPhone implements PhoneInterface {
 		if(hopperTest.contains(",")){
 			hopperTest = hopperTest.replaceAll(",", " -p ");
 		}
-		String[] args = {AutomaticPhoneDetection.getInstance().getADBLocation(), "shell", "monkey", "-v -s 3", "-p "+hopperTest, " --throttle "+throttle, ""+nbofEvent};
+		String[] args = {AutomaticPhoneDetection.getInstance().getADBLocation(), "-s",this.uid,"shell", "monkey", "-v -s 3", "-p "+hopperTest, " --throttle "+throttle, ""+nbofEvent};
 		/*Logger.getLogger(this.getClass()).debug("Start random test 2");
 		ArrayList<String> args = new ArrayList<String>();
 		args.add(AutomaticPhoneDetection.getInstance().getADBLocation());
@@ -567,7 +568,8 @@ public class AndroidPhone implements PhoneInterface {
 		return null;
 	}
 
-	private void openSocket(int port) throws Exception{
+	private void openSocket(int port) throws UnknownHostException, IOException{
+		/*
 		if(listSocket==null){
 			listSocket = new ArrayList<Socket>();
 		}
@@ -582,39 +584,54 @@ public class AndroidPhone implements PhoneInterface {
 				}
 			}
 		}
-
-		try{
-			Socket socket = new Socket("127.0.0.1", port);
-			listSocket.add(socket);
-			outMonitor = new PrintWriter(socket.getOutputStream(), true);
-			inMonitor = new BufferedReader(new InputStreamReader(
-					socket.getInputStream()));
-		} catch (UnknownHostException e) {
-			Logger.getLogger(this.getClass() ).debug("Unknown host: 127.0.0.1");
-			throw new Exception("Network unreachable");
-		} catch  (IOException e) {
-			Logger.getLogger(this.getClass() ).debug("No I/O");
-			throw new Exception("Network unreachable");	
+		*/
+		if (socket==null || socket.isClosed()){
+			Logger.getLogger(this.getClass() ).info("connecting to ATKMonitor");
+			try{
+				socket = new Socket("127.0.0.1", port);
+				//listSocket.add(socket);
+				outMonitor = new PrintWriter(socket.getOutputStream(), true);
+				inMonitor = new BufferedReader(new InputStreamReader(
+						socket.getInputStream()));
+			} catch (UnknownHostException e) {
+				Logger.getLogger(this.getClass() ).error("Unknown host: 127.0.0.1");
+				throw e;
+			} catch  (IOException e) {
+				Logger.getLogger(this.getClass() ).error("No I/O");
+				throw e;	
+			}
 		}
+		
 	}
 
 	private void clearSockets() {
 		//Close all opened socket to avoid problems.
-		try {
-			if(null!=listSocket){
-				for(Socket socket : listSocket){
-					socket.close();
-				}
-				listSocket.clear();
-			}
-			if(outMonitor!=null)
-				outMonitor.close();
-			if(inMonitor!=null)
-				inMonitor.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		
+			//if(null!=listSocket){
+			//	for(Socket socket : listSocket){
+		if(socket != null){
+					try {
+						socket.close();
+						socket = null;
+					} catch (IOException e) {
+						Logger.getLogger(this.getClass()).error("unable to close socket: "+e);
+					}
 		}
-
+			//	}
+			//	listSocket.clear();
+			//}
+			if(outMonitor!=null){
+				outMonitor.close();
+				outMonitor=null;
+			}
+			if(inMonitor!=null)
+				try {
+					inMonitor.close();
+					inMonitor = null;
+				} catch (IOException e) {
+					Logger.getLogger(this.getClass()).error("unable to close BufferedReader");
+				}
+		
 	}
 
 	public HashMap <String,Long> getResources(List <String> resourcesName) throws PhoneException {
@@ -649,7 +666,7 @@ public class AndroidPhone implements PhoneInterface {
 					if (!values[4].startsWith("-")) h.put("Data received_"+values[0], Long.valueOf(values[4]));
 				}
 			}			
-		} catch (Exception e) {
+		} catch (IOException e) {
 			String error = ResourceManager.getInstance().getString("RESOURCE_ATK_MONITOR_ERROR");
 			ErrorManager.getInstance().addError(getClass().getName(), error, e);
 			throw new PhoneException(error);
@@ -697,7 +714,22 @@ public class AndroidPhone implements PhoneInterface {
 		}
 
 	}
-
+    private int checkMonitor() {
+    	String startCmd = "pm list packages";
+		try {
+			String[] result = executeShellCommand(startCmd, true);
+			for(String res: result){
+				if(res.contains("com.orange.atk.monitor")){
+					Logger.getLogger(this.getClass()).debug("atk monitor found");
+					return 0;
+				}
+			}
+		} catch (PhoneException e) {
+			Logger.getLogger(this.getClass()).debug("unable to check monitor");
+		}
+		Logger.getLogger(this.getClass()).debug("atk monitor not found");
+    	return -1;
+    }
 	private void pushATKMonitor() throws PhoneException {
 		Logger.getLogger(this.getClass()).debug("Pushing ATK Monitor on phone");
 		//push ATKMonitor to the Device	
@@ -770,7 +802,20 @@ public class AndroidPhone implements PhoneInterface {
 		clearSockets();
 
 		//Forward tcp port
-		String adbLocation = AutomaticPhoneDetection.getInstance().getADBLocation();
+		try {
+			adevice.createForward(PORT_ATK_MONITOR,PORT_ATK_MONITOR);
+		} catch (TimeoutException e1) {
+			Logger.getLogger(this.getClass() ).error("Timeout while setting port forwarding");
+			throw new PhoneException("Can not communicate with ATK Monitor");
+		} catch (AdbCommandRejectedException e1) {
+			Logger.getLogger(this.getClass() ).error(e1.getMessage()+" while setting port forwarding");
+			throw new PhoneException("Can not communicate with ATK Monitor");
+		} catch (IOException e1) {
+			Logger.getLogger(this.getClass() ).error(e1.getMessage()+" while setting port forwarding");
+			throw new PhoneException("Can not communicate with ATK Monitor");
+		}
+		Logger.getLogger(this.getClass() ).debug("adb forward done for port "+PORT_ATK_MONITOR);
+		/*String adbLocation = AutomaticPhoneDetection.getInstance().getADBLocation();
 		Runtime r =Runtime.getRuntime();
 		String [] args1 = {adbLocation, "forward" ,"tcp:"+PORT_ATK_MONITOR,"tcp:"+PORT_ATK_MONITOR};
 		Process p;
@@ -789,23 +834,35 @@ public class AndroidPhone implements PhoneInterface {
 			throw new PhoneException("Can not communicate with ATK Monitor");
 		}
 		Logger.getLogger(this.getClass() ).debug("adb forward done for port "+PORT_ATK_MONITOR);
-
-		try{
-			openSocket(PORT_ATK_MONITOR);
-			//check if the correct version of ATK Monitor is installed
-			command = "VERSION";
-			outMonitor.println(command);
-			Logger.getLogger(this.getClass()).debug(command);
-			String line = inMonitor.readLine();
-			Logger.getLogger(this.getClass()).debug("line = "+line);
-			if (!line.equals(AndroidPhone.ATK_MONITOR_VERSION)) pushATK=true; 
-		} catch (Exception e) {
-			Logger.getLogger(this.getClass()).debug("Check ATK Monitor Version failed.");
-			pushATK = true;
-		}
-
-		if (pushATK) 
+		*/
+		String line="NA";
+		if(checkMonitor()==0){
+			try {
+				Logger.getLogger(this.getClass() ).debug("starting monitor");
+				String startCmd = "am broadcast -a com.orange.atk.monitor.MONITORSTARTUP";
+				float version = Float.valueOf(adevice.getProperty("ro.build.version.release").substring(0,3));
+				if (version >= 3.1) startCmd += " -f 32";
+				executeShellCommand(startCmd, true);
+				//check if the correct version of ATK Monitor is installed
+				command = "VERSION";
+				Logger.getLogger(this.getClass()).debug(command);
+				try{
+					openSocket(PORT_ATK_MONITOR);
+					outMonitor.println(command);
+					line = inMonitor.readLine();
+				}catch(Exception e){
+					Logger.getLogger(this.getClass()).error("unable to connect to ATKMonitor");
+				}
+				Logger.getLogger(this.getClass()).debug("line = "+line);
+				if (!line.equals(AndroidPhone.ATK_MONITOR_VERSION)){
+					pushATKMonitor();
+				}
+			} catch (PhoneException e) {
+				Logger.getLogger(this.getClass() ).error("unable to start monitor");
+			}
+		}else{
 			pushATKMonitor();
+		}
 		boolean useNetworkMonitor = Boolean.valueOf(Configuration.getProperty(Configuration.NETWORKMONITOR, "false"));
 		if (useNetworkMonitor && noTcpDumpLaunch == false) {
 			boolean checkRoot = isDeviceRooted();
@@ -851,11 +908,14 @@ public class AndroidPhone implements PhoneInterface {
 		String tcpdumpPath = Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"AndroidTools"+Platform.FILE_SEPARATOR+"tcpdump";
 
 		CommandExecutor cmd_exe = new CommandExecutor();
-		String cmd = "adb push \""+tcpdumpPath+"\" /data/local";
+		String cmd = "adb -s "+uid +" push \""+tcpdumpPath+"\" /sdcard/";
 		String cmdResult = cmd_exe.execute(cmd);
 		Logger.getLogger(this.getClass() ).debug("Results of the command : "+cmd+"\n"+cmdResult);
+		cmd = "su -c 'cat /sdcard/tcpdump > /data/local/tcpdump'";
+		String results[] = executeShellCommand(cmd, true);
+		Logger.getLogger(this.getClass() ).debug("Results of the command : "+cmd+"\n"+results[0]);
 		// make tcpdump executable
-		String commandToTest = "cd /data/local && chmod 777 tcpdump";
+		String commandToTest = "su -c 'chmod 777 /data/local/tcpdump'";
 		executeShellCommand(commandToTest, false);
 	}
 	
@@ -900,7 +960,8 @@ public class AndroidPhone implements PhoneInterface {
 			// Tcpdump, show headers
 			// only get lines starting with "xx:xx" and followed by "Host:"
 			// results go to stdout
-			String commandToTest = "su -c '/data/local/tcpdump -A -s 500 ' | awk '$1 ~ /^[0-9][0-9]:[0-9][0-9]/ {tmp = $1} ; $1 ~ /^Host/ {print tmp \" \" $2}'";
+			DdmPreferences.setTimeOut(30000000);
+			String commandToTest = "su -c '/data/local/tcpdump -A -s 500 '";
 			IShellOutputReceiver receiver;
 		
 			Logger.getLogger(this.getClass() ).debug("executeShellCommand: "+commandToTest);
@@ -913,14 +974,27 @@ public class AndroidPhone implements PhoneInterface {
 					
 					@Override
 					public void processNewLines(String[] lines) {
+						String latesttimestamp="",host="";
 						for (String line : lines) {
-							if (line.matches(NetworkAnalysisUtils.regexToMatch)) {
+							if(line.matches("\\b\\d{2}:\\d{2}:\\d{2}\\.\\d{6} .*")){
+								latesttimestamp = line.split(" ")[0];
+							}
+							if(line.startsWith("Host")){
+								host=line.split(":")[1];
+								line = latesttimestamp+host;
 								Logger.getLogger(this.getClass() ).debug("Line="+line);
 								for (Iterator<TcpdumpLineListener> iterator = tcpdumpListeners.iterator(); iterator
 										.hasNext();) {
 									TcpdumpLineListener listener = (TcpdumpLineListener) iterator.next();
 									listener.newTcpDumpLine(line);
-								}
+							}
+							/*if (line.matches(NetworkAnalysisUtils.regexToMatch)) {
+								Logger.getLogger(this.getClass() ).debug("Line="+line);
+								for (Iterator<TcpdumpLineListener> iterator = tcpdumpListeners.iterator(); iterator
+										.hasNext();) {
+									TcpdumpLineListener listener = (TcpdumpLineListener) iterator.next();
+									listener.newTcpDumpLine(line);
+								}*/
 							}
 						}
 					}
@@ -961,8 +1035,21 @@ public class AndroidPhone implements PhoneInterface {
 	 */
 	public void killTcmdump() throws PhoneException{
 		Logger.getLogger(this.getClass() ).debug("Killing tcpdump");
-		String commandToTest = "su -c 'killall tcpdump'";
-		executeShellCommand(commandToTest, false);
+		String commandToTest = "ps";
+		String results[]=executeShellCommand(commandToTest, true);
+		for(String r: results){
+			if(r.contains("tcpdump")){
+				Logger.getLogger(this.getClass() ).debug(r);
+				String pid=r.split("\\s+")[1];
+				Logger.getLogger(this.getClass() ).debug("tcpdump pid="+pid);
+				
+				commandToTest = "su -c 'kill -9 "+ pid+"'";
+				Logger.getLogger(this.getClass() ).debug(commandToTest);
+				executeShellCommand(commandToTest, false);
+			}
+		}
+		
+		
 	}
 	
 	public void stopTestingMode() {

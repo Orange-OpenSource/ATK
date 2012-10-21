@@ -36,8 +36,12 @@ public class AndroidICSDriver extends AndroidMonkeyDriver {
 	public void keyPress(String key, int keyPressTime, int delay)
 			throws PhoneException {
 		super.keyPress(key, keyPressTime, delay);
-		if (keyCanal.get(key).equals("keyboard")) executeShellCommand("sendevent "+KEY_CHANNEL_EVENT+" 0 "+0+" 0", false);
-		else if (keyCanal.get(key).equals("keyboard2")) executeShellCommand("sendevent "+KEY_CHANNEL_EVENT2+" 0 "+0+" 0", false);
+		if (keyCanal.get(key)!=null && keyCanal.get(key).equals("keyboard")){
+			executeShellCommand("sendevent "+KEY_CHANNEL_EVENT+" 0 "+0+" 0", false);
+		}
+		else if (keyCanal.get(key)!=null && keyCanal.get(key).equals("keyboard2")){
+			executeShellCommand("sendevent "+KEY_CHANNEL_EVENT2+" 0 "+0+" 0", false);
+		}
 		else executeShellCommand("sendevent "+KEY_CHANNEL_EVENT3+" 0 "+0+" 0", false);
 	}
 	

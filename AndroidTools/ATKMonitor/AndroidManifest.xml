@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	android:versionCode="6" package="com.orange.atk.monitor" android:versionName="2.7">
+	android:versionCode="6" package="com.orange.atk.monitor" android:versionName="2.8">
 	<application android:label="ATK Monitor" android:debuggable="true" android:icon="@drawable/icon">		
 		<activity android:name="com.orange.atk.monitor.client.ATKMonitorClient">
 			<intent-filter>

@@ -292,8 +292,8 @@ public class MonitorAction extends MatosAbstractAction {
 			currentPhone.addTcpdumpLineListener(tcpdumpLineListener);
 			currentPhone.startTestingMode();
 		} catch (PhoneException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger(this.getClass() ).error(""+e);
+			JOptionPane.showMessageDialog(null, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
 		}
 		createPDFFile();
 		logger = new ResultLogger(logDir, documentGenerator, xmlfilepath);
@@ -310,6 +310,7 @@ public class MonitorAction extends MatosAbstractAction {
 			currentPhone.stopTestingMode();
 			stopRealTimeGraph();
 			logger.interrupt();
+			logger.join();
 			writeLogAndExitPhoneHandling();
 			running = false;
 			buttonStart.setEnabled(true);

@@ -5,7 +5,7 @@ Name ATK
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 2.13
+!define VERSION 2.14
 !define COMPANY "France Telecom"
 !define URL www.francetelecom.com
 
@@ -40,7 +40,7 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile atk_2_13.exe
+OutFile atk_2_14.exe
 InstallDir $PROGRAMFILES\ATK
 CRCCheck on
 XPStyle on
@@ -443,13 +443,13 @@ enddownload:
  
 
 ; copy all files except the files preceded by /x
-    File /r /x *.svn /x nsis /x jsmooth /x launch4j /x manifest* /x octk.* /x README.txt /x \tests_file /x \Output /x \rxtx /x *.nsi /x setup.* /x atk_*.exe /x *.iss /x setup_*.exe /x \export /x RXTXcomm.jar /x \Salome-script *
+    File /r /x .gitignore /x *.svn /x nsislog.txt /x jsmooth /x launch4j /x launch4j.log /x manifest* /x octk.* /x README.txt /x \tests_file /x \Output /x \rxtx /x *.nsi /x setup.* /x atk_*.exe /x *.iss /x setup_*.exe /x \export /x RXTXcomm.jar /x \Salome-script *
     CreateDirectory "$SMPROGRAMS\$StartMenuGroup"
     SetOutPath $INSTDIR
     WriteRegStr HKLM SOFTWARE\ATK\Components ATKpath $INSTDIR
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
     CreateShortcut $SMPROGRAMS\$StartMenuGroup\ATK.lnk $INSTDIR\ATK.exe "" $INSTDIR\ATK.exe 0
-    SetOutPath $INSTDIR\bat
+    ;SetOutPath $INSTDIR\bat
     CreateShortcut $SMPROGRAMS\$StartMenuGroup\Analyser.lnk $INSTDIR\Analyser.exe "" $INSTDIR\Analyser.exe 0
     CreateShortcut $SMPROGRAMS\$StartMenuGroup\ScriptRecorder.lnk $INSTDIR\ScriptRecorder.exe "" $INSTDIR\ScriptRecorder.exe 0
     SetOutPath $INSTDIR\Screenshot

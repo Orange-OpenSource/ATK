@@ -537,17 +537,12 @@ public class ResultLogger {
 	/**
 	 * Wait for log thread to be totally stopped. Logger.interrupt() should be
 	 * called first.
-	 * 
-	 * @throws NullPointerException
-	 *             if start has not been successfully executed before
 	 */
 	public void join() {
-		if (logThread == null) {
-			throw new NullPointerException(
-			"Internal error : logThread is null in Logger.join()");
+		if (logThread != null) {
+			logThread.join();
+			logThread = null;
 		}
-		logThread.join();
-		logThread = null;
 	}
 
 	/**

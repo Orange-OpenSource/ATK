@@ -47,6 +47,27 @@ public class AndroidMonkeyDriver extends AndroidDriver {
 	private final String localScript = Platform.TMP_DIR+Platform.FILE_SEPARATOR+"scriptfile";
 	private final String remoteScript = "/sdcard/scriptfile";
 
+	public void setDevice(IDevice d) throws PhoneException{
+		adevice=d;
+		try {
+			syncService = d.getSyncService();
+		} catch (IOException e) {
+			String error = ResourceManager.getInstance().getString("ANDROID_GET_SYNC_SERVICE_FAILED");
+			ErrorManager.getInstance().addError(getClass().getName(), error, e); 
+			syncService = null;
+			throw new PhoneException(error);
+		} catch (TimeoutException e) {
+			String error = ResourceManager.getInstance().getString("ANDROID_GET_SYNC_SERVICE_FAILED");
+			ErrorManager.getInstance().addError(getClass().getName(), error, e); 
+			syncService = null;
+			throw new PhoneException(error);
+		} catch (AdbCommandRejectedException e) {
+			String error = ResourceManager.getInstance().getString("ANDROID_GET_SYNC_SERVICE_FAILED");
+			ErrorManager.getInstance().addError(getClass().getName(), error, e); 
+			syncService = null;
+			throw new PhoneException(error);
+		}
+	}
 	public AndroidMonkeyDriver(String phoneModel, String version, IDevice d) throws PhoneException {
 		super(phoneModel, version, d);
 		try {

@@ -1,7 +1,7 @@
 /*
  * Software Name : ATK
  *
- * Copyright (C) 2007 - 2012 France Télécom
+ * Copyright (C) 2007 - 2012 France Tï¿½lï¿½com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -606,7 +606,7 @@ public class ATKMonitorService extends ATKService implements Runnable{
 								ret = in.readLine();
 							fileReader.close();
 							//VmRSS = Virtual Memory Resident Stack Size
-							//Taille de la mémoire physique utilisée.
+							//Taille de la mï¿½moire physique utilisï¿½e.
 							mem = ret.split(" +")[1];
 							Log.v(TAG,"mem (1.5 VmRSS) = "+m);
 						}
@@ -633,7 +633,7 @@ public class ATKMonitorService extends ATKService implements Runnable{
 			fileReader.close();
 			String  m = ret.split(" +")[1];
 			//VmRSS = Virtual Memory Resident Stack Size
-			//Taille de la mémoire physique utilisée.
+			//Taille de la mï¿½moire physique utilisï¿½e.
 			Log.v(TAG,"mem (1.5 VmRSS) = "+m);
 			return m;
 		} else 
@@ -715,6 +715,36 @@ public class ATKMonitorService extends ATKService implements Runnable{
 		return PIDfound;
 	}
 
+	@Override
+	public void onCreate() {
+		Log.i(TAG,"onCreate");
+		super.onCreate();
+	}
+
+	@Override
+	public void onDestroy() {
+		Log.i(TAG,"onDestroy");
+		super.onDestroy();
+	}
+
+	@Override
+	public void onLowMemory() {
+		Log.i(TAG,"onLowMemory");
+		super.onLowMemory();
+	}
+
+	@Override
+	public void onRebind(Intent intent) {
+		Log.i(TAG,"onRebind");
+		super.onRebind(intent);
+	}
+
+	@Override
+	public boolean onUnbind(Intent intent) {
+		Log.i(TAG,"onUnbind");
+		return super.onUnbind(intent);
+	}
+	
 	@Override
 	void initBeforeLoop() {
 		// We clear the process list to be sure nothing is left	
