@@ -142,7 +142,7 @@ public class ConfigurationDialog extends JDialog {
 		adbPanel.setBorder(BorderFactory.createTitledBorder("Android Debug Bridge"));
 		
 		JPanel adbPathPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		final JLabel pathLabel = new JLabel("Path to adb.exe:");
+		final JLabel pathLabel = new JLabel("Path to adb:");
 		ADBPath = new JTextField( Configuration.getProperty(Configuration.ADBPATH), 20);
 		adbPathPanel.add(pathLabel);
 		adbPathPanel.add(ADBPath);

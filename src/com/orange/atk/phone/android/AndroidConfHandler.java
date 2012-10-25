@@ -63,8 +63,8 @@ class AndroidConfHandler extends DefaultHandler {
 	private boolean useMonkeyForPress = false; // default value
 	private boolean useSmartTouchDetection = false; // default value
 	private boolean sendFlushTwiceForMouseUp = false; // default value
-	private float ratioX;
-	private float ratioY;
+	private float ratioX=1.0f;
+	private float ratioY=1.0f;
 	private boolean sendMouseEventFirst = false; // default value
 	private boolean sendMouseDownForMove = false; // default value
 	private boolean sendSeparateFlush = false; // default value

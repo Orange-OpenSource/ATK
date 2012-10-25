@@ -34,6 +34,7 @@ import com.orange.atk.atkUI.corecli.utils.Out;
 import com.orange.atk.atkUI.guiHopper.HopperGUI;
 import com.orange.atk.atkUI.guiMixScript.MixScriptGUI;
 import com.orange.atk.atkUI.guiScript.JatkGUI;
+import com.orange.atk.platform.Platform;
 
 /**
  * This class is the main class of the "coregui" plugin.
@@ -77,7 +78,7 @@ public class CoreGUIPlugin {
 	 * @return icon's URL or null if file not in ressource directory
 	 */
 	public static URL getIconURL(String iconFileName) {
-		File configFile = new File(Configuration.getProperty("iconDir")+iconFileName);
+		File configFile = new File(Configuration.getProperty("iconDir")+Platform.FILE_SEPARATOR+iconFileName);
 		URL iconURL = null;
 		try {
 			iconURL = configFile.toURI().toURL();
