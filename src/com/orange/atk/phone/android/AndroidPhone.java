@@ -301,7 +301,11 @@ public class AndroidPhone implements PhoneInterface {
 	}
 
 	public void runMidlet(String midlet) throws PhoneException {
-		executeShellCommand("am start -n " + midlet , false);
+		if(midlet.startsWith("-a")){
+			executeShellCommand("am start " + midlet , false);
+		}else{
+			executeShellCommand("am start -n " + midlet , false);
+		}
 	}
 
 	public BufferedImage screenShot() throws PhoneException {
