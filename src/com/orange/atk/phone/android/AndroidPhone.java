@@ -515,7 +515,7 @@ public class AndroidPhone implements PhoneInterface {
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger(this.getClass() ).error("exception while communicating with monkey:"+e.getMessage());
 			return false;
 		}
 		finally{
@@ -532,8 +532,7 @@ public class AndroidPhone implements PhoneInterface {
 				if(in!=null)
 					in.close();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				Logger.getLogger(this.getClass() ).error("exception while communicating with monkey:"+e1.getMessage());
 			}
 		}
 
