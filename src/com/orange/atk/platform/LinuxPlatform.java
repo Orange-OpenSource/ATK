@@ -23,6 +23,8 @@
  */
 package com.orange.atk.platform;
 
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.util.HashMap;
@@ -49,9 +51,7 @@ public class LinuxPlatform extends Platform {
 
 	@Override
 	public String getDefaultADBLocation() {
-		// TODO return proper string "locate adb"
-		return "/home/lyyg7252/local/android-sdk-linux_86/tools/adb";
-		
+	    return "adb";
 	}
 
 

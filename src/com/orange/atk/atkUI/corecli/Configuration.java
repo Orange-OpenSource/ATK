@@ -55,7 +55,7 @@ public class Configuration {
 	private static SortedProperties properties = new SortedProperties();
 	private static Vector<String> defaultPhoneConfigs;
 	private HashMap <String,String> defaultConfig;
-	public static String defaultPhoneConfigPath = Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"log"+Platform.FILE_SEPARATOR+"ConfigFiles"+Platform.FILE_SEPARATOR;
+	public static String defaultPhoneConfigPath = Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"ConfigFiles"+Platform.FILE_SEPARATOR;
 	private static String configFileName = null;
 
 	/** A file resolver to get back file from URI */
@@ -190,8 +190,7 @@ public class Configuration {
 
 						//We have to copy the default configuration files
 						String folderPath = Platform.getInstance().getJATKPath();	
-						folderPath += Platform.FILE_SEPARATOR+"log"+
-							Platform.FILE_SEPARATOR+"ConfigFiles"+ File.separator;
+						folderPath += Platform.FILE_SEPARATOR+Platform.FILE_SEPARATOR+"ConfigFiles"+ File.separator;
 						
 						File folderinstall = new File(folderPath);
 						if(!folderinstall.exists()){

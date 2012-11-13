@@ -280,7 +280,7 @@ public class AutomaticPhoneDetection {
 		
 		String newAdbLocation = null;
 		if (Boolean.valueOf(Configuration.getProperty(Configuration.SPECIFICADB, "false"))) 
-			newAdbLocation = Configuration.getProperty(Configuration.ADBPATH)+ Platform.FILE_SEPARATOR+"adb.exe";
+			newAdbLocation = Configuration.getProperty(Configuration.ADBPATH)+ Platform.FILE_SEPARATOR+"adb";
 		else newAdbLocation = defaultAdbLocation;
 		if (bridge==null || !newAdbLocation.equals(adbLocation)) {
 			Logger.getLogger(this.getClass()).debug("Initializing ADB bridge : "+newAdbLocation);
