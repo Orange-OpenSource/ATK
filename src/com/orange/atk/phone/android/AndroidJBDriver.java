@@ -1,6 +1,7 @@
 package com.orange.atk.phone.android;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import com.android.ddmlib.IDevice;
 import com.orange.atk.phone.PhoneException;
@@ -15,6 +16,10 @@ public class AndroidJBDriver extends AndroidICSDriver {
 	
 	protected EventFilter createTouchScreenEventFilter(AndroidDriver d, AndroidConfHandler gestionnaire, HashMap<String,Position> softkeyMap){
 		return new AndroidJBTouchScreenEventfilter(d,gestionnaire, softkeyMap);
+	}
+	
+	protected EventFilter createKeyboardEventFilter(AndroidPhone aphone,Map<Integer, String> codemap){
+		return new AndroidJBKeyboardEventFilter(aphone, codemap);
 	}
 
 }

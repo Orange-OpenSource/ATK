@@ -38,6 +38,7 @@ class DefaultKeyboardEventfilter extends EventFilter {
 
 	private final Map<Integer,String> keycodeMap;
 	private AndroidPhone driver;
+	protected String splitChar = ": ";
 	
 	public DefaultKeyboardEventfilter(AndroidPhone aphone, Map<Integer,String> codemap) {
 		driver = aphone;
@@ -46,7 +47,7 @@ class DefaultKeyboardEventfilter extends EventFilter {
 
 	@Override
 	public void processline( String line) {
-		String commands[] = line.split(": ");
+		String commands[] = line.split(splitChar);
 		String command;
 		if(commands.length>1)
 			command = commands[1];

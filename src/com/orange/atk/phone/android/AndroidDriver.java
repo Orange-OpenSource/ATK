@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -562,6 +563,10 @@ public class AndroidDriver extends AndroidPhone implements PhoneInterface {
 		return new DefaultTouchScreenEventfilter(d,gestionnaire, softkeyMap);
 	}
 	
+	protected EventFilter createKeyboardEventFilter(AndroidPhone aphone,Map<Integer, String> codemap){
+		return new DefaultKeyboardEventfilter(aphone, codemap);
+	}
+	
 	public void startRecordingMode() throws PhoneException {
 		isScriptRecording = true;
 		//touchscreen
@@ -587,19 +592,19 @@ public class AndroidDriver extends AndroidPhone implements PhoneInterface {
 
 		recordingPhoneModethreadkeyboard = new RecordingThread(adevice,
 				KEY_CHANNEL_EVENT,
-				new DefaultKeyboardEventfilter(this,keycodeMap) );
+				createKeyboardEventFilter(this, keycodeMap) );
 		recordingPhoneModethreadkeyboard.start();
 
 		if (KEY_CHANNEL_EVENT2!=null) {
 			recordingPhoneModethreadkeyboard2 = new RecordingThread(adevice,
 				KEY_CHANNEL_EVENT2,
-				new DefaultKeyboardEventfilter(this,keycodeMap) );
+				createKeyboardEventFilter(this, keycodeMap) );
 			recordingPhoneModethreadkeyboard2.start();
 		}
 		if (KEY_CHANNEL_EVENT3!=null) {
 			recordingPhoneModethreadkeyboard3 = new RecordingThread(adevice,
 				KEY_CHANNEL_EVENT3,
-				new DefaultKeyboardEventfilter(this,keycodeMap) );
+				createKeyboardEventFilter(this, keycodeMap));
 			recordingPhoneModethreadkeyboard3.start();
 		}		
 		return;
