@@ -5,7 +5,7 @@ Name ATK
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 2.14
+!define VERSION 2.15
 !define COMPANY "France Telecom"
 !define URL www.francetelecom.com
 
@@ -40,7 +40,7 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile atk_2_14.exe
+OutFile atk_2_15.exe
 InstallDir $PROGRAMFILES\ATK
 CRCCheck on
 XPStyle on
