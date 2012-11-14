@@ -325,14 +325,13 @@ public class AutomaticPhoneDetection {
 	public String getxmlfilepath()
 	{
 		String JATKpath = Platform.getInstance().getJATKPath();	
-		String xmlconfilepath = JATKpath+Platform.FILE_SEPARATOR+"log"+
-		Platform.FILE_SEPARATOR+"ConfigFiles"+Platform.FILE_SEPARATOR;
+		String xmlconfilepath = JATKpath+Platform.FILE_SEPARATOR+"ConfigFiles"+Platform.FILE_SEPARATOR;
 		
 		// Test to determine which config file to use
 		PhoneInterface phone = AutomaticPhoneDetection.getInstance().getDevice();
 		if (phone != null) {
 			xmlconfilepath += phone.getConfigFile();
-		} else xmlconfilepath += "se.xml";
+		}
 
 		return 	xmlconfilepath;
 	}
