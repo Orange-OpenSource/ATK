@@ -51,7 +51,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.xml.sax.SAXException;
 
-import com.orange.atk.phone.android.TcpdumpLineListener;
+import com.orange.atk.phone.TcpdumpLineListener;
 import com.orange.atk.platform.Platform;
 import com.orange.atk.results.logger.documentGenerator.GraphGenerator;
 import com.orange.atk.results.logger.documentGenerator.PlotReader;

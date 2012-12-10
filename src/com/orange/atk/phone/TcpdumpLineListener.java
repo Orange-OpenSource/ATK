@@ -21,7 +21,7 @@
  * Created     : 02/12/2011
  * Author(s)   : Rcheze Ext
  */
-package com.orange.atk.phone.android;
+package com.orange.atk.phone;
 
 public interface TcpdumpLineListener {
 	

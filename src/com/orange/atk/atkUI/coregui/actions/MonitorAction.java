@@ -65,7 +65,7 @@ import com.orange.atk.launcher.LaunchJATK;
 import com.orange.atk.phone.DefaultPhone;
 import com.orange.atk.phone.PhoneException;
 import com.orange.atk.phone.PhoneInterface;
-import com.orange.atk.phone.android.TcpdumpLineListener;
+import com.orange.atk.phone.TcpdumpLineListener;
 import com.orange.atk.phone.detection.AutomaticPhoneDetection;
 import com.orange.atk.platform.Platform;
 import com.orange.atk.results.logger.documentGenerator.DocumentGenerator;

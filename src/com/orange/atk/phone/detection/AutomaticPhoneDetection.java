@@ -25,6 +25,7 @@ package com.orange.atk.phone.detection;
 
 
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -40,6 +41,8 @@ import com.orange.atk.internationalization.ResourceManager;
 import com.orange.atk.phone.DefaultPhone;
 import com.orange.atk.phone.PhoneException;
 import com.orange.atk.phone.PhoneInterface;
+import com.orange.atk.phone.Plugin;
+import com.orange.atk.phone.PluginManager;
 import com.orange.atk.phone.android.AndroidDriver;
 import com.orange.atk.phone.android.AndroidICSDriver;
 import com.orange.atk.phone.android.AndroidJBDriver;
@@ -56,11 +59,8 @@ public class AutomaticPhoneDetection {
 	private PhoneInterface selectedPhone= null;
 	private List<PhoneInterface> connectedDevices;
 	private DeviceDetectionThread deviceDetectionThread;
-	private  AndroidDebugBridge bridge;
 	private List<DeviceDetectionListener> deviceDetectionListeners = new ArrayList<DeviceDetectionListener>();
 	private static AutomaticPhoneDetection instance=null;
-	private static String adbLocation;
-	private static String defaultAdbLocation = Platform.getInstance().getDefaultADBLocation();
 	private boolean launchThread = true;
 	
 	public static AutomaticPhoneDetection getInstance(){
@@ -70,6 +70,30 @@ public class AutomaticPhoneDetection {
 	public static AutomaticPhoneDetection getInstance(boolean launchThread){
 		if(instance ==null) {
 			instance = new AutomaticPhoneDetection(launchThread);
+			try {
+				String currentDir = new File(".").getAbsolutePath();
+				Logger.getLogger("AutomaticPhoneDetection").info("currentDir="+currentDir);
+				File folder = new File("./install/jar/plugins");//here to ease launching via eclipse
+				File[] listOfFiles = folder.listFiles();
+				if (listOfFiles == null){
+					folder = new File("./jar/plugins");
+					listOfFiles = folder.listFiles();
+				}
+				for (int i = 0; i < listOfFiles.length; i++) {
+					if (listOfFiles[i].isFile()) {
+						String filename=listOfFiles[i].getName();
+						String name = filename.substring(0, filename.lastIndexOf('.'));
+						Logger.getLogger("AutomaticPhoneDetection").info(("File " + name));
+						String classname="com.orange.atk.phone."+name+"."+name.substring(0,1).toUpperCase()+name.substring(1).toLowerCase()+"Plugin";
+						Logger.getLogger("AutomaticPhoneDetection").info(("Loading " + classname));
+						Class.forName(classname);
+					} else if (listOfFiles[i].isDirectory()) {
+						Logger.getLogger("AutomaticPhoneDetection").info(("Directory " + listOfFiles[i].getName()));
+					}				
+				}
+			} catch (ClassNotFoundException e) {
+				Logger.getLogger("AutomaticPhoneDetection").error("Unable to load plugin");
+			}
 		}
 		return instance;
 	}
@@ -122,14 +146,9 @@ public class AutomaticPhoneDetection {
 		synchronized (connectedDevices) {
 			List<PhoneInterface> connectedEnabledDevices = new ArrayList<PhoneInterface>();
 			for (int i=0; i<connectedDevices.size(); i++) {
-				if (connectedDevices.get(i) instanceof AndroidPhone) {
-					if (!((AndroidPhone) connectedDevices.get(i)).isDisabledPhone())  {
+					if (!connectedDevices.get(i).isDisabledPhone())  {
 						connectedEnabledDevices.add(connectedDevices.get(i));
 					}
-				}
-				else {
-					connectedEnabledDevices.add(connectedDevices.get(i));
-				}
 			}
 			return connectedEnabledDevices;
 		}
@@ -149,78 +168,12 @@ public class AutomaticPhoneDetection {
 	public void checkDevices() {
 		boolean changed = false;
 		List<PhoneInterface> newConnectedDevices = new ArrayList<PhoneInterface>();
-		
-		//ANDROID Devices detection
-		IDevice[] androidDevices = initddmlib();
-		for (int i=0 ; i<androidDevices.length ; i++) {
-			IDevice androidDevice = androidDevices[i];
-			if (androidDevice.isOnline()) {
-				boolean found = false;
-				for (int j=0; j<connectedDevices.size(); j++) {
-					PhoneInterface phone = connectedDevices.get(j);
-					String uid = AndroidPhone.getUID(androidDevice);
-					String connectedPhoneUid = phone.getUID();
-					if (connectedPhoneUid!=null && connectedPhoneUid.equals(uid)) {
-						found = true;
-						newConnectedDevices.add(phone);
-						if (phone.getCnxStatus()!=PhoneInterface.CNX_STATUS_AVAILABLE) {
-							phone.setCnxStatus(PhoneInterface.CNX_STATUS_AVAILABLE);
-							changed = true;
-							if(phone instanceof AndroidMonkeyDriver){
-								Logger.getLogger(this.getClass()).info("refresh ddmlib handler for MonkeyDriver enabled device");
-								try {
-									((AndroidMonkeyDriver)phone).setDevice(androidDevice);
-								} catch (PhoneException e) {
-									Logger.getLogger(this.getClass()).error("unable to refresh ddmlib handler");
-								}
-							}
-						}
-					}
-				}
-				if (!found) {
-					String vendor = AndroidPhone.getVendor(androidDevice);
-					if (vendor!=null) vendor = vendor.toLowerCase();
-					String model = AndroidPhone.getModel(androidDevice);
-					String version = "";
-					version = AndroidPhone.getVersion(androidDevice);
-					if (model!=null) model = model.toLowerCase();
-					if(vendor!=null && model!=null){
-						PhoneInterface newPhone;
-						try {
-							float v=Float.parseFloat(version.substring(0, 3)); 
-							Logger.getLogger(this.getClass()).info(v);
-							if ( v >= 2.0f){
-								if (v >= 4.0f){
-									if (v >= 4.1f){
-										Logger.getLogger(this.getClass()).info("Android Jelly bean detected !");
-										newPhone = new AndroidJBDriver(vendor+"_"+model, version, androidDevice);
-									}else{
-										Logger.getLogger(this.getClass()).info("Android ICS detected !");
-										newPhone = new AndroidICSDriver(vendor+"_"+model, version, androidDevice);
-									}
-								}else{
-									newPhone = new AndroidMonkeyDriver(vendor+"_"+model, version, androidDevice);
-								}
-							}else{
-								newPhone = new AndroidDriver(vendor+"_"+model, version, androidDevice);
-							}
-							newPhone.setCnxStatus(PhoneInterface.CNX_STATUS_AVAILABLE);
-							newConnectedDevices.add(newPhone);
-							Logger.getLogger(this.getClass()).info("New phone "+newPhone.getName()+" connected");
-							if (!((AndroidPhone)newPhone).isDisabledPhone()) changed = true;
-						} catch (PhoneException e) {
-							// NOTHING TO DO HERE
-						}
-					} else {
-						PhoneInterface newPhone = new AndroidPhone(androidDevice);
-						newPhone.setCnxStatus(PhoneInterface.CNX_STATUS_AVAILABLE);
-						newConnectedDevices.add(newPhone);
-						Logger.getLogger(this.getClass()).info("New phone "+newPhone.getName()+" connected");
-						changed = true;
-					}
-				}
-			}
+		List<Plugin> plugins = PluginManager.getAll();
+		for (int j=0; j<plugins.size(); j++) {
+			//Logger.getLogger(this.getClass()).info("plugin "+plugins.get(j).getName());
+			changed=changed || plugins.get(j).checkDevices(connectedDevices,newConnectedDevices);
 		}
+		
 		
 		synchronized(connectedDevices) {
 			// the devices not present in newConnectedDevices are the one that have been disconnected
@@ -270,50 +223,6 @@ public class AutomaticPhoneDetection {
 		
 	}
 
-	
-	/**
-	 * Use adb location set by user in com.android.screenshot.bindir properties
-	 * or use default location (<i>Install_dir</i>/AndroidTools/adb.exe)
-	 * @return null or Device detected
-	 */
-	public IDevice[] initddmlib() {
-		
-		String newAdbLocation = null;
-		if (Boolean.valueOf(Configuration.getProperty(Configuration.SPECIFICADB, "false"))) 
-			newAdbLocation = Configuration.getProperty(Configuration.ADBPATH)+ Platform.FILE_SEPARATOR+"adb";
-		else newAdbLocation = defaultAdbLocation;
-		if (bridge==null || !newAdbLocation.equals(adbLocation)) {
-			Logger.getLogger(this.getClass()).debug("Initializing ADB bridge : "+newAdbLocation);
-		   adbLocation = newAdbLocation;	
-		   if (bridge!=null) AndroidDebugBridge.disconnectBridge();
-		   AndroidDebugBridge.init(false /* debugger support */);
-	
-	
-	       bridge = AndroidDebugBridge.getBridge();
-	       if (bridge==null) bridge = AndroidDebugBridge.createBridge(adbLocation, true );
-		
-	       if (bridge==null) Logger.getLogger(this.getClass()).debug("bridge is null");
-	       //AndroidDebugBridge bridge = AndroidDebugBridge.createBridge(adbLocation, false /* forceNewBridge */);
-	       // we can't just ask for the device list right away, as the internal thread getting
-	       // them from ADB may not be done getting the first list.
-	       // Since we don't really want getDevices() to be blocking, we wait here manually.
-	       int count = 0;
-	       while (bridge.hasInitialDeviceList() == false) {
-	           try {
-	               Thread.sleep(100);
-	               count++;
-	           } catch (InterruptedException e) { }
-	           
-	           // let's not wait > 10 sec.
-	           if (count > 100) {
-	               Logger.getLogger(this.getClass() ).warn("Timeout getting device list!");
-	               return new IDevice[0];
-	           }
-	       }     
-		}
-		return  bridge.getDevices();
-	}
-
 
 	/**
 	 * Search the config file path of the phone in parameters.
@@ -336,15 +245,15 @@ public class AutomaticPhoneDetection {
 		return 	xmlconfilepath;
 	}
 
-	public String getADBLocation() {
-		return adbLocation;
-	}
-
 	/**
 	 * close all fabric (like androidDebugBridge)
 	 */
 	private void close() {
-		if (bridge!=null) AndroidDebugBridge.terminate();
+		List<Plugin> plugins = PluginManager.getAll();
+		for (int j=0; j<plugins.size(); j++) {
+			Logger.getLogger(this.getClass()).info("closing plugin "+plugins.get(j).getName());
+			plugins.get(j).close();
+		}
 	}
 
 

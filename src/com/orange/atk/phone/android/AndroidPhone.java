@@ -65,6 +65,7 @@ import com.orange.atk.manageListener.IMeasureListener;
 import com.orange.atk.manageListener.IPhoneKeyListener;
 import com.orange.atk.phone.PhoneException;
 import com.orange.atk.phone.PhoneInterface;
+import com.orange.atk.phone.TcpdumpLineListener;
 import com.orange.atk.phone.detection.AutomaticPhoneDetection;
 import com.orange.atk.platform.Platform;
 import com.orange.atk.results.logger.log.ResultLogger;
@@ -475,7 +476,7 @@ public class AndroidPhone implements PhoneInterface {
 		if(hopperTest.contains(",")){
 			hopperTest = hopperTest.replaceAll(",", " -p ");
 		}
-		String[] args = {AutomaticPhoneDetection.getInstance().getADBLocation(), "-s",this.uid,"shell", "monkey", "-v -s 3", "-p "+hopperTest, " --throttle "+throttle, ""+nbofEvent};
+		String[] args = {Platform.getInstance().getDefaultADBLocation(), "-s",this.uid,"shell", "monkey", "-v -s 3", "-p "+hopperTest, " --throttle "+throttle, ""+nbofEvent};
 		/*Logger.getLogger(this.getClass()).debug("Start random test 2");
 		ArrayList<String> args = new ArrayList<String>();
 		args.add(AutomaticPhoneDetection.getInstance().getADBLocation());
@@ -651,7 +652,7 @@ public class AndroidPhone implements PhoneInterface {
 			outMonitor.println("RES");
 			String line ="";
 			String [] values;
-			while (!(line =inMonitor.readLine()).startsWith("END")) {		
+			while ( (line =inMonitor.readLine()) !=null && !(line.startsWith("END"))) {		
 				Logger.getLogger(this.getClass()).debug("line = "+line);
 				values = line.split(" ");
 				if (line.startsWith("GLOBAL")) {				

@@ -31,7 +31,6 @@ import java.util.List;
 
 import com.orange.atk.manageListener.IMeasureListener;
 import com.orange.atk.manageListener.IPhoneKeyListener;
-import com.orange.atk.phone.android.TcpdumpLineListener;
 import com.orange.atk.platform.Platform;
 import com.orange.atk.results.logger.log.ResultLogger;
 import com.orange.atk.util.Position;
@@ -662,4 +661,8 @@ public interface PhoneInterface {
 	
 	public String getIncludeDir();
 	public String getConfigFile();
+
+
+
+	public boolean isDisabledPhone();
 }

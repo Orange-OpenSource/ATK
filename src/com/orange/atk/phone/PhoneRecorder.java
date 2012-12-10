@@ -34,7 +34,6 @@ import javax.swing.event.EventListenerList;
 
 import com.orange.atk.manageListener.IMeasureListener;
 import com.orange.atk.manageListener.IPhoneKeyListener;
-import com.orange.atk.phone.android.TcpdumpLineListener;
 import com.orange.atk.results.logger.log.ResultLogger;
 import com.orange.atk.util.Position;
 
@@ -478,8 +477,12 @@ public class PhoneRecorder implements PhoneInterface {
 	}
 
 	public String getConfigFile() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public boolean isDisabledPhone() {
+		return false;
 	}
 
 }

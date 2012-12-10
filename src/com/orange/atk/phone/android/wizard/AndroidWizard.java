@@ -232,7 +232,7 @@ public class AndroidWizard extends JFrame {
 				throw new PhoneException("ATK Wizard - unable to install ATK Wizard");
 			}
 			//Forward tcp port
-			String adbLocation = AutomaticPhoneDetection.getInstance().getADBLocation();
+			String adbLocation = Platform.getInstance().getDefaultADBLocation();
 			Runtime r =Runtime.getRuntime();
 			String [] args1 = {adbLocation, "forward" ,"tcp:"+PORT_ATK_WIZARD,"tcp:"+PORT_ATK_WIZARD};
 			Process p;

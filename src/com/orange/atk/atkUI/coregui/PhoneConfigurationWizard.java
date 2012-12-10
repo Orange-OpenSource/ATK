@@ -138,7 +138,7 @@ public class PhoneConfigurationWizard extends JFrame {
 
 
 		//specific to Android
-		if((phone instanceof AndroidPhone  || phone instanceof AndroidDriver || phone instanceof AndroidMonkeyDriver) && !this.isDefaultConfig) {
+		if((phone.getName()!= null  && phone.getName().contains("Android")) && !this.isDefaultConfig) {
 			c.gridy =1; c.gridx =0; c.gridwidth = 2;
 			c.weightx =1; c.weighty =1;
 
