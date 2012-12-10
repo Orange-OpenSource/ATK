@@ -72,8 +72,13 @@
 			
 		
 		<mkdir dir="${dist.dir}/jar" />
-		<jar jarfile="${dist.dir}/jar/ATK.jar" basedir="${build.dir}">
+
+		<jar jarfile="${dist.dir}/jar/ATK.jar" excludes="com/orange/atk/phone/android/**" basedir="${build.dir}">
 		</jar>
+         <jar destfile="${dist.dir}/jar/plugins/android.jar"
+           basedir="${build.dir}"  includes="com/orange/atk/phone/android/**">
+        </jar>
+        
 
         <!-- create a property containing all .jar files, prefix lib/, and seperated with a space -->  
         <pathconvert property="libs.project" pathsep=";">     
