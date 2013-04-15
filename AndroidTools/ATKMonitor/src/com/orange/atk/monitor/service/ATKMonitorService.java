@@ -226,8 +226,7 @@ public class ATKMonitorService extends ATKService implements Runnable{
 			}
 			
 			return "Init Ok ";
-		} else if (inputline.matches("RES")) {
-			Log.v(TAG,"RES");
+		} else if (inputline.matches("RES")) {		
 			// Return resource information formatted as follow:
 			// GLOBAL CPU_TOTAL PROCESSOR_SPEED MEM_USED STORAGE_DATA_USED BATTERY_LEVEL
 			// Optional:
@@ -246,11 +245,12 @@ public class ATKMonitorService extends ATKService implements Runnable{
 			//Get the state of the internal and external storage for data
 			internalStorage.restat(Environment.getDataDirectory().getPath());
 			externalStorage.restat(Environment.getExternalStorageDirectory().getPath()); // Sdcard
-			long freeInData = (internalStorage.getBlockCount()-internalStorage.getAvailableBlocks())*internalStorage.getBlockSize();
-			long freeExData = (externalStorage.getBlockCount()-externalStorage.getAvailableBlocks())*externalStorage.getBlockSize();
-			ressource+=" "+String.valueOf(freeInData/1024);
+			long freeInData = (long)(internalStorage.getBlockCount()-internalStorage.getAvailableBlocks())*internalStorage.getBlockSize();
+			long freeExData = (long)(externalStorage.getBlockCount()-externalStorage.getAvailableBlocks())*externalStorage.getBlockSize();
+			//Log.v(TAG,"int blockCount "+internalStorage.getBlockCount()+" availableBlack "+internalStorage.getAvailableBlocks()+" blackSize "+internalStorage.getBlockSize());
+			ressource+=" "+String.valueOf(freeInData/1024L);
 			if (externalStorage.getBlockCount()==0) ressource+=" -1";
-			else ressource+=" "+String.valueOf(freeExData/1024);
+			else ressource+=" "+String.valueOf(freeExData/1024L);
 			ressource+=" "+batteryLevel; // %
 			
 			long rX = -1000,tX = -1000 ;
