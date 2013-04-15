@@ -26,6 +26,7 @@
     <cp>.\jar\jfreechart-1.0.9.jar</cp>
     <cp>.\jar\log4j-1.2.15.jar</cp>
     <cp>.\jar\swtgraphics2d.jar</cp>
+    <cp>.\jar\plugins\*.jar</cp>
   </classPath>
   <jre>
     <path></path>
