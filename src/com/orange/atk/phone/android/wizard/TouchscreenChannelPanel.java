@@ -38,8 +38,8 @@ public class TouchscreenChannelPanel extends ChannelPanel {
 	public TouchscreenChannelPanel( AndroidWizard wizard, IDevice device, Hashtable<String,String> detectedChannels) throws PhoneException {
 		super(wizard,device,detectedChannels);
 		infoLabel1.setText("Select a channel and touch your phone's screen.");
-		infoLabel2.setText("If phone screen icon becomes blue when touching the screen, then validate touchscreen channel.");
-		infoLabel3.setText("If phone screen icon is always blue or always red, then select another channel and retry.");
+		infoLabel2.setText("If phone screen icon becomes green when touching the screen, then validate touchscreen channel.");
+		infoLabel3.setText("If phone screen icon is always green or always red, then select another channel and retry.");
 
 	}
 
