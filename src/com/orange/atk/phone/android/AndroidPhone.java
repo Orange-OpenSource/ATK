@@ -82,7 +82,7 @@ import com.orange.atk.util.Position;
 public class AndroidPhone implements PhoneInterface {
 
 	private final static EventListenerList listeners = new EventListenerList();
-	private final static String ATK_MONITOR_VERSION = "2.8";
+	private final static String ATK_MONITOR_VERSION = "2.9";
 	private boolean isInitResDone = false;
 	//	private Boolean ispm = false;
 
