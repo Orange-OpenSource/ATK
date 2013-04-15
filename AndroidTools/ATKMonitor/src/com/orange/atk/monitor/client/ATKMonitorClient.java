@@ -1,7 +1,7 @@
 /*
  * Software Name : ATK
  *
- * Copyright (C) 2007 - 2012 France Télécom
+ * Copyright (C) 2007 - 2012 France Tï¿½lï¿½com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -213,7 +213,6 @@ public class ATKMonitorClient extends Activity {
 	private IATKMonitorEventListener eventListener = new IATKMonitorEventListener.Stub() {
 
 		public void globalChanged(final String global,final String totalmem) throws RemoteException {
-			Log.v(TAG,"memoryChanged");
 			if (global != null) {
 				handler.post(new Runnable() {
 					public void run() {

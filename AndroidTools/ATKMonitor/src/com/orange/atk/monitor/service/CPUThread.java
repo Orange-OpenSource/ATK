@@ -1,7 +1,7 @@
 /*
  * Software Name : ATK
  *
- * Copyright (C) 2007 - 2012 France Télécom
+ * Copyright (C) 2007 - 2012 France Tï¿½lï¿½com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,6 @@ public class CPUThread implements Runnable {
 		int max_i_refresh = (int) (REFRESH_MAX_FREQ / _frequency);
 		String maxCpuFrequency = "0";
 		while (!_stop) {
-			Log.v(TAG,"runnning");
 			try {			
 
 				FileReader fileReader = new FileReader("/proc/stat");

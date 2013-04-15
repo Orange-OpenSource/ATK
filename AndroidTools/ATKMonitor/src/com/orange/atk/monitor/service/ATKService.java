@@ -1,7 +1,7 @@
 /*
  * Software Name : ATK
  *
- * Copyright (C) 2007 - 2012 France Télécom
+ * Copyright (C) 2007 - 2012 France Tï¿½lï¿½com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,14 +78,13 @@ abstract class ATKService extends Service {
 
 				while ((inputline = in.readLine()) != null) {
 					//reportConnection(""+socket.getInetAddress()+" "+inputline);
-					Log.v(TAG,inputline);
 					String outputLine = analyseInput(inputline);
 					out.println(outputLine);
 					if (_stop) break;
 				}
 			}
 			catch (Exception e)
-				{Log.v(TAG,"accept cancelled");}
+				{Log.v(TAG,"Exception "+e);}
 			finally {
 				Log.v(TAG,"finally");
 				if (in != null){
