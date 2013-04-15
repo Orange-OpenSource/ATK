@@ -652,24 +652,39 @@ public class AndroidPhone implements PhoneInterface {
 			outMonitor.println("RES");
 			String line ="";
 			String [] values;
-			while ( (line =inMonitor.readLine()) !=null && !(line.startsWith("END"))) {		
-				Logger.getLogger(this.getClass()).debug("line = "+line);
-				values = line.split(" ");
-				if (line.startsWith("GLOBAL")) {				
-					h.put("Cpu", Long.valueOf(values[1]));	
-					h.put("Memory", Long.valueOf(values[2]));
-					h.put("Storage",Long.valueOf(values[3]));
-					if (!values[5].startsWith("-"))h.put("SDCard",Long.valueOf(values[4]));
-					h.put("Battery",Long.valueOf(values[5]));
-					h.put("Data received",Long.valueOf(values[6]));
-					h.put("Data sent",Long.valueOf(values[7]));
-				} else {
-					if (!values[1].startsWith("-")) h.put("Cpu_"+values[0], Long.valueOf(values[1]));					
-					if (!values[2].startsWith("-")) h.put("Memory_"+values[0], Long.valueOf(values[2]));
-					if (!values[3].startsWith("-")) h.put("Data sent_"+values[0], Long.valueOf(values[3]));
-					if (!values[4].startsWith("-")) h.put("Data received_"+values[0], Long.valueOf(values[4]));
+			boolean run=true;
+			do{
+				Logger.getLogger(this.getClass() ).debug("reading socket");
+				line =inMonitor.readLine();
+				if(line != null){
+					Logger.getLogger(this.getClass()).debug("line = "+line);
+					if(!(line.startsWith("END"))){
+						
+						values = line.split(" ");
+						if (line.startsWith("GLOBAL")) {				
+							h.put("Cpu", Long.valueOf(values[1]));	
+							h.put("Memory", Long.valueOf(values[2]));
+							h.put("Storage",Long.valueOf(values[3]));
+							if (!values[5].startsWith("-"))h.put("SDCard",Long.valueOf(values[4]));
+							h.put("Battery",Long.valueOf(values[5]));
+							h.put("Data received",Long.valueOf(values[6]));
+							h.put("Data sent",Long.valueOf(values[7]));
+						} else {
+							if (!values[1].startsWith("-")) h.put("Cpu_"+values[0], Long.valueOf(values[1]));					
+							if (!values[2].startsWith("-")) h.put("Memory_"+values[0], Long.valueOf(values[2]));
+							if (!values[3].startsWith("-")) h.put("Data sent_"+values[0], Long.valueOf(values[3]));
+							if (!values[4].startsWith("-")) h.put("Data received_"+values[0], Long.valueOf(values[4]));
+						}
+					}else{
+						Logger.getLogger(this.getClass()).debug("end of test");
+						run=false;
+					}
+				}else{
+					Logger.getLogger(this.getClass()).debug("line is null");
+					run=false;
 				}
-			}			
+			}while (run);		
+
 		} catch (IOException e) {
 			String error = ResourceManager.getInstance().getString("RESOURCE_ATK_MONITOR_ERROR");
 			ErrorManager.getInstance().addError(getClass().getName(), error, e);
@@ -707,7 +722,7 @@ public class AndroidPhone implements PhoneInterface {
 				Logger.getLogger(this.getClass()).debug(command);
 				outMonitor.println(command);
 				String line = inMonitor.readLine();
-				Logger.getLogger(this.getClass()).debug("line = "+line);
+				//Logger.getLogger(this.getClass()).debug("line = "+line);
 				if (line.startsWith("Init")) {				
 					Logger.getLogger(this.getClass()).debug("INIT OK");					
 				}	

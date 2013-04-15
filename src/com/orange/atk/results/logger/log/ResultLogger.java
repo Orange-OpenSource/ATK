@@ -341,16 +341,23 @@ public class ResultLogger {
 			}
 	
 			if(getPhoneInterface()!=null&&logThread!=null && logThread.isRunning()) {
-	
-				HashMap <String,Long> values = getPhoneInterface().getResources(sampledKeys);
-				cles = values.keySet();
-				it = cles.iterator();
-				while (it.hasNext()) {
-					String cle = (String) it.next();
-					float v = values.get(cle).floatValue();
-					documentLogger.addDataToList(cle, d.getTime(),v);
-					//fireResourceChanged(String.valueOf(v));
+				try{
+					HashMap <String,Long> values = getPhoneInterface().getResources(sampledKeys);
+					cles = values.keySet();
+					it = cles.iterator();
+					while (it.hasNext()) {
+						String cle = (String) it.next();
+						float v = values.get(cle).floatValue();
+						documentLogger.addDataToList(cle, d.getTime(),v);
+						//fireResourceChanged(String.valueOf(v));
+					}
+				}catch(PhoneException e){
+					addInfotoActionLogger("Error JATK", "Monitor connection lost", new Date(), new Date());
+					getPhoneInterface().stopTestingMode();
+					getPhoneInterface().startTestingMode();
 				}
+
+
 			}
 		}
 	}
