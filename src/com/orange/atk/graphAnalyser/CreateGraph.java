@@ -64,9 +64,8 @@ public class CreateGraph implements TcpdumpLineListener{
 
 	public static final String[] COLORS= {"black", "blue", "cyan", "gray", "green", 
 		"magenta", "orange", "pink", "red", "yellow"};
-	public static final Color[] COLORS_= {Color.black, Color.blue, Color.cyan, Color.gray, Color.green, 
-		Color.magenta, Color.orange, Color.pink, Color.red, Color.yellow};
-	
+	public static final Color[] COLORS_= {Color.decode("#000000"), Color.decode("#29A2C6"), Color.decode("#4FD5D6"), Color.decode("#666666"), Color.decode("#73B66B"), 
+		Color.decode("#660099"), Color.decode("#FF6D31"), Color.decode("#EF597B"), Color.decode("#EE0000"), Color.decode("#FFCB18")};
 	private Map<String, PerformanceGraph> mapPerfGraph = null;
 	private Map<String, GraphMarker> mapAction = null;
 	private static Map<String, Color> mapColor = null;
@@ -85,9 +84,9 @@ public class CreateGraph implements TcpdumpLineListener{
 		jfreechart.setBackgroundPaint(Color.white);
 		xyplot = jfreechart.getXYPlot();
 		xyplot.setOrientation(PlotOrientation.VERTICAL);
-		xyplot.setBackgroundPaint(Color.lightGray);
-		xyplot.setDomainGridlinePaint(Color.white);
-		xyplot.setRangeGridlinePaint(Color.white);
+		xyplot.setBackgroundPaint(Color.white);
+		xyplot.setDomainGridlinePaint(Color.lightGray);
+		xyplot.setRangeGridlinePaint(Color.lightGray);
 		chartPanel = new ChartPanel(jfreechart);
 		mapColor = new HashMap<String, Color>();
 		setMapcolor();
