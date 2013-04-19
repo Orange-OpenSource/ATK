@@ -106,7 +106,7 @@ public class ScriptController {
 
 
 	private ScriptController() {
-		Logger.getLogger(this.getClass() ).debug("/********new sriptcontroller*************/");
+		Logger.getLogger(this.getClass() ).debug("/********new ok sriptcontroller*************/");
 		this.ui=new RecorderFrame( this);		
 		//Screenshot frame
 		newFile();
