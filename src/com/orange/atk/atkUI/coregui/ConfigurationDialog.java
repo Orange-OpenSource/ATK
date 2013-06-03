@@ -85,6 +85,7 @@ public class ConfigurationDialog extends JDialog {
 	private JCheckBox useNetworkMonitor = null;
 	private JTextField ADBPath = null;
 	private String rotationValue = "0";
+	private JTextField benchmarkDir;
 	
 	/**
 	 * Construct a new configuration dialog.
@@ -115,6 +116,7 @@ public class ConfigurationDialog extends JDialog {
 	
 		tabs.addTab("External tools", getExternalToolsPanel());
 		tabs.addTab("Screenshots", getScreenshotsPanel());
+		tabs.addTab("Benchmarks", getBenchmarksPanel());
 		
 		this.add(tabs, BorderLayout.CENTER);
 		this.add(getOKCancelPanel(), BorderLayout.SOUTH);
@@ -128,7 +130,28 @@ public class ConfigurationDialog extends JDialog {
 
 		this.setVisible(true); 
 	}
-	
+	/**
+	 * Builds the panel that allow benchmarks reports configuration parameters 
+	 * @return a JPanel to configure commons parameters
+	 */
+	private JPanel getBenchmarksPanel() {
+		JPanel bench = new JPanel();
+		bench.setLayout(new BoxLayout(bench, BoxLayout.Y_AXIS));
+		JPanel reportPathPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		final JLabel pathLabel = new JLabel("Path to benchmark reports:");
+		benchmarkDir = new JTextField( Configuration.getProperty(Configuration.BENCHMARKDIRECTORY), 20);
+		reportPathPanel.add(pathLabel);
+		reportPathPanel.add(benchmarkDir);
+		final JButton browseButton = new JButton("Browse");
+		browseButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				openFileChooser(benchmarkDir, true);
+			}
+		});
+		reportPathPanel.add(browseButton);
+		bench.add(reportPathPanel, BorderLayout.WEST);
+		return bench;
+	}
 	/**
 	 * Builds the panel that allow to External tools configuration parameters 
 	 * @return a JPanel to configure commons parameters
@@ -463,6 +486,7 @@ public class ConfigurationDialog extends JDialog {
 		// save external tools config parameters
 		Configuration.setProperty(Configuration.SPECIFICADB, Boolean.toString(useSpecADB.isSelected()));
 		Configuration.setProperty(Configuration.ADBPATH, ADBPath.getText());
+		Configuration.setProperty(Configuration.BENCHMARKDIRECTORY, benchmarkDir.getText());
 	
 		Configuration.setProperty(Configuration.NETWORKMONITOR, Boolean.toString(useNetworkMonitor.isSelected()));
 		

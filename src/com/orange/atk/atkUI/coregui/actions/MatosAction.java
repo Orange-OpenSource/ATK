@@ -68,9 +68,12 @@ public enum MatosAction {
 		  	"monitor",
 		  	new ImageIcon(CoreGUIPlugin.getIconURL("tango/graph.png")),
   			"Monitor the phone (without runnning a test)")),
-  								        		  
-
-  			
+  	
+  	BENCHMARK ("benchmark", new BenchmarkAction(
+  				  	"benchmark",
+  				  	new ImageIcon(CoreGUIPlugin.getIconURL("gauge.png")),
+  		  			"Benchmark the phone")),
+  								        		    			
 	ADDDIR ("addDir", new AddDirectoryAction(
 			          "addDir", new ImageIcon(CoreGUIPlugin.getIconURL("tango/add-dir.png")),
 		       		  "Add a directory to the current check-list.")),

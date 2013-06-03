@@ -83,6 +83,7 @@ public class Configuration {
 	public static final String NETWORKMONITOR = "useNetworkMonitor";
 	public static final String ADBPATH = "ADBPath";
 	public static final String SCROTATION = "screenshotRotation";
+	public static final String BENCHMARKDIRECTORY = "benchmarkDir";
 	// PDF properties name
 	public static final String pdfEncryptionUserPassword = "pdf.encryption.userpasswd";
 	public static final String pdfEncryptionOwnerPassword = "pdf.encryption.ownerpasswd";

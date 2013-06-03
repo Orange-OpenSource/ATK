@@ -382,6 +382,7 @@ public class MatosGUI extends JFrame {
 
 		toolBar.addSeparator();
 		toolBar.add( MatosAction.MONITOR.getAsJButton() );
+		toolBar.add( MatosAction.BENCHMARK.getAsJButton() );
 
 		// adds an Exit nutton at rigthmost
 		toolBar.add(Box.createHorizontalGlue());
