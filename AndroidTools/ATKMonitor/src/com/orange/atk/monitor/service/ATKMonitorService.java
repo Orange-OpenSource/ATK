@@ -71,6 +71,7 @@ public class ATKMonitorService extends ATKService implements Runnable{
 	private static final String TAG = "ATKMonitorService";
 	private final static int PORT = 1357;
 	private static final int ATK_MONITOR = 0;
+	private static int count = 0;
 
 	private CPUThread cput;
 
@@ -146,8 +147,20 @@ public class ATKMonitorService extends ATKService implements Runnable{
 
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
-		Log.v(TAG,"onStart");
-		addNotification(true,"Monitor Started");
+		
+		PendingIntent contentIntent = PendingIntent.getActivity(_context, 0, 
+				new Intent("com.orange.atk.monitor.CLIENT"), Intent.FLAG_ACTIVITY_NEW_TASK);
+		int iconId  = R.drawable.icon_monitor_on;
+		
+		Notification notif = new Notification(iconId, "", System.currentTimeMillis());
+
+		notif.flags = Notification.FLAG_NO_CLEAR;
+		notif.setLatestEventInfo( _context , "ATKMonitorService","Monitor started", contentIntent);
+
+		// Send notification
+		NotificationManager notificationManager = (NotificationManager)_context.getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationManager.notify(ATK_MONITOR, notif);
+
 		// Internal Storage init
 		String dataDir = Environment.getDataDirectory().getPath();
 		internalStorage = new StatFs(dataDir);
@@ -187,7 +200,11 @@ public class ATKMonitorService extends ATKService implements Runnable{
 	}
 
 	protected String analyseInput(String inputline) {
-		System.gc();
+		if( (++count%60)==0){
+			System.gc();
+			addNotification(true,"Monitor running");
+			Log.d(TAG, "update notification #"+count);
+		}
 		if (inputline.equals("VERSION")) {
 			Log.v(TAG,"VERSION");
 			//Get the version
