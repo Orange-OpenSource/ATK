@@ -654,10 +654,9 @@ public class AndroidPhone implements PhoneInterface {
 			String [] values;
 			boolean run=true;
 			do{
-				Logger.getLogger(this.getClass() ).debug("reading socket");
 				line =inMonitor.readLine();
 				if(line != null){
-					Logger.getLogger(this.getClass()).debug("line = "+line);
+					//Logger.getLogger(this.getClass()).debug("line = "+line);
 					if(!(line.startsWith("END"))){
 						
 						values = line.split(" ");
@@ -676,18 +675,20 @@ public class AndroidPhone implements PhoneInterface {
 							if (!values[4].startsWith("-")) h.put("Data received_"+values[0], Long.valueOf(values[4]));
 						}
 					}else{
-						Logger.getLogger(this.getClass()).debug("end of test");
+						//Logger.getLogger(this.getClass()).debug("end of test");
 						run=false;
 					}
 				}else{
 					Logger.getLogger(this.getClass()).debug("line is null");
-					run=false;
+					//run=false;
+					String error = ResourceManager.getInstance().getString("RESOURCE_ATK_MONITOR_ERROR");
+					throw new PhoneException(error);
 				}
 			}while (run);		
 
 		} catch (IOException e) {
 			String error = ResourceManager.getInstance().getString("RESOURCE_ATK_MONITOR_ERROR");
-			ErrorManager.getInstance().addError(getClass().getName(), error, e);
+			//ErrorManager.getInstance().addError(getClass().getName(), error, e);
 			throw new PhoneException(error);
 		}
 		return h; 
@@ -739,7 +740,6 @@ public class AndroidPhone implements PhoneInterface {
 			String[] result = executeShellCommand(startCmd, true);
 			for(String res: result){
 				if(res.contains("com.orange.atk.monitor")){
-					Logger.getLogger(this.getClass()).debug("atk monitor found");
 					return 0;
 				}
 			}
@@ -749,7 +749,7 @@ public class AndroidPhone implements PhoneInterface {
 		Logger.getLogger(this.getClass()).debug("atk monitor not found");
     	return -1;
     }
-	private void pushATKMonitor() throws PhoneException {
+	private void installATKMonitor() throws PhoneException {
 		Logger.getLogger(this.getClass()).debug("Pushing ATK Monitor on phone");
 		//push ATKMonitor to the Device	
 		try {
@@ -763,26 +763,14 @@ public class AndroidPhone implements PhoneInterface {
 				Logger.getLogger(this.getClass()).debug("Result of the push: "+result);
 			}
 		}catch (InstallException e) {
-			e.printStackTrace();
 			throw new PhoneException("ATK Monitor - unable to install ATK Monitor");
-		}
-		Logger.getLogger(this.getClass()).debug("Starting ATK Monitor");
-		//run ATKMonitor
-		try {
-			String startCmd = "am broadcast -a com.orange.atk.monitor.MONITORSTARTUP";
-			float version = Float.valueOf(adevice.getProperty("ro.build.version.release").substring(0,3));
-			if (version >= 3.1) startCmd += " -f 32";
-			String[] result = executeShellCommand(startCmd, true);
-		} catch (PhoneException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new PhoneException("ATK Monitor - unable to launch ATK Monitor");
 		}
 		try {
 			Thread.sleep(2000);
-		} catch (InterruptedException e2) {}
-		Logger.getLogger(this.getClass()).debug("ATK Monitor is launched on the device ...");
-		clearSockets();
+		} catch (InterruptedException e) {
+			Logger.getLogger(this.getClass()).debug("Unable to wait install termination");
+		}
+		
 	}
 
 	public void sendEmail(String Subject, String Msg, String EmailDest,
@@ -817,7 +805,7 @@ public class AndroidPhone implements PhoneInterface {
 			Logger.getLogger(this.getClass() ).debug("Can't Detect Device");
 			return;
 		}
-		AutomaticPhoneDetection.getInstance().pauseDetection();
+		//AutomaticPhoneDetection.getInstance().pauseDetection();
 		clearSockets();
 
 		//Forward tcp port
@@ -834,53 +822,37 @@ public class AndroidPhone implements PhoneInterface {
 			throw new PhoneException("Can not communicate with ATK Monitor");
 		}
 		Logger.getLogger(this.getClass() ).debug("adb forward done for port "+PORT_ATK_MONITOR);
-		/*String adbLocation = AutomaticPhoneDetection.getInstance().getADBLocation();
-		Runtime r =Runtime.getRuntime();
-		String [] args1 = {adbLocation, "forward" ,"tcp:"+PORT_ATK_MONITOR,"tcp:"+PORT_ATK_MONITOR};
-		Process p;
-		BufferedReader in_br=null;
-		try {
-			p = r.exec(args1);
-			in_br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			String line ="";
-			while ((line =in_br.readLine()) != null) {
-				Logger.getLogger(this.getClass() ).debug("adb forward done : "+line);	
-				if (line.contains("daemon")) {return;}
-			}
-			in_br.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new PhoneException("Can not communicate with ATK Monitor");
-		}
-		Logger.getLogger(this.getClass() ).debug("adb forward done for port "+PORT_ATK_MONITOR);
-		*/
+		
 		String line="NA";
-		if(checkMonitor()==0){
-			try {
-				Logger.getLogger(this.getClass() ).debug("starting monitor");
-				String startCmd = "am broadcast -a com.orange.atk.monitor.MONITORSTARTUP";
-				float version = Float.valueOf(adevice.getProperty("ro.build.version.release").substring(0,3));
+		if(checkMonitor()!=0){
+			Logger.getLogger(this.getClass()).info("Could not find ATKMonitor");
+			installATKMonitor();
+		}
+		try {
+			Logger.getLogger(this.getClass() ).info("Starting ATKMonitor");
+			String startCmd = "am broadcast -a com.orange.atk.monitor.MONITORSTARTUP";
+			float version = Float.valueOf(adevice.getProperty("ro.build.version.release").substring(0,3));
+			if (version >= 3.1) startCmd += " -f 32";
+			executeShellCommand(startCmd, true);
+			//check if the correct version of ATK Monitor is installed
+			command = "VERSION";
+			Logger.getLogger(this.getClass()).debug(command);
+			try{
+				openSocket(PORT_ATK_MONITOR);
+				outMonitor.println(command);
+				line = inMonitor.readLine();
+			}catch(Exception e){
+				Logger.getLogger(this.getClass()).error("Unable to connect to ATKMonitor");
+			}
+			Logger.getLogger(this.getClass() ).info("ATKMonitor version is: "+line);
+			if (!line.equals(AndroidPhone.ATK_MONITOR_VERSION)){
+				Logger.getLogger(this.getClass() ).info("Updating ATKMonitor to version "+AndroidPhone.ATK_MONITOR_VERSION);
+				installATKMonitor();
 				if (version >= 3.1) startCmd += " -f 32";
 				executeShellCommand(startCmd, true);
-				//check if the correct version of ATK Monitor is installed
-				command = "VERSION";
-				Logger.getLogger(this.getClass()).debug(command);
-				try{
-					openSocket(PORT_ATK_MONITOR);
-					outMonitor.println(command);
-					line = inMonitor.readLine();
-				}catch(Exception e){
-					Logger.getLogger(this.getClass()).error("unable to connect to ATKMonitor");
-				}
-				Logger.getLogger(this.getClass()).debug("line = "+line);
-				if (!line.equals(AndroidPhone.ATK_MONITOR_VERSION)){
-					pushATKMonitor();
-				}
-			} catch (PhoneException e) {
-				Logger.getLogger(this.getClass() ).error("unable to start monitor");
 			}
-		}else{
-			pushATKMonitor();
+		} catch (PhoneException e) {
+			Logger.getLogger(this.getClass() ).error("unable to start monitor");
 		}
 		boolean useNetworkMonitor = Boolean.valueOf(Configuration.getProperty(Configuration.NETWORKMONITOR, "false"));
 		if (useNetworkMonitor && noTcpDumpLaunch == false) {
@@ -1095,7 +1067,7 @@ public class AndroidPhone implements PhoneInterface {
 			}
 		}
 		Logger.getLogger(this.getClass() ).debug("End of Testing Mode");
-		AutomaticPhoneDetection.getInstance().resumeDetection();
+		//AutomaticPhoneDetection.getInstance().resumeDetection();
 
 	}
 
