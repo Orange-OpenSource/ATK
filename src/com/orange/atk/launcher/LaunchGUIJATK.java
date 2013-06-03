@@ -30,6 +30,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 import com.orange.atk.atkUI.corecli.Configuration;
 import com.orange.atk.atkUI.coregui.CoreGUIPlugin;
 import com.orange.atk.platform.Platform;
+import com.orange.atk.system.WebServer;
 import com.orange.atk.util.FileUtil;
 
 public class LaunchGUIJATK {
@@ -49,7 +50,7 @@ public class LaunchGUIJATK {
 			return;
 		DOMConfigurator.configure("log4j.xml");
 		
-		
+		WebServer.run();
 		//laucnh JATK
 		try {
 			new CoreGUIPlugin().doStart();
@@ -57,7 +58,6 @@ public class LaunchGUIJATK {
 			
 			e.printStackTrace();
 		}
-
 
 	}
 
