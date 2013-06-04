@@ -1,4 +1,4 @@
-ATK
+ATK  [![Build Status](https://travis-ci.org/Orange-OpenSource/ATK.png)](https://travis-ci.org/Orange-OpenSource/ATK) 
 ===
 
 The Accelerator Test Kit is a software designed for testing applications on Android devices.
