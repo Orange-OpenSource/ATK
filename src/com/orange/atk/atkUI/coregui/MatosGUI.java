@@ -50,16 +50,17 @@ import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.log4j.Logger;
+
 import com.orange.atk.atkUI.corecli.Alert;
 import com.orange.atk.atkUI.corecli.Campaign;
 import com.orange.atk.atkUI.corecli.Configuration;
-import com.orange.atk.atkUI.corecli.utils.Out;
 import com.orange.atk.atkUI.coregui.actions.MatosAction;
 import com.orange.atk.phone.detection.AutomaticPhoneDetection;
 
 /**
  * Main class of Matos user interface.
- *
+ * 
  * @author Aurore PENAULT
  * @since JDK5.0
  */
@@ -101,48 +102,46 @@ public class MatosGUI extends JFrame {
 	public static String outputDir = null;
 	public static File destDir = null;
 
-	//static because acces by a static way from other GUI elements 
+	// static because acces by a static way from other GUI elements
 	public static JPhoneStatusButton phoneStatusButton;
 
 	/** Constructor */
 	public MatosGUI() {
 		try {
-			//Configuration.loadConfigurationFile(CoreGUIPlugin.getLibraryPath("config"));
-			//init plugins which extends GUICommon extension point
+			// init plugins which extends GUICommon extension point
 			createAndShowGUI();
 		} catch (Alert a) {
 			String message = "Unable to start the application since:";
-			String [] mesgs = a.getMessage().split("\\. ");
-			for(String msg : mesgs) {
-				message += "\n"+msg;
+			String[] mesgs = a.getMessage().split("\\. ");
+			for (String msg : mesgs) {
+				message += "\n" + msg;
 			}
-			JOptionPane.showMessageDialog(this, message, 
-					"Error", 
-					JOptionPane.ERROR_MESSAGE, 
+			JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE,
 					new ImageIcon(CoreGUIPlugin.getIconURL("tango/messagebox_critical.png")));
 			System.exit(1);
 		} catch (Exception e) {
-			e.printStackTrace(Out.log);
+			Logger.getLogger(this.getClass()).error(e);
 			String message = "Unable to start the application since:";
-			String [] mesgs = e.getMessage().split("\\.");
-			for(String msg : mesgs) {
-				message += "\n"+msg;
+			String[] mesgs = e.getMessage().split("\\.");
+			for (String msg : mesgs) {
+				message += "\n" + msg;
 			}
-			JOptionPane.showMessageDialog(this, message, 
-					"Error", 
-					JOptionPane.ERROR_MESSAGE, 
+			JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE,
 					new ImageIcon(CoreGUIPlugin.getIconURL("tango/messagebox_critical.png")));
 		}
 	}
 
 	/**
 	 * Returns the selected Analysis GUI pane
+	 * 
 	 * @return the selected Analysis GUI pane
 	 */
 	public AnalysisGUICommon getSelectedAnalysisPane() {
 		int selected = tabbedPane.getSelectedIndex();
-		if ((selected<0)||(selected>MatosGUI.analysisPlugins.size())) return null;
-		else return MatosGUI.analysisPlugins.get(selected);
+		if ((selected < 0) || (selected > MatosGUI.analysisPlugins.size()))
+			return null;
+		else
+			return MatosGUI.analysisPlugins.get(selected);
 	}
 
 	/**
@@ -152,16 +151,16 @@ public class MatosGUI extends JFrame {
 		tabbedPane.setSelectedComponent(toBeSelected.getMainPanel());
 	}
 
-	
 	public String getCheckListFileName() {
 		return checkListFileName;
 	}
 
 	/**
 	 * Create components and show the user interface
+	 * 
 	 * @throws Exception
 	 */
-	public void createAndShowGUI() throws Exception{
+	public void createAndShowGUI() throws Exception {
 
 		JPanel pane = new JPanel();
 		pane.setLayout(new BorderLayout());
@@ -170,23 +169,15 @@ public class MatosGUI extends JFrame {
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				//int selected = tabbedPane.getSelectedIndex();
 				Component selectedComp = tabbedPane.getSelectedComponent();
 				for (IGUICommon plugin : allPlugins) {
 					JPanel panel = plugin.getMainPanel();
-					if ((panel!=null)&&(panel.equals(selectedComp))) {
+					if ((panel != null) && (panel.equals(selectedComp))) {
 						plugin.notifySelected();
-						if (CoreGUIPlugin.mainFrame!=null) CoreGUIPlugin.mainFrame.updateButtons();
+						if (CoreGUIPlugin.mainFrame != null)
+							CoreGUIPlugin.mainFrame.updateButtons();
 					}
 				}
-//				MatosGUI.this.getSelectedAnalysisPane();
-//				if ((selected>0)&&(selected<MatosGUI.analysisPlugins.size())) {
-//					IGUICommon selectedTab = MatosGUI.analysisPlugins.get(selected);
-//					selectedTab.notifySelected();
-//				} else {
-//					IGUICommon selectedTab = MatosGUI.othersPlugins.get(selected);
-//					selectedTab.notifySelected();
-//				}
 			}
 		});
 		analysisPlugins = new ArrayList<AnalysisGUICommon>();
@@ -196,21 +187,22 @@ public class MatosGUI extends JFrame {
 		for (IGUICommon guiCommon : CoreGUIPlugin.guiCommons) {
 			if (guiCommon instanceof AnalysisGUICommon) {
 				nbAnalysisPlugins++;
-				analysisPlugins.add((AnalysisGUICommon)guiCommon);
-				//Add to the campaign list
-				Campaign.campaignsList.add(((AnalysisGUICommon) guiCommon).getCheckListTable().getCampaign());
+				analysisPlugins.add((AnalysisGUICommon) guiCommon);
+				// Add to the campaign list
+				Campaign.campaignsList.add(((AnalysisGUICommon) guiCommon).getCheckListTable()
+						.getCampaign());
 			} else {
 				othersPlugins.add(guiCommon);
 			}
 			allPlugins.add(guiCommon);
 		}
 
-		
 		JMenuItem itemNew = MatosAction.NEWCHECKLIST.getAsMenuItem("New");
 		JMenuItem itemOpen = MatosAction.OPEN.getAsMenuItem("Open...");
 		JMenuItem itemSave = MatosAction.SAVEALLALL.getAsMenuItem("Save");
 		JMenuItem itemSaveAs = MatosAction.SAVEAS.getAsMenuItem("Save as...");
-		JMenuItem itemSaveSelectionAs = MatosAction.SAVESELECTIONAS.getAsMenuItem("Save selection as...");
+		JMenuItem itemSaveSelectionAs = MatosAction.SAVESELECTIONAS
+				.getAsMenuItem("Save selection as...");
 
 		// handla analysis plugins
 		JMenu itemAddFile = new JMenu("Add file to analyse");
@@ -222,7 +214,8 @@ public class MatosGUI extends JFrame {
 		}
 
 		JMenuItem itemDirectory = MatosAction.ADDDIR.getAction().getAsMenuItem("Add directory...");
-		JMenuItem itemCheckList = MatosAction.ADDCHECKLIST.getAction().getAsMenuItem("Add check-list...");
+		JMenuItem itemCheckList = MatosAction.ADDCHECKLIST.getAction().getAsMenuItem(
+				"Add check-list...");
 		JMenuItem itemQuit = MatosAction.EXIT.getAction().getAsMenuItem("Exit");
 
 		JMenu menuFile = new JMenu("File");
@@ -239,18 +232,15 @@ public class MatosGUI extends JFrame {
 		menuFile.add(new JSeparator());
 
 		// handle other plugins in File menu
-//		ArrayList<IGUICommon> nonAnalysisPlugins = new ArrayList<IGUICommon>();
-//		nonAnalysisPlugins.addAll(CoreGUIPlugin.guiCommons);
-//		nonAnalysisPlugins.removeAll(analysisPlugin);
-		int nbSubMenu=0;
+		int nbSubMenu = 0;
 		for (IGUICommon gui : othersPlugins) {
 			JMenuItem item = gui.getFileMenuItem();
-			if (item!=null) {
+			if (item != null) {
 				menuFile.add(item);
 				nbSubMenu++;
 			}
 		}
-		if (nbSubMenu>0) {
+		if (nbSubMenu > 0) {
 			menuFile.add(new JSeparator());
 		}
 		menuFile.add(itemQuit);
@@ -285,10 +275,11 @@ public class MatosGUI extends JFrame {
 		// add analysis menus according to plugins
 		if (nbAnalysisPlugins > 1) { // need sub-menus
 			JMenu analyseAllSubMenu = new JMenu("Analyse all");
-			JMenuItem itemAnalyseAllAll = MatosAction.ANALYSEALLALLTAB.getAsMenuItem("All"); /*"analyseAllAll"*/
+			JMenuItem itemAnalyseAllAll = MatosAction.ANALYSEALLALLTAB.getAsMenuItem("All"); /* "analyseAllAll" */
 			analyseAllSubMenu.add(itemAnalyseAllAll);
 			JMenu analyseSelectionSubMenu = new JMenu("Analyse selection");
-			JMenuItem itemAnalyseSelAllAll = MatosAction.ANALYSESELECTIONALLTAB.getAsMenuItem("All"); /*"analyseSelectionAll"*/
+			JMenuItem itemAnalyseSelAllAll = MatosAction.ANALYSESELECTIONALLTAB
+					.getAsMenuItem("All"); /* "analyseSelectionAll" */
 			analyseSelectionSubMenu.add(itemAnalyseSelAllAll);
 
 			for (AnalysisGUICommon guiCommon : analysisPlugins) {
@@ -302,43 +293,44 @@ public class MatosGUI extends JFrame {
 				}
 			}
 
-
 			menuTools.add(analyseAllSubMenu);
 			menuTools.add(analyseSelectionSubMenu);
 		} else { // no need sub-menu
 			JMenuItem itemAnalyseAll = MatosAction.ANALYSEALLALLTAB.getAsMenuItem("Analyse all");
 			menuTools.add(itemAnalyseAll);
-			JMenuItem itemAnalyseSelection = MatosAction.ANALYSESELECTIONALLTAB.getAsMenuItem("Analyse selection");
+			JMenuItem itemAnalyseSelection = MatosAction.ANALYSESELECTIONALLTAB
+					.getAsMenuItem("Analyse selection");
 			menuTools.add(itemAnalyseSelection);
 		}
 
 		menuTools.add(new JSeparator());
-		//menuTools.add(MatosAction.CONFIRMVERDICT.getAsMenuItem("Confirm the verdict"));
-		//menuTools.add( MatosAction.MODIFYVERDICT.getAsMenuItem("Modify the verdict"));
+		// menuTools.add(MatosAction.CONFIRMVERDICT.getAsMenuItem("Confirm the verdict"));
+		// menuTools.add(
+		// MatosAction.MODIFYVERDICT.getAsMenuItem("Modify the verdict"));
 		menuTools.add(new JSeparator());
 		menuTools.add(MatosAction.STATISTICSALL.getAsMenuItem("View statistics"));
 		menuTools.add(new JSeparator());
 		menuTools.add(MatosAction.VIEWLOG.getAsMenuItem("Open log file"));
 
 		// handle other plugins in Tools menu
-		nbSubMenu=0;
+		nbSubMenu = 0;
 		for (IGUICommon gui : othersPlugins) {
 			JMenuItem item = gui.getToolsMenuItem();
-			if (item!=null) {
+			if (item != null) {
 				menuTools.add(item);
 				nbSubMenu++;
 			}
 		}
-//		if (nbSubMenu>0) {
-//			menuFile.add(new JSeparator());
-//		}
+		// if (nbSubMenu>0) {
+		// menuFile.add(new JSeparator());
+		// }
 
 		menuBar.add(menuTools);
 
 		// add tabbed panes of analysis plugins
 		for (AnalysisGUICommon guiCommon : analysisPlugins) {
 			JPanel mainPanel = guiCommon.getMainPanel();
-			if (guiCommon.getDisplayName()!=null && mainPanel!=null) {
+			if (guiCommon.getDisplayName() != null && mainPanel != null) {
 				tabbedPane.addTab(guiCommon.getDisplayName(), mainPanel);
 			}
 		}
@@ -346,12 +338,11 @@ public class MatosGUI extends JFrame {
 		// add tabbed panes of others plugins
 		for (IGUICommon gui : othersPlugins) {
 			JPanel mainPanel = gui.getMainPanel();
-			if (gui.getDisplayName()!=null && mainPanel!=null) {
+			if (gui.getDisplayName() != null && mainPanel != null) {
 				tabbedPane.addTab(gui.getDisplayName(), mainPanel);
 			}
 		}
 
-		
 		JMenuItem aboutItem = MatosAction.ABOUT.getAsMenuItem("About...");
 		JMenuItem userGuideItem = MatosAction.USERGUIDE.getAsMenuItem("ATK User Guide");
 
@@ -359,8 +350,8 @@ public class MatosGUI extends JFrame {
 		menuHelp.add(aboutItem);
 		menuHelp.add(userGuideItem);
 
-	    //add help menu at rightmost
-	    menuBar.add(Box.createHorizontalGlue());
+		// add help menu at rightmost
+		menuBar.add(Box.createHorizontalGlue());
 		menuBar.add(menuHelp);
 
 		statusBar = new StatusBar("");
@@ -368,28 +359,28 @@ public class MatosGUI extends JFrame {
 		// building the tool bar
 		JToolBar toolBar = new JToolBar();
 		toolBar.setFloatable(false);
-		toolBar.add( MatosAction.NEWCHECKLIST.getAsJButton() );
-		toolBar.add( MatosAction.OPEN.getAsJButton() );
-		toolBar.add( MatosAction.ADDDIR.getAsJButton() );
-		toolBar.add( MatosAction.SAVEALLALL.getAsJButton() );
-		toolBar.add( MatosAction.SAVEAS.getAsJButton() );
+		toolBar.add(MatosAction.NEWCHECKLIST.getAsJButton());
+		toolBar.add(MatosAction.OPEN.getAsJButton());
+		toolBar.add(MatosAction.ADDDIR.getAsJButton());
+		toolBar.add(MatosAction.SAVEALLALL.getAsJButton());
+		toolBar.add(MatosAction.SAVEAS.getAsJButton());
 		toolBar.addSeparator();
-		toolBar.add( MatosAction.COPY.getAsJButton() );
-		toolBar.add( MatosAction.PASTE.getAsJButton() );
-		toolBar.add( MatosAction.REMOVE.getAsJButton() );
+		toolBar.add(MatosAction.COPY.getAsJButton());
+		toolBar.add(MatosAction.PASTE.getAsJButton());
+		toolBar.add(MatosAction.REMOVE.getAsJButton());
 		toolBar.addSeparator();
-		toolBar.add( MatosAction.OPENRECORDER.getAsJButton() );
+		toolBar.add(MatosAction.OPENRECORDER.getAsJButton());
 
 		toolBar.addSeparator();
-		toolBar.add( MatosAction.MONITOR.getAsJButton() );
-		toolBar.add( MatosAction.BENCHMARK.getAsJButton() );
+		toolBar.add(MatosAction.MONITOR.getAsJButton());
+		toolBar.add(MatosAction.BENCHMARK.getAsJButton());
 
 		// adds an Exit nutton at rigthmost
 		toolBar.add(Box.createHorizontalGlue());
 		phoneStatusButton = new JPhoneStatusButton();
 		toolBar.add(phoneStatusButton);
-		
-		toolBar.add( MatosAction.EXIT.getAsJButton());
+
+		toolBar.add(MatosAction.EXIT.getAsJButton());
 
 		JPanel upperBars = new JPanel();
 		upperBars.setLayout(new BorderLayout());
@@ -410,22 +401,29 @@ public class MatosGUI extends JFrame {
 		locationX = bounds.x + (bounds.width - width) / 2;
 		locationY = bounds.y + (bounds.height - height) / 2;
 		// remember last dimension & location
-		width = Integer.valueOf(Configuration.getProperty(Configuration.GUI_WIDTH, ""+width));
-		height = Integer.valueOf(Configuration.getProperty(Configuration.GUI_HEIGTH, ""+height));
-		locationX = Integer.valueOf(Configuration.getProperty(Configuration.GUI_LOCATION_X, ""+locationX));
-		locationY = Integer.valueOf(Configuration.getProperty(Configuration.GUI_LOCATION_Y, ""+locationY));
+		width = Integer.valueOf(Configuration.getProperty(Configuration.GUI_WIDTH, "" + width));
+		height = Integer.valueOf(Configuration.getProperty(Configuration.GUI_HEIGTH, "" + height));
+		locationX = Integer.valueOf(Configuration.getProperty(Configuration.GUI_LOCATION_X, ""
+				+ locationX));
+		locationY = Integer.valueOf(Configuration.getProperty(Configuration.GUI_LOCATION_Y, ""
+				+ locationY));
 
 		setSize(width, height);
 		setLocation(locationX, locationY);
-		addWindowListener( new WindowAdapter() {
+		addWindowListener(new WindowAdapter() {
 
-			/* (non-Javadoc)
-			 * @see java.awt.event.WindowAdapter#windowClosing(java.awt.event.WindowEvent)
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see
+			 * java.awt.event.WindowAdapter#windowClosing(java.awt.event.WindowEvent
+			 * )
 			 */
 			@Override
 			public void windowClosing(WindowEvent e) {
 				AutomaticPhoneDetection.getInstance().stopDetection(phoneStatusButton);
-				ActionEvent ae = new ActionEvent(e.getSource(), e.getID(), MatosAction.EXIT.getName());
+				ActionEvent ae = new ActionEvent(e.getSource(), e.getID(),
+						MatosAction.EXIT.getName());
 				MatosAction.EXIT.getAction().actionPerformed(ae);
 				dispose();
 			}
@@ -446,12 +444,14 @@ public class MatosGUI extends JFrame {
 	 * Updates title of content tabs with the number of thep they contain.
 	 */
 	public void updateContentTabsTitle() {
-		int i=0;
+		int i = 0;
 		for (AnalysisGUICommon guiCommon : analysisPlugins) {
 			String name = guiCommon.getDisplayName();
 			CheckListTable clt = guiCommon.getCheckListTable();
-			tabbedPane.setTitleAt(i, name+" ["+clt.getStepNumber()+"]");
-			tabbedPane.setToolTipTextAt(i, name+": "+ clt.getStepNumber()+" element" + (clt.getStepNumber()>1 ? "s" : ""));
+			tabbedPane.setTitleAt(i, name + " [" + clt.getStepNumber() + "]");
+			tabbedPane.setToolTipTextAt(i,
+					name + ": " + clt.getStepNumber() + " element"
+							+ (clt.getStepNumber() > 1 ? "s" : ""));
 			i++;
 		}
 	}
@@ -471,7 +471,7 @@ public class MatosGUI extends JFrame {
 	public void setModified(boolean modified) {
 		MatosGUI.modified = modified;
 		if (modified) {
-			setTitle("*"+baseTitle);
+			setTitle("*" + baseTitle);
 		} else {
 			setTitle(baseTitle);
 		}
@@ -485,12 +485,12 @@ public class MatosGUI extends JFrame {
 
 	/**
 	 * Enable or disable menu in accordance with contents of current check-list
-	 *
+	 * 
 	 */
 	public void updateButtons() {
 		int nbRows = getStepNumber();
 		int indexSelected = tabbedPane.getSelectedIndex();
-		if (indexSelected<0 || indexSelected>=analysisPlugins.size()) {
+		if (indexSelected < 0 || indexSelected >= analysisPlugins.size()) {
 			return;
 		}
 		AnalysisGUICommon guiCommonSelected = getSelectedAnalysisPane();
@@ -519,14 +519,14 @@ public class MatosGUI extends JFrame {
 			MatosAction.MODIFYVERDICT.setEnabled(false);
 			MatosAction.STATISTICSALL.setEnabled(false);
 
-		} else /*if (nbRows > 0)*/ {
+		} else {
 			MatosAction.NEWCHECKLIST.setEnabled(true);
 			MatosAction.SAVEALLALL.setEnabled(isModified());
 			MatosAction.SAVEAS.setEnabled(true);
 			MatosAction.SELECTALLALL.setEnabled(true);
 			MatosAction.UNSELECTALLALL.setEnabled(true);
 
-			MatosAction.ANALYSEALLCURRENTTAB.setEnabled(nbRowCurrentTab>0);
+			MatosAction.ANALYSEALLCURRENTTAB.setEnabled(nbRowCurrentTab > 0);
 			MatosAction.ANALYSEALLALLTAB.setEnabled(true);
 			MatosAction.ANALYSESELECTIONALLTAB.setEnabled(true);
 			MatosAction.STATISTICSALL.setEnabled(true);
@@ -541,12 +541,12 @@ public class MatosGUI extends JFrame {
 				}
 				MatosAction.REMOVE.setEnabled(true);
 
-				MatosAction.PROPERTIES.setEnabled(nbRowCurrentTabSelected==1);
-				MatosAction.CONFIRMVERDICT.setEnabled(nbRowCurrentTabSelected==1);
-				MatosAction.MODIFYVERDICT.setEnabled(nbRowCurrentTabSelected==1);
+				MatosAction.PROPERTIES.setEnabled(nbRowCurrentTabSelected == 1);
+				MatosAction.CONFIRMVERDICT.setEnabled(nbRowCurrentTabSelected == 1);
+				MatosAction.MODIFYVERDICT.setEnabled(nbRowCurrentTabSelected == 1);
 
 				MatosAction.ANALYSESELECTIONCURRENTTAB.setEnabled(true);
-				//MatosAction.VIEWREPORT.setEnabled(true);
+				MatosAction.VIEWREPORT.setEnabled(true);
 			} else {
 				MatosAction.SAVESELECTIONAS.setEnabled(false);
 				MatosAction.COPY.setEnabled(false);
@@ -563,17 +563,20 @@ public class MatosGUI extends JFrame {
 
 		// selected analisys tab hav to to so
 		guiCommonSelected.updateButtons();
-		
+
 		// no analysis GUI plugins have to do so...
-		for (IGUICommon guiCommon : othersPlugins/*CoreGUIPlugin.guiCommons*/) {
+		for (IGUICommon guiCommon : othersPlugins/* CoreGUIPlugin.guiCommons */) {
 			guiCommon.updateButtons();
 		}
 	}
 
 	/**
-	 * Enable or disable user action on the GUI.
-	 * This is used to prevent multiple actions since they use the same staus bar and overwrite each other's status.
-	 * @param b the enable/disable status
+	 * Enable or disable user action on the GUI. This is used to prevent
+	 * multiple actions since they use the same staus bar and overwrite each
+	 * other's status.
+	 * 
+	 * @param b
+	 *            the enable/disable status
 	 */
 	public void enableUserActions(boolean b) {
 		for (MatosAction ma : MatosAction.values()) {
@@ -599,17 +602,18 @@ public class MatosGUI extends JFrame {
 	 */
 	public void setCheckListFileName(String newCLFileName) {
 		checkListFileName = newCLFileName;
-		if (checkListFileName==null) {
+		if (checkListFileName == null) {
 			setModified(false);
-			baseTitle=matosTitle;
+			baseTitle = matosTitle;
 		} else {
-			baseTitle=matosTitle + " - " + checkListFileName;
+			baseTitle = matosTitle + " - " + checkListFileName;
 		}
 		setTitle(baseTitle);
 	}
 
 	/**
 	 * Get the global number of steps
+	 * 
 	 * @return
 	 */
 	public int getStepNumber() {
@@ -635,9 +639,5 @@ public class MatosGUI extends JFrame {
 		}
 		return selectedCampaign;
 	}
-
-
-
-	
 
 }

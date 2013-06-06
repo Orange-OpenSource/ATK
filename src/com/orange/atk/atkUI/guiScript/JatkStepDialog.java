@@ -44,20 +44,21 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.log4j.Logger;
+
 import com.orange.atk.atkUI.corecli.Alert;
 import com.orange.atk.atkUI.corecli.Configuration;
 import com.orange.atk.atkUI.corecli.utils.FileUtilities;
-import com.orange.atk.atkUI.corecli.utils.Out;
 import com.orange.atk.atkUI.coregui.AbstractStepDialog;
 import com.orange.atk.atkUI.coregui.AuthenticationPanel;
 import com.orange.atk.atkUI.coregui.CoreGUIPlugin;
 import com.orange.atk.atkUI.coregui.MatosGUI;
 import com.orange.atk.phone.detection.AutomaticPhoneDetection;
 
-
 /**
- * This is a specialization of <code>AbstractStepDialog</code> dialogs
- * for <code>FlashStep</code>.
+ * This is a specialization of <code>AbstractStepDialog</code> dialogs for
+ * <code>FlashStep</code>.
+ * 
  * @author Aurore PENAULT, Nicolas MOTEAU
  * @since JDK5.0
  */
@@ -76,7 +77,8 @@ public abstract class JatkStepDialog extends AbstractStepDialog {
 	protected JButton cancel;
 
 	/**
-	 * Path of last selected file (used to re-open the file chooser at the same place)
+	 * Path of last selected file (used to re-open the file chooser at the same
+	 * place)
 	 */
 	protected String lastFilePath = null;
 
@@ -95,12 +97,12 @@ public abstract class JatkStepDialog extends AbstractStepDialog {
 		super();
 
 		authenticationPanel = new AuthenticationPanel();
-		clt = (JatkCheckListTable)GuiJatkLink.getFlashGUI().getCheckListTable();
+		clt = (JatkCheckListTable) GuiJatkLink.getFlashGUI().getCheckListTable();
 		fileRadio = new JRadioButton("Script File: ");
 		fileButton = new JButton("Browse");
 		fileButton.setVerticalTextPosition(AbstractButton.CENTER);
 		fileButton.setHorizontalTextPosition(AbstractButton.LEADING);
-		fileButton.addActionListener(new ActionListener(){
+		fileButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				scriptFileChooser();
 			}
@@ -132,21 +134,21 @@ public abstract class JatkStepDialog extends AbstractStepDialog {
 		globalFilePanel.add(urlPanel);
 
 		ok = new JButton("OK");
-		ok.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+		ok.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				launchAction();
 			}
 		});
 		cancel = new JButton("Cancel");
-		cancel.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+		cancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				JatkStepDialog.this.dispose();
 			}
 		});
 
-		urlRadio.addChangeListener(new ChangeListener(){
+		urlRadio.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				if (urlRadio.isSelected()){
+				if (urlRadio.isSelected()) {
 					authenticationPanel.setEnabled(true);
 					urlTF.setEnabled(true);
 					fileButton.setEnabled(false);
@@ -183,20 +185,17 @@ public abstract class JatkStepDialog extends AbstractStepDialog {
 
 	/**
 	 * Adds a step to the flash table.
-	 *
+	 * 
 	 */
 	protected void launchAction() {
-		try{
+		try {
 			action();
-			if (!fileError){
+			if (!fileError) {
 				JatkStepDialog.this.dispose();
 			}
 			fileError = false;
-		}catch (Alert a){
-			JOptionPane.showMessageDialog(
-					JatkStepDialog.this,
-					a.getMessage(),
-					"Error !",
+		} catch (Alert a) {
+			JOptionPane.showMessageDialog(JatkStepDialog.this, a.getMessage(), "Error !",
 					JOptionPane.ERROR_MESSAGE);
 		}
 	}
@@ -205,126 +204,139 @@ public abstract class JatkStepDialog extends AbstractStepDialog {
 
 	/**
 	 * Compute the short name of a file from its URI.
-	 * @param uri file URI
+	 * 
+	 * @param uri
+	 *            file URI
 	 * @return a string that is the short name.
 	 */
 	public static String guessName(String uri) {
 		String name = "";
-		if (uri.startsWith("http:") && (uri.length()-1)>uri.lastIndexOf("/")){
-			name = uri.substring(uri.lastIndexOf("/")+1);//, uri.length()-1);
-		}else if (uri.lastIndexOf(File.separator)!=-1 && (uri.length()-1)>uri.lastIndexOf(File.separator)){
-			name = uri.substring(uri.lastIndexOf(File.separator)+1);//, uri.length()-1);
-		}else{
-			name = uri;
-		}
+		if (uri.startsWith("http:") && (uri.length() - 1) > uri.lastIndexOf("/")) {
+			name = uri.substring(uri.lastIndexOf("/") + 1);// , uri.length()-1);
+		} else
+			if (uri.lastIndexOf(File.separator) != -1
+					&& (uri.length() - 1) > uri.lastIndexOf(File.separator)) {
+				name = uri.substring(uri.lastIndexOf(File.separator) + 1);// ,
+																			// uri.length()-1);
+			} else {
+				name = uri;
+			}
 		return name;
 	}
 
 	/**
 	 * Opens a file chooser to select a flash file.
-	 *
+	 * 
 	 */
 	protected void scriptFileChooser() {
 		JFileChooser fileChooser = null;
 		String path = lastFilePath;
 
-		if (fileTF.getText()!=null && !fileTF.getText().equals("")) {
+		if (fileTF.getText() != null && !fileTF.getText().equals("")) {
 			String file = fileTF.getText();
-			if (file.lastIndexOf(File.separator)!=-1){
+			if (file.lastIndexOf(File.separator) != -1) {
 				path = file.substring(0, file.lastIndexOf(File.separator));
 			}
 		}
 
 		fileChooser = new JFileChooser(path);
-		String extension=".tst";
+		String extension = ".tst";
 
-		if(AutomaticPhoneDetection.getInstance()
-				.isNokia())
-			extension=".xml";	
-		fileChooser.setFileFilter(new FileUtilities.Filter("ATK Script file [*"+extension+"]", extension));
+		if (AutomaticPhoneDetection.getInstance().isNokia())
+			extension = ".xml";
+		fileChooser.setFileFilter(new FileUtilities.Filter("ATK Script file [*" + extension + "]",
+				extension));
 		selectAndSetTF(fileChooser, extension);
 	}
 
 	/**
 	 * Fills the text field with th selected file
+	 * 
 	 * @param fileChooser
-	 * @param extension extension of the selected file
+	 * @param extension
+	 *            extension of the selected file
 	 */
 	private void selectAndSetTF(JFileChooser fileChooser, String extension) {
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		String tmp=null;
+		String tmp = null;
 		try {
 			tmp = Configuration.getProperty(Configuration.INPUTDIRECTORY);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if(tmp!=null)
-		fileChooser.setCurrentDirectory(new File(tmp));
+		if (tmp != null)
+			fileChooser.setCurrentDirectory(new File(tmp));
 		int returnVal = fileChooser.showDialog(null, "Select");
-		String file="";
+		String file = "";
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			file = fileChooser.getSelectedFile().getAbsolutePath();
 			file = FileUtilities.verifyExtension(file, extension);
 			lastFilePath = file;
 			fileTF.setText(file);
-			Configuration.setProperty(Configuration.INPUTDIRECTORY, fileChooser.getSelectedFile().getParent());
+			Configuration.setProperty(Configuration.INPUTDIRECTORY, fileChooser.getSelectedFile()
+					.getParent());
 
 		}
 	}
 
 	/**
 	 * Verify correct filling of fields in the dialog box.
-	 *
+	 * 
 	 */
 	protected void verifyAndInitialize() {
-		if (authenticationPanel.getLogin().length()>0) {
+		if (authenticationPanel.getLogin().length() > 0) {
 			login = authenticationPanel.getLogin();
 			password = authenticationPanel.getPassword();
 		} else {
 			login = null;
 			password = null;
 		}
-		if (authenticationPanel.getUserAgent().length()>0) {
+		if (authenticationPanel.getUserAgent().length() > 0) {
 			user_agent = authenticationPanel.getUserAgent();
 		} else {
-			user_agent=null;
+			user_agent = null;
 		}
 		if (fileRadio.isSelected()) {
-			if (fileTF.getText()==null || fileTF.getText().equals("")) {
+			if (fileTF.getText() == null || fileTF.getText().equals("")) {
 				showError("You must indicate the location of the Flash file.");
 			} else {
 				flashFile = new File(fileTF.getText());
-				if (!flashFile.exists()){
+				if (!flashFile.exists()) {
 					showError("The specified Flash file can't be found.");
-				}else{
+				} else {
 					flashURI = fileTF.getText();
 					flashName = guessName(flashURI);
 				}
 			}
-		} else if (urlRadio.isSelected()) {
-			if (urlTF.getText() == null || urlTF.getText().equals("")) {
-				showError("You must indicate the location of the Flash file.");
-			} else {
-				flashURI = urlTF.getText();
-				if (!flashURI.startsWith("http://")) flashURI = "http://"+flashURI;
-				flashName = guessName(flashURI);
-				String errorMsg = "";
-				try{
-					if (!flashURI.endsWith(".xml")) {
-						flashFile = Configuration.fileResolver.getFile(flashURI, "tmpflash", ".tst", login, password, user_agent);
-					} else {
-						flashFile = Configuration.fileResolver.getFile(flashURI, "tmpflash", ".xml", login, password, user_agent);
+		} else
+			if (urlRadio.isSelected()) {
+				if (urlTF.getText() == null || urlTF.getText().equals("")) {
+					showError("You must indicate the location of the Flash file.");
+				} else {
+					flashURI = urlTF.getText();
+					if (!flashURI.startsWith("http://"))
+						flashURI = "http://" + flashURI;
+					flashName = guessName(flashURI);
+					String errorMsg = "";
+					try {
+						if (!flashURI.endsWith(".xml")) {
+							flashFile = Configuration.fileResolver.getFile(flashURI, "tmpflash",
+									".tst", login, password, user_agent);
+						} else {
+							flashFile = Configuration.fileResolver.getFile(flashURI, "tmpflash",
+									".xml", login, password, user_agent);
+						}
+					} catch (Alert e) {
+						errorMsg = e.getMessage();
+						Logger.getLogger(this.getClass()).error(errorMsg);
 					}
-				}catch (Alert e){
-					errorMsg = e.getMessage();
-					Out.log.println(errorMsg);
-				}
-				if (flashFile == null || !flashFile.exists()){
-					showError("<html>Invalid URL for Flash file or problem when downloading Flash file.<br>" + errorMsg+"</html>");
+					if (flashFile == null || !flashFile.exists()) {
+						showError("<html>Invalid URL for Flash file or problem when downloading Flash file.<br>"
+								+ errorMsg + "</html>");
+					}
 				}
 			}
-		}
 
 	}
 

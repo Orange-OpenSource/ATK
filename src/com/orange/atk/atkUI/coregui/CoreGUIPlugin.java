@@ -28,9 +28,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 import com.orange.atk.atkUI.corecli.Alert;
 import com.orange.atk.atkUI.corecli.Configuration;
-import com.orange.atk.atkUI.corecli.utils.Out;
 import com.orange.atk.atkUI.guiHopper.HopperGUI;
 import com.orange.atk.atkUI.guiMixScript.MixScriptGUI;
 import com.orange.atk.atkUI.guiScript.JatkGUI;
@@ -38,34 +39,29 @@ import com.orange.atk.platform.Platform;
 
 /**
  * This class is the main class of the "coregui" plugin.
- *
+ * 
  * @author Aurore PENAULT
  * @since JDK5.0
  */
 public class CoreGUIPlugin {
 
-	
 	public static ArrayList<IGUICommon> guiCommons = new ArrayList<IGUICommon>();
 
 	public static MatosGUI mainFrame;
 
-
 	public void doStart() throws Exception {
-		Out.log.println("Starting CoreGUIPlugin");
+		Logger.getLogger(this.getClass()).error("Starting CoreGUIPlugin");
 
-
-
-		guiCommons.add(new JatkGUI() );
-		guiCommons.add(new HopperGUI() );
+		guiCommons.add(new JatkGUI());
+		guiCommons.add(new HopperGUI());
 		guiCommons.add(new MixScriptGUI());
-	
-		
+
 		mainFrame = new MatosGUI();
 	}
 
-
 	/**
 	 * Gets back application icon.
+	 * 
 	 * @return URL of the application's icon
 	 */
 	public static URL getMainIcon() {
@@ -74,16 +70,19 @@ public class CoreGUIPlugin {
 
 	/**
 	 * Gets back the URL of the specified icon.
-	 * @param iconFileName icon file name
+	 * 
+	 * @param iconFileName
+	 *            icon file name
 	 * @return icon's URL or null if file not in ressource directory
 	 */
 	public static URL getIconURL(String iconFileName) {
-		File configFile = new File(Configuration.getProperty("iconDir")+Platform.FILE_SEPARATOR+iconFileName);
+		File configFile = new File(Configuration.getProperty("iconDir") + Platform.FILE_SEPARATOR
+				+ iconFileName);
 		URL iconURL = null;
 		try {
 			iconURL = configFile.toURI().toURL();
 		} catch (MalformedURLException e) {
-			Alert.raise(e, "Unable to get icon '"+iconFileName+"'");
+			Alert.raise(e, "Unable to get icon '" + iconFileName + "'");
 		}
 		return iconURL;
 	}

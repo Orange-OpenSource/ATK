@@ -23,47 +23,49 @@
  */
 package com.orange.atk.atkUI.corecli.utils;
 
-/** This class is responsible for monitoring the status of a download
- * session. A user will typically create an instance of Downloader as
- * well as an instance of DownloadMonitor. The user will start the
- * Downloader object, as an independant thread, then call the
- * DownloadMonitor.waitForEnd() method, which is blocked until the
- * status is changed to something else than DLOAD_ONGOING. When
- * created, the Downloader thread is passed a pointer to its
- * DownloadMonitor, to keep it informed of the evolution of the
- * session's status. 
+/**
+ * This class is responsible for monitoring the status of a download session. A
+ * user will typically create an instance of Downloader as well as an instance
+ * of DownloadMonitor. The user will start the Downloader object, as an
+ * independant thread, then call the DownloadMonitor.waitForEnd() method, which
+ * is blocked until the status is changed to something else than DLOAD_ONGOING.
+ * When created, the Downloader thread is passed a pointer to its
+ * DownloadMonitor, to keep it informed of the evolution of the session's
+ * status.
  */
-public class DownloadMonitor  {
-	
-	public static int DLOAD_FAILED = 1;
-	public static int DLOAD_SUCCESS = 2;
-	public static int DLOAD_ONGOING = 3;
-	public static int DLOAD_TIMEOUT_C = 4; // during connection
-	public static int DLOAD_TIMEOUT_T = 5; // during transfer
-	public static int DLOAD_FAILED_NO_NEW_ATTEMPT = 6;
-	
-	int status = DLOAD_ONGOING;
-	
-	int getDownloadStatus() { return status; };
-	
-	void setDownloadStatus(int status) { this.status = status; }
-	
-	/** 
-	 * Reset the session status to DLOAD_ONGOING 
+public class DownloadMonitor {
+
+	public static final int DLOAD_FAILED = 1;
+	public static final int DLOAD_SUCCESS = 2;
+	public static final int DLOAD_ONGOING = 3;
+	public static final int DLOAD_TIMEOUT_C = 4; // during connection
+	public static final int DLOAD_TIMEOUT_T = 5; // during transfer
+	public static final int DLOAD_FAILED_NO_NEW_ATTEMPT = 6;
+
+	private int status = DLOAD_ONGOING;
+
+	int getDownloadStatus() {
+		return status;
+	};
+
+	void setDownloadStatus(int status) {
+		this.status = status;
+	}
+
+	/**
+	 * Reset the session status to DLOAD_ONGOING
 	 */
 	void reset() {
 		setDownloadStatus(DLOAD_ONGOING);
 	}
-	
-	/** 
-	 * Allows to wait for the end (successful of or not) of the
-	 * download session. The method returns only when the session is
-	 * over (Active wait). 
-	 */ 
-	void waitForEnd() { 
-		while (getDownloadStatus() == DLOAD_ONGOING) {}
-	};
-	
-	
-}
 
+	/**
+	 * Allows to wait for the end (successful of or not) of the download
+	 * session. The method returns only when the session is over (Active wait).
+	 */
+	void waitForEnd() {
+		while (getDownloadStatus() == DLOAD_ONGOING) {
+		}
+	};
+
+}

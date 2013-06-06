@@ -28,10 +28,12 @@ import java.io.File;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
-import com.orange.atk.atkUI.corecli.utils.Out;
+import org.apache.log4j.Logger;
 
 /**
- * Abstract class which represents dialog for creation/edition of <code>step</code>.
+ * Abstract class which represents dialog for creation/edition of
+ * <code>step</code>.
+ * 
  * @author Aurore PENAULT
  * @since JDK5.0
  */
@@ -47,41 +49,46 @@ public abstract class AbstractStepDialog extends JDialog {
 
 	protected boolean fileError = false;
 
-	public AbstractStepDialog(){
+	public AbstractStepDialog() {
 		super(CoreGUIPlugin.mainFrame, true);
 	}
 
 	/**
 	 * Shows an error message
-	 * @param msg the error message
+	 * 
+	 * @param msg
+	 *            the error message
 	 */
 	protected void showError(String msg) {
-		Out.log.println(msg);
-		JOptionPane.showMessageDialog(
-				CoreGUIPlugin.mainFrame,
-				msg,
-				"Error !",
+		Logger.getLogger(this.getClass()).error(msg);
+		JOptionPane.showMessageDialog(CoreGUIPlugin.mainFrame, msg, "Error !",
 				JOptionPane.ERROR_MESSAGE);
 		fileError = true;
 	}
 
 	/**
 	 * Guess the short name of a file given its URI and its extension
-	 * @param uri file URI
-	 * @param ext file extension
+	 * 
+	 * @param uri
+	 *            file URI
+	 * @param ext
+	 *            file extension
 	 * @return short name for the given file
 	 */
 	public static String guessName(String uri, String ext) {
 		String name = "";
-		if (uri.lastIndexOf(ext)!=-1){
-			if (uri.startsWith("http:") && uri.lastIndexOf(ext)>uri.lastIndexOf("/")){
-				name = uri.substring(uri.lastIndexOf("/")+1, uri.lastIndexOf(ext)+3);
-			}else if (uri.lastIndexOf(File.separator)!=-1 && uri.lastIndexOf(ext)>uri.lastIndexOf(File.separator)){
-				name = uri.substring(uri.lastIndexOf(File.separator)+1, uri.lastIndexOf(ext)+3);
-			}else{
-				name = uri;
-			}
-		}else{
+		if (uri.lastIndexOf(ext) != -1) {
+			if (uri.startsWith("http:") && uri.lastIndexOf(ext) > uri.lastIndexOf("/")) {
+				name = uri.substring(uri.lastIndexOf("/") + 1, uri.lastIndexOf(ext) + 3);
+			} else
+				if (uri.lastIndexOf(File.separator) != -1
+						&& uri.lastIndexOf(ext) > uri.lastIndexOf(File.separator)) {
+					name = uri.substring(uri.lastIndexOf(File.separator) + 1,
+							uri.lastIndexOf(ext) + 3);
+				} else {
+					name = uri;
+				}
+		} else {
 			name = uri;
 		}
 		return name;

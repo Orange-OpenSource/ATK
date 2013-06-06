@@ -31,7 +31,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JFileChooser;
@@ -47,6 +46,7 @@ import com.orange.atk.util.FileUtil;
 
 /**
  * This class represents the configuration parameters.
+ * 
  * @author Nicolas MOTEAU
  * @since JDK5.0
  */
@@ -54,18 +54,13 @@ public class Configuration {
 
 	private static SortedProperties properties = new SortedProperties();
 	private static Vector<String> defaultPhoneConfigs;
-	private HashMap <String,String> defaultConfig;
-	public static String defaultPhoneConfigPath = Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"ConfigFiles"+Platform.FILE_SEPARATOR;
+	private HashMap<String, String> defaultConfig;
+	public static String defaultPhoneConfigPath = Platform.getInstance().getJATKPath()
+			+ Platform.FILE_SEPARATOR + "ConfigFiles" + Platform.FILE_SEPARATOR;
 	private static String configFileName = null;
 
 	/** A file resolver to get back file from URI */
 	public static FileResolver fileResolver;
-
-
-	/** List of tools */
-	/** Parser to parse the file which contains the list of tools */
-	private static ExternalToolXMLParser externalToolParser = null;
-
 
 	// properties's valid keys
 	public static final String LOGFILENAME = "logFile";
@@ -97,7 +92,6 @@ public class Configuration {
 	public static final String httpMaxDownloadTime = "httpMaxDownloadTime";
 	public static final String httpMaxAttempts = "httpMaxAttempts";
 
-
 	public static final String MATOS_VERSION = "matosVersion";
 	public static final String MATOS_REVISION = "matosRevision";
 
@@ -108,79 +102,82 @@ public class Configuration {
 	public static final String GUI_LOCATION_Y = "gui.locationY";
 
 	private static Configuration instance;
-	
-	public static Configuration getInstance(){
-		if(instance ==null) {
+
+	public static Configuration getInstance() {
+		if (instance == null) {
 			instance = new Configuration();
 		}
 		return instance;
 	}
-	
+
 	private Configuration() {
-		defaultConfig = new HashMap<String,String>();
-		defaultConfig.put("com.orange.atk.phone.android.AndroidDriver","android.xml");
-		defaultConfig.put("com.orange.atk.phone.android.AndroidMonkeyDriver","android.xml");
-		defaultConfig.put("com.orange.atk.phone.android.AndroidICSDriver","android.xml");
-		defaultConfig.put("com.orange.atk.phone.android.AndroidJBDriver","android.xml");
-		defaultConfig.put("com.orange.atk.phone.mediatek.MediatekPhone","mediatek.xml");
+		defaultConfig = new HashMap<String, String>();
+		defaultConfig.put("com.orange.atk.phone.android.AndroidDriver", "android.xml");
+		defaultConfig.put("com.orange.atk.phone.android.AndroidMonkeyDriver", "android.xml");
+		defaultConfig.put("com.orange.atk.phone.android.AndroidICSDriver", "android.xml");
+		defaultConfig.put("com.orange.atk.phone.android.AndroidJBDriver", "android.xml");
+		defaultConfig.put("com.orange.atk.phone.mediatek.MediatekPhone", "mediatek.xml");
 		defaultPhoneConfigs = new Vector<String>();
 		Iterator<String> configNames = defaultConfig.values().iterator();
 		while (configNames.hasNext()) {
 			String name = configNames.next();
-			if (!defaultPhoneConfigs.contains(name)) defaultPhoneConfigs.add(name);
+			if (!defaultPhoneConfigs.contains(name)) {
+				defaultPhoneConfigs.add(name);
+			}
 		}
-		
+
 	}
 
-	public HashMap<String,String> getDefaultConfig() {
+	public HashMap<String, String> getDefaultConfig() {
 		return defaultConfig;
 	}
-	
+
 	public Vector<String> defaultPhoneConfigNames() {
 		return defaultPhoneConfigs;
 	}
-	
+
 	public static boolean loadConfigurationFile(String configFileName) {
 		Configuration.configFileName = configFileName;
 		try {
 			FileInputStream fileInputStream = new FileInputStream(configFileName);
 			properties.load(fileInputStream);
 			fileInputStream.close();
-			fileResolver = new FileResolver(new File(Platform.TMP_DIR), 
-					Integer.parseInt(getProperty(httpMaxConnectionTime)), 
-					Integer.parseInt(getProperty(httpMaxDownloadTime)), 
-					Integer.parseInt(getProperty(httpMaxAttempts)), 
-					Boolean.parseBoolean(getProperty(PROXYSET)),
-					getProperty(PROXYHOST), 
+			fileResolver = new FileResolver(new File(Platform.TMP_DIR),
+					Integer.parseInt(getProperty(httpMaxConnectionTime)),
+					Integer.parseInt(getProperty(httpMaxDownloadTime)),
+					Integer.parseInt(getProperty(httpMaxAttempts)),
+					Boolean.parseBoolean(getProperty(PROXYSET)), getProperty(PROXYHOST),
 					getProperty(PROXYPORT));
 			String configdir = properties.getProperty(CONFIGDIRECTORY);
-			if((null==configdir)||(configdir.equals(""))){
-				int option = JOptionPane. showConfirmDialog(null,
-						"You must specify a folder to save the configuration files.\n"+
-						"Please select a folder.\n" +
-						"(A folder ConfigFiles will created in the folder you  select)",
+			if ((null == configdir) || (configdir.equals(""))) {
+				int option = JOptionPane.showConfirmDialog(null,
+						"You must specify a folder to save the configuration files.\n"
+								+ "Please select a folder.\n"
+								+ "(A folder ConfigFiles will created in the folder you  select)",
 						"Select a folder for the configuration files...",
 						JOptionPane.OK_CANCEL_OPTION);
-				if(JOptionPane.CANCEL_OPTION == option){
+				if (JOptionPane.CANCEL_OPTION == option) {
 					return false;
 				}
 				JFileChooser fileChooser = new JFileChooser();
 				fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				fileChooser.setFileFilter(new FileUtilities.FilterDir());
 				int returnVal = -1;
-				do{
-					returnVal =  fileChooser.showDialog(null, "Select location to create the directory for the configuration files.");
+				do {
+					returnVal = fileChooser.showDialog(null,
+							"Select location to create the directory for the configuration files.");
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
 						String selectedFolder = fileChooser.getSelectedFile().toString();
 						selectedFolder += File.separator + "ConfigFiles" + File.separator;
 						File folder = new File(selectedFolder);
-						if(!folder.exists()){
-							if(!folder.mkdir()){
-								if(JOptionPane.CANCEL_OPTION == JOptionPane.showConfirmDialog(null, 
-										"Could not create the configuration folder in the selected folder.\n" +
-										"Please selecte a new folder.",
+						if (!folder.exists()) {
+							if (!folder.mkdir()) {
+								if (JOptionPane.CANCEL_OPTION == JOptionPane.showConfirmDialog(
+										null,
+										"Could not create the configuration folder in the selected folder.\n"
+												+ "Please selecte a new folder.",
 										"Need to select another folder",
-										JOptionPane.OK_CANCEL_OPTION)){
+										JOptionPane.OK_CANCEL_OPTION)) {
 									return false;
 								}
 							}
@@ -189,14 +186,16 @@ public class Configuration {
 						properties.setProperty(CONFIGDIRECTORY, selectedFolder);
 						writeProperties();
 
-						//We have to copy the default configuration files
-						String folderPath = Platform.getInstance().getJATKPath();	
-						folderPath += Platform.FILE_SEPARATOR+Platform.FILE_SEPARATOR+"ConfigFiles"+ File.separator;
-						
+						// We have to copy the default configuration files
+						String folderPath = Platform.getInstance().getJATKPath();
+						folderPath += Platform.FILE_SEPARATOR + Platform.FILE_SEPARATOR
+								+ "ConfigFiles" + File.separator;
+
 						File folderinstall = new File(folderPath);
-						if(!folderinstall.exists()){
-							Logger.getLogger("").debug("The installation folder with the configurations files" +
-									"does not exits.\n It should be under "+folderPath);
+						if (!folderinstall.exists()) {
+							Logger.getLogger("").debug(
+									"The installation folder with the configurations files"
+											+ "does not exits.\n It should be under " + folderPath);
 						}
 						FilenameFilter filter = new FilenameFilter() {
 							public boolean accept(File dir, String name) {
@@ -204,38 +203,30 @@ public class Configuration {
 							}
 						};
 						String[] listfiles = folderinstall.list(filter);
-						for(String fileName : listfiles){
-							File newFile = new File(selectedFolder+fileName);
-							File toCopy = new File(folderPath+fileName);
+						for (String fileName : listfiles) {
+							File newFile = new File(selectedFolder + fileName);
+							File toCopy = new File(folderPath + fileName);
 							FileUtil.copyfile(newFile, toCopy);
 						}
 						return true;
 
 					}
-				}while(true);
-			}
-			else{
-				//TODO: need to verify the folder exists
+				} while (true);
+			} else {
+				if (!new File(configdir).exists()) {
+					JOptionPane.showMessageDialog(null,
+							"The directory where configuration files are saved does not exist:\n"
+									+ configdir, "Error", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 			return true;
 
 		} catch (FileNotFoundException fnfe) {
-			Alert.raise(fnfe, "Unable to find configuration file '"+configFileName+"'");
+			Alert.raise(fnfe, "Unable to find configuration file '" + configFileName + "'");
 		} catch (IOException ioe) {
-			Alert.raise(ioe, "Unable to access configuration file '"+configFileName+"'");
+			Alert.raise(ioe, "Unable to access configuration file '" + configFileName + "'");
 		}
 		return false;
-	}
-
-
-	/**
-	 * Saves definitions of external tools
-	 * @throws Exception 
-	 */
-	public static void updateExternalToolList(List<ExternalTool> tools) throws Exception {
-		if (externalToolParser==null) {
-			externalToolParser = new ExternalToolXMLParser();
-		}
 	}
 
 	public static String getConfigFileName() {
@@ -243,25 +234,32 @@ public class Configuration {
 	}
 
 	/**
-	 * Retrieves a config property value by its name.
-	 * Use static field of this class as keys.
-	 * @param key the name of the property
+	 * Retrieves a config property value by its name. Use static field of this
+	 * class as keys.
+	 * 
+	 * @param key
+	 *            the name of the property
 	 * @return the value of the property.
-	 * @throws Alert if the property cannot be found.
+	 * @throws Alert
+	 *             if the property cannot be found.
 	 */
 	public static String getProperty(String key) {
 		String val = properties.getProperty(key);
-		if (val==null) {
-			Alert.raise(null, "Unable to find config property named '"+key+"' in "+Configuration.configFileName );
+		if (val == null) {
+			Alert.raise(null, "Unable to find config property named '" + key + "' in "
+					+ Configuration.configFileName);
 		}
 		return val;
 	}
 
 	/**
-	 * Retrieves a config property value by its name.
-	 * Use static field of this class as keys.
-	 * @param key the name of the property
-	 * @param defaultValue the value to use if the key is not found
+	 * Retrieves a config property value by its name. Use static field of this
+	 * class as keys.
+	 * 
+	 * @param key
+	 *            the name of the property
+	 * @param defaultValue
+	 *            the value to use if the key is not found
 	 * @return the value of the property, or the default value.
 	 */
 	public static String getProperty(String key, String defaultValue) {
@@ -276,6 +274,7 @@ public class Configuration {
 
 	/**
 	 * Set a avalue to a property
+	 * 
 	 * @param property
 	 * @param value
 	 */
@@ -293,13 +292,14 @@ public class Configuration {
 			properties.store(fileOutputStream, "");
 			fileOutputStream.close();
 
-			//	externalToolParser.writeInFile(externalToolsList, Configuration.extToolsConfigFileName);
+			// externalToolParser.writeInFile(externalToolsList,
+			// Configuration.extToolsConfigFileName);
 		} catch (FileNotFoundException fne) {
-			Alert.raise(fne, "Cannot find configuration file: "+fne.getMessage());
+			Alert.raise(fne, "Cannot find configuration file: " + fne.getMessage());
 		} catch (IOException ioe) {
-			Alert.raise(ioe, "Cannot write configuration file: "+ioe.getMessage());
+			Alert.raise(ioe, "Cannot write configuration file: " + ioe.getMessage());
 		} catch (Exception ex) {
-			Alert.raise(ex, "Cannot write configuration file: "+ex.getMessage());
+			Alert.raise(ex, "Cannot write configuration file: " + ex.getMessage());
 		}
 	}
 

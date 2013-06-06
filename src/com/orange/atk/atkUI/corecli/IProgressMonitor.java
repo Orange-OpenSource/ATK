@@ -27,6 +27,7 @@ package com.orange.atk.atkUI.corecli;
  * This interface holds the necessary operations for a task gives informations
  * to a monitor about it's completness, and ask this monitor if it should stop
  * (because it has been canceled for example)
+ * 
  * @author moteauni
  */
 public interface IProgressMonitor {
@@ -34,19 +35,21 @@ public interface IProgressMonitor {
 	/**
 	 * Increments the completeness counter
 	 */
-	public void increment();
-	public void increment(String message);
-	public void setMessage(String message);
+	void increment();
+	void increment(String message);
+	void setMessage(String message);
 
 	/**
 	 * Check if someone decide to stop the task
-	 * @return true if the task have to be stopped as soon as possible, false otherwise.
+	 * 
+	 * @return true if the task have to be stopped as soon as possible, false
+	 *         otherwise.
 	 */
-	public boolean isStop();
+	boolean isStop();
 
 	/**
 	 * Indicate that the task should stop as soon as possible.
 	 */
-	public void setStop();
+	void setStop();
 
 }

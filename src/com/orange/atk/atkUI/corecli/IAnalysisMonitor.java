@@ -23,30 +23,32 @@
  */
 package com.orange.atk.atkUI.corecli;
 
-
 /**
  * Analysis monitor API.
+ * 
  * @author Aurore PENAULT
  * @since JDK5.0
  */
 public interface IAnalysisMonitor {
 
 	/**
-	 * Tells wether the activity monitored by this monitor
-	 * should stop or not.
+	 * Tells wether the activity monitored by this monitor should stop or not.
+	 * 
 	 * @return true if the activity should stop, false otherwise.
 	 */
-	public boolean isStop();
+	boolean isStop();
 
 	/**
 	 * Callback to inform this monitor of the analysis result of a step.
-	 * @param step the concerned step
+	 * 
+	 * @param step
+	 *            the concerned step
 	 */
-	public void notifyStepAnalysed(Step step);
+	void notifyStepAnalysed(Step step);
 
 	/**
 	 * Callback to inform this monitor of the end of all analysis.
 	 */
-	public void notifyAllAnalysisDone();
+	void notifyAllAnalysisDone();
 
 }

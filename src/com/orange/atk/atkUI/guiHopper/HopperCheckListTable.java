@@ -50,14 +50,15 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.apache.log4j.Logger;
+
 import com.orange.atk.atkUI.anaHopper.HopperCampaign;
 import com.orange.atk.atkUI.anaHopper.HopperStep;
 import com.orange.atk.atkUI.anaHopper.HopperStepAnalysisResult;
 import com.orange.atk.atkUI.corecli.Configuration;
 import com.orange.atk.atkUI.corecli.Step;
-import com.orange.atk.atkUI.corecli.StepAnalysisResult;
 import com.orange.atk.atkUI.corecli.Step.Verdict;
-import com.orange.atk.atkUI.corecli.utils.Out;
+import com.orange.atk.atkUI.corecli.StepAnalysisResult;
 import com.orange.atk.atkUI.corecli.utils.StringUtilities;
 import com.orange.atk.atkUI.coregui.CheckListTable;
 import com.orange.atk.atkUI.coregui.CheckListTableModel;
@@ -69,7 +70,7 @@ import com.orange.atk.phone.PhoneInterface;
 import com.orange.atk.phone.detection.AutomaticPhoneDetection;
 
 /**
- *
+ * 
  * @author Aurore PENAULT
  * @since JDK5.0
  */
@@ -79,45 +80,35 @@ public class HopperCheckListTable extends CheckListTable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	//First columns defined in CheckListTable
+	// First columns defined in CheckListTable
 	public static final int COLUMN_TIME = COLUMN_VERDICT + 1;
 	public static final int COLUMN_THROTTLE = COLUMN_TIME + 1;
 	public static final String COLUMN_PARAM_TIME = "Time (sec.)";
 	public static final String COLUMN_PARAM_EVENTS = "Nb of events";
 	public static final String COLUMN_PARAM_THROTTLE = "Throttle (millisec.)";
 	private boolean isNokia = false;
-	
-	private Object[] nokiaValues = {"100",
-			"ALongWordForAScriptTestFile.tst",
-			"Configuration",
-			"*",
-			"Passed***",
-			"200000"};
-	
-	private Object[] otherValues = {"100",
-			"ALongWordForAScriptTestFile.tst",
-			"Configuration",
-			"*",
-			"Passed***",
-			"200000",
-			"2000"};
+
+	private Object[] nokiaValues = {"100", "ALongWordForAScriptTestFile.tst", "Configuration", "*",
+			"Passed***", "200000"};
+
+	private Object[] otherValues = {"100", "ALongWordForAScriptTestFile.tst", "Configuration", "*",
+			"Passed***", "200000", "2000"};
 
 	boolean completeView = false;
 
-	//	-- Table management --
+	// -- Table management --
 	private TableColumn timeColumn;
 	private TableColumn throttleColumn;
-
 
 	static public JMenu submenuLaunchInExternalTool;
 
 	/**
 	 * Builds and initialize a new CheckList Table for Flash content.
-	 *
+	 * 
 	 */
 	public HopperCheckListTable() {
 		super();
-		JATKcomboBoxListener comboBoxListener = new JATKcomboBoxListener(comboBoxPhoneConfig,this);
+		JATKcomboBoxListener comboBoxListener = new JATKcomboBoxListener(comboBoxPhoneConfig, this);
 		comboBoxPhoneConfig.addActionListener(comboBoxListener);
 		comboBoxPhoneConfig.addMouseListener(comboBoxListener);
 		initTable();
@@ -126,22 +117,24 @@ public class HopperCheckListTable extends CheckListTable {
 	@SuppressWarnings("serial")
 	private void initTable() {
 		campaign = new HopperCampaign();
-		
-		ToolTipManager.sharedInstance().setDismissDelay(10000); //10sec
+
+		ToolTipManager.sharedInstance().setDismissDelay(10000); // 10sec
 		model = new FlashCheckListTableModel();
-		
-		if (AutomaticPhoneDetection.getInstance().isNokia()) isNokia = true;
-		else isNokia = false;
-		
+
+		if (AutomaticPhoneDetection.getInstance().isNokia())
+			isNokia = true;
+		else
+			isNokia = false;
+
 		if (isNokia) {
 			model.setLongValues(nokiaValues);
 		} else {
-			model.setLongValues(otherValues);			
+			model.setLongValues(otherValues);
 		}
 		table = new JTable(model) {
-			public boolean getScrollableTracksViewportHeight(){
-				if (getParent() instanceof JViewport){
-					return (((JViewport)getParent()).getHeight() > getPreferredSize().height);
+			public boolean getScrollableTracksViewportHeight() {
+				if (getParent() instanceof JViewport) {
+					return (((JViewport) getParent()).getHeight() > getPreferredSize().height);
 				}
 				return false;
 			}
@@ -167,7 +160,7 @@ public class HopperCheckListTable extends CheckListTable {
 		}
 		constructTable();
 
-		//Set up column sizes.
+		// Set up column sizes.
 		model.initColumnSizes(model, table, nbCol);
 
 		setRenderer();
@@ -187,18 +180,21 @@ public class HopperCheckListTable extends CheckListTable {
 		this.setLayout(new BorderLayout());
 		this.add(BorderLayout.CENTER, tablePane);
 	}
-	
+
 	/**
 	 * Associates a popup menu to a table.
-	 * @param table the target table
+	 * 
+	 * @param table
+	 *            the target table
 	 */
 	public void givePopupMenuToTable(JTable table) {
 		JPopupMenu popUp = createTablePopUp();
-		table.addMouseListener(new HopperMouseListener(popUp,this));
+		table.addMouseListener(new HopperMouseListener(popUp, this));
 	}
 
 	/**
 	 * Creates the popup menu.
+	 * 
 	 * @return the popup menu
 	 */
 	private JPopupMenu createTablePopUp() {
@@ -206,18 +202,18 @@ public class HopperCheckListTable extends CheckListTable {
 
 		submenuLaunchInExternalTool = new JMenu("Run external tool");
 		submenuLaunchInExternalTool.setToolTipText("Launch an external tool one the selected step");
-		//initLaunchExternalTool();
+		// initLaunchExternalTool();
 
 		popup.add(HopperGUIAction.ANALYSESELECTIONFLASH.getAsMenuItem("launch selection"));
 		popup.add(MatosAction.VIEWREPORT.getAsMenuItem("Open latest report"));
-		//	popup.add(submenuLaunchInExternalTool);
+		// popup.add(submenuLaunchInExternalTool);
 		popup.addSeparator();
 		popup.add(MatosAction.COPY.getAsMenuItem("Copy"));
 		popup.add(MatosAction.PASTE.getAsMenuItem("Paste under"));
 		popup.add(MatosAction.REMOVE.getAsMenuItem("Remove"));
 		popup.addSeparator();
-		//	popup.add(MatosAction.CONFIRMVERDICT.getAsMenuItem("Confirm the verdict"));
-		//	popup.add(MatosAction.MODIFYVERDICT.getAsMenuItem("Modify the verdict"));
+		// popup.add(MatosAction.CONFIRMVERDICT.getAsMenuItem("Confirm the verdict"));
+		// popup.add(MatosAction.MODIFYVERDICT.getAsMenuItem("Modify the verdict"));
 		popup.addSeparator();
 		popup.add(MatosAction.PROPERTIES.getAsMenuItem("Properties..."));
 
@@ -234,7 +230,7 @@ public class HopperCheckListTable extends CheckListTable {
 		nbStepColumn.setMaxWidth(70);
 		nbStepColumn.setCellRenderer(nbStepRenderer);
 
-		flashfileColumn= table.getColumnModel().getColumn(COLUMN_TESTNAME);
+		flashfileColumn = table.getColumnModel().getColumn(COLUMN_TESTNAME);
 		GeneralRenderer flashRenderer = new GeneralRenderer();
 		flashfileColumn.setCellRenderer(flashRenderer);
 
@@ -251,15 +247,14 @@ public class HopperCheckListTable extends CheckListTable {
 		GeneralRenderer verdictRenderer = new GeneralRenderer();
 		verdictColumn.setCellRenderer(verdictRenderer);
 
-		//	commentsColumn = table.getColumnModel().getColumn(COLUMN_COMMENTS);
-		//	GeneralRenderer commentsRenderer = new GeneralRenderer();
-		//	commentsColumn.setCellRenderer(commentsRenderer);
-
+		// commentsColumn = table.getColumnModel().getColumn(COLUMN_COMMENTS);
+		// GeneralRenderer commentsRenderer = new GeneralRenderer();
+		// commentsColumn.setCellRenderer(commentsRenderer);
 
 		timeColumn = table.getColumnModel().getColumn(COLUMN_TIME);
 		GeneralRenderer timeRenderer = new GeneralRenderer();
 		timeColumn.setCellRenderer(timeRenderer);
-		
+
 		if (!this.isNokia) {
 			throttleColumn = table.getColumnModel().getColumn(COLUMN_THROTTLE);
 			GeneralRenderer throttleRenderer = new GeneralRenderer();
@@ -267,8 +262,6 @@ public class HopperCheckListTable extends CheckListTable {
 		}
 
 	}
-
-
 
 	/**
 	 * The renderer for this check-list table.
@@ -279,11 +272,11 @@ public class HopperCheckListTable extends CheckListTable {
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		private	ImageIcon[]	suitImages;
+		private ImageIcon[] suitImages;
 
 		/**
 		 * Creates the renderer.
-		 *
+		 * 
 		 */
 		public GeneralRenderer() {
 			setOpaque(true);
@@ -291,255 +284,296 @@ public class HopperCheckListTable extends CheckListTable {
 			java.net.URL passedURL = CoreGUIPlugin.getIconURL("tango/apply.png");
 			java.net.URL failedURL = CoreGUIPlugin.getIconURL("tango/messagebox_warning.png");
 			java.net.URL skippedURL = CoreGUIPlugin.getIconURL("tango/cache.png");
-			suitImages[0] = new ImageIcon( passedURL, Step.verdictAsString.get(Verdict.PASSED));
-			suitImages[1] = new ImageIcon( failedURL, Step.verdictAsString.get(Verdict.FAILED));
-			suitImages[2] = new ImageIcon( skippedURL, Step.verdictAsString.get(Verdict.SKIPPED));
+			suitImages[0] = new ImageIcon(passedURL, Step.verdictAsString.get(Verdict.PASSED));
+			suitImages[1] = new ImageIcon(failedURL, Step.verdictAsString.get(Verdict.FAILED));
+			suitImages[2] = new ImageIcon(skippedURL, Step.verdictAsString.get(Verdict.SKIPPED));
 		}
 
 		/**
 		 * Gets the renderer for each cell of the table.
 		 */
-		public Component getTableCellRendererComponent(JTable table, Object color, boolean isSelected, boolean hasFocus, int row, int column) {
+		public Component getTableCellRendererComponent(JTable table, Object color,
+				boolean isSelected, boolean hasFocus, int row, int column) {
 			if (isSelected) {
 				this.setBackground(table.getSelectionBackground());
 			} else {
-				if (column == COLUMN_TESTNAME){
-					this.setBackground(new Color(253,245,230));
-				}else{
+				if (column == COLUMN_TESTNAME) {
+					this.setBackground(new Color(253, 245, 230));
+				} else {
 					this.setBackground(table.getBackground());
 				}
 			}
 			try {
-				this.setText((String)model.getValueAt(row, column));
-				int	numRow = new Integer((String)model.getValueAt(row, COLUMN_NBROW)).intValue() - 1;
-				if (column == COLUMN_TESTNAME){
-					this.setToolTipText((String)toolTipFlashFile.get(numRow));
-				} else if (column == COLUMN_PHONECONFIG){
+				this.setText((String) model.getValueAt(row, column));
+				int numRow = new Integer((String) model.getValueAt(row, COLUMN_NBROW)).intValue() - 1;
+				if (column == COLUMN_TESTNAME) {
+					this.setToolTipText((String) toolTipFlashFile.get(numRow));
+				} else
+					if (column == COLUMN_PHONECONFIG) {
 
-				} else if (column == COLUMN_MODIFIED){
-					this.setToolTipText((String)toolTipModified.get(numRow));
-					this.setHorizontalAlignment(JLabel.CENTER);
-				} else if (column == COLUMN_VERDICT){
-					this.setToolTipText((String)toolTipReport.get(numRow));
-					Verdict verdict = Verdict.NONE;
-					Verdict userVerdict = Verdict.NONE;
-					if (numRow<campaign.size()) {
-						verdict = ((Step)campaign.get(numRow)).getVerdict();
-						userVerdict = ((Step)campaign.get(numRow)).getUserVerdict();
-					}
-					if (userVerdict != Verdict.NONE) {
-						if (userVerdict == Verdict.PASSED){
-							this.setIcon(suitImages[0]);
-						}else if (userVerdict == Verdict.FAILED){
-							this.setIcon(suitImages[1]);
-						}else if (userVerdict == Verdict.SKIPPED){
-							this.setIcon(suitImages[2]);
-						}
-					} else {
-						if (verdict == Verdict.PASSED){
-							this.setIcon(suitImages[0]);
-						}else if (verdict == Verdict.FAILED){
-							this.setIcon(suitImages[1]);
-						}else if (verdict == Verdict.SKIPPED){
-							this.setIcon(suitImages[2]);
-						}else if (verdict == Verdict.NONE){
-							this.setIcon(null);
-						} else {
-							this.setIcon(null);
-						}
-					}
-					if (userVerdict == verdict && verdict != Verdict.NONE){
-						this.setBackground(new Color(224, 238, 224));
-					}else if (userVerdict != verdict && userVerdict != Verdict.NONE){
-						this.setBackground(new Color(238, 213, 210));
-					}
-					if (verdict == Verdict.SKIPPED){
-						this.setBackground(new Color(255, 250, 205));
-					}
-				//			} else	if (column == COLUMN_COMMENTS){
-				//					this.setToolTipText((String)model.getValueAt(row, column));
-				//
-				//					table.getCellEditor(row, column).addCellEditorListener(
-				//							new CellEditorListener() {
-				//								public void editingCanceled(ChangeEvent e) {
-				//								}
-				//								public void editingStopped(ChangeEvent e) {
-				//									int row = HopperCheckListTable.this.table.getSelectedRow();
-				//									Step c = (Step)campaign.get(row);
-				//									c.setUserComment((String)model.getValueAt(row, COLUMN_COMMENTS));
-				//								}
-				//							});
-				//				}
-			} else if (column == COLUMN_TIME){
-					this.setToolTipText((String)model.getValueAt(row, column));
-
-					table.getCellEditor(row, column).addCellEditorListener(
-							new CellEditorListener() {
-								public void editingCanceled(ChangeEvent e) {
+					} else
+						if (column == COLUMN_MODIFIED) {
+							this.setToolTipText((String) toolTipModified.get(numRow));
+							this.setHorizontalAlignment(JLabel.CENTER);
+						} else
+							if (column == COLUMN_VERDICT) {
+								this.setToolTipText((String) toolTipReport.get(numRow));
+								Verdict verdict = Verdict.NONE;
+								Verdict userVerdict = Verdict.NONE;
+								if (numRow < campaign.size()) {
+									verdict = ((Step) campaign.get(numRow)).getVerdict();
+									userVerdict = ((Step) campaign.get(numRow)).getUserVerdict();
 								}
-								public void editingStopped(ChangeEvent e) {
-									int row = HopperCheckListTable.this.table.getSelectedRow();
-									HopperStep c = (HopperStep)campaign.get(row);
-									//String value=(String)model.getValueAt(row, COLUMN_TIME);
-									if (isNokia) c.getParam().put(HopperStep.PARAM_TIME,((String)model.getValueAt(row, COLUMN_TIME)));
-									else c.getParam().put(HopperStep.PARAM_NBEVENTS,((String)model.getValueAt(row, COLUMN_TIME)));
-									CoreGUIPlugin.mainFrame.setModified(true);
-
+								if (userVerdict != Verdict.NONE) {
+									if (userVerdict == Verdict.PASSED) {
+										this.setIcon(suitImages[0]);
+									} else
+										if (userVerdict == Verdict.FAILED) {
+											this.setIcon(suitImages[1]);
+										} else
+											if (userVerdict == Verdict.SKIPPED) {
+												this.setIcon(suitImages[2]);
+											}
+								} else {
+									if (verdict == Verdict.PASSED) {
+										this.setIcon(suitImages[0]);
+									} else
+										if (verdict == Verdict.FAILED) {
+											this.setIcon(suitImages[1]);
+										} else
+											if (verdict == Verdict.SKIPPED) {
+												this.setIcon(suitImages[2]);
+											} else
+												if (verdict == Verdict.NONE) {
+													this.setIcon(null);
+												} else {
+													this.setIcon(null);
+												}
 								}
-							});
-				} else if (column == COLUMN_THROTTLE){
-					this.setToolTipText((String)model.getValueAt(row, column));
-
-					table.getCellEditor(row, column).addCellEditorListener(
-							new CellEditorListener() {
-								public void editingCanceled(ChangeEvent e) {
+								if (userVerdict == verdict && verdict != Verdict.NONE) {
+									this.setBackground(new Color(224, 238, 224));
+								} else
+									if (userVerdict != verdict && userVerdict != Verdict.NONE) {
+										this.setBackground(new Color(238, 213, 210));
+									}
+								if (verdict == Verdict.SKIPPED) {
+									this.setBackground(new Color(255, 250, 205));
 								}
-								public void editingStopped(ChangeEvent e) {
-									int row = HopperCheckListTable.this.table.getSelectedRow();
-									HopperStep c = (HopperStep)campaign.get(row);
-									//String value=(String)model.getValueAt(row, COLUMN_TIME);
-									c.getParam().put(HopperStep.PARAM_THROTTLE,((String)model.getValueAt(row, COLUMN_THROTTLE)));
-									CoreGUIPlugin.mainFrame.setModified(true);
+								// } else if (column == COLUMN_COMMENTS){
+								// this.setToolTipText((String)model.getValueAt(row,
+								// column));
+								//
+								// table.getCellEditor(row,
+								// column).addCellEditorListener(
+								// new CellEditorListener() {
+								// public void editingCanceled(ChangeEvent e) {
+								// }
+								// public void editingStopped(ChangeEvent e) {
+								// int row =
+								// HopperCheckListTable.this.table.getSelectedRow();
+								// Step c = (Step)campaign.get(row);
+								// c.setUserComment((String)model.getValueAt(row,
+								// COLUMN_COMMENTS));
+								// }
+								// });
+								// }
+							} else
+								if (column == COLUMN_TIME) {
+									this.setToolTipText((String) model.getValueAt(row, column));
 
-								}
-							});
-				}
+									table.getCellEditor(row, column).addCellEditorListener(
+											new CellEditorListener() {
+												public void editingCanceled(ChangeEvent e) {
+												}
+												public void editingStopped(ChangeEvent e) {
+													int row = HopperCheckListTable.this.table
+															.getSelectedRow();
+													HopperStep c = (HopperStep) campaign.get(row);
+													// String
+													// value=(String)model.getValueAt(row,
+													// COLUMN_TIME);
+													if (isNokia)
+														c.getParam().put(
+																HopperStep.PARAM_TIME,
+																((String) model.getValueAt(row,
+																		COLUMN_TIME)));
+													else
+														c.getParam().put(
+																HopperStep.PARAM_NBEVENTS,
+																((String) model.getValueAt(row,
+																		COLUMN_TIME)));
+													CoreGUIPlugin.mainFrame.setModified(true);
 
+												}
+											});
+								} else
+									if (column == COLUMN_THROTTLE) {
+										this.setToolTipText((String) model.getValueAt(row, column));
 
-				if (completeView){
-					if (column == COLUMN_TIME){
+										table.getCellEditor(row, column).addCellEditorListener(
+												new CellEditorListener() {
+													public void editingCanceled(ChangeEvent e) {
+													}
+													public void editingStopped(ChangeEvent e) {
+														int row = HopperCheckListTable.this.table
+																.getSelectedRow();
+														HopperStep c = (HopperStep) campaign
+																.get(row);
+														// String
+														// value=(String)model.getValueAt(row,
+														// COLUMN_TIME);
+														c.getParam().put(
+																HopperStep.PARAM_THROTTLE,
+																((String) model.getValueAt(row,
+																		COLUMN_THROTTLE)));
+														CoreGUIPlugin.mainFrame.setModified(true);
+
+													}
+												});
+									}
+
+				if (completeView) {
+					if (column == COLUMN_TIME) {
 						this.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.BLACK));
 					}
 
 				}
 				return this;
 			} catch (ArrayIndexOutOfBoundsException ae) {
-				// throwed when table is modified (cleared,...) and repainted at same time...
+				// throwed when table is modified (cleared,...) and repainted at
+				// same time...
 				// when numRow becomes > nb row in table
-				//ae.printStackTrace(Out.log);
+				// ae.printStackTrace(Out.log);
 			} catch (NumberFormatException nfe) {
-				// case numRow retriving get a null (see overwritten method MyTableModel.getValueAt(..))
-				//nfe.printStackTrace(Out.log);
+				// case numRow retriving get a null (see overwritten method
+				// MyTableModel.getValueAt(..))
+				// nfe.printStackTrace(Out.log);
 			}
 			return null;
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.orange.atk.atkUI.coregui.CheckListTable#addRow(com.orange.atk.atkUI.corecli.Step, int, boolean, boolean)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.orange.atk.atkUI.coregui.CheckListTable#addRow(com.orange.atk.atkUI
+	 * .corecli.Step, int, boolean, boolean)
 	 */
 	@Override
-	public void addRow(Step step, int rowNumberInGUI, boolean selectIt,	boolean checkPreviousResults) {
+	public void addRow(Step step, int rowNumberInGUI, boolean selectIt, boolean checkPreviousResults) {
 		if (!(step instanceof HopperStep)) {
-			//Out.log.println("addRow(..): Warning, trying to add a non FlashStep into FlashCheckListTable... step skipped.");
+			// Out.log.println("addRow(..): Warning, trying to add a non FlashStep into FlashCheckListTable... step skipped.");
 			return;
 		}
-		HopperStep flashStep = (HopperStep)step;
+		HopperStep flashStep = (HopperStep) step;
 		String flashURI = flashStep.getFlashFilePath();
 		String flashName = "";
 		if (flashURI.endsWith("tst")) {
 			flashName = StringUtilities.guessName(flashURI, "tst");
-		} else {//.sis
+		} else {// .sis
 			flashName = StringUtilities.guessName(flashURI, "xml");
 		}
 		Vector<String> rowData = new Vector<String>();
-		if (rowNumberInGUI == -1){
+		if (rowNumberInGUI == -1) {
 			rowNumberInGUI = model.getRowCount();
 		}
-		String numRowInNumbers = Integer.valueOf(table.getRowCount()+1).toString();
+		String numRowInNumbers = Integer.valueOf(table.getRowCount() + 1).toString();
 		int numRowInCampaign = campaign.size();
-		rowData.add(numRowInNumbers);//rowNumber
+		rowData.add(numRowInNumbers);// rowNumber
 
 		rowData.add(flashName);
 		toolTipFlashFile.add(numRowInCampaign, flashURI);
 
 		if (checkPreviousResults) {
 			// check for previous results
-			//			List<HopperStepAnalysisResult> results = new ArrayList<HopperStepAnalysisResult>();
-			//			List<IAnalysisResultsManager> arManagers= Matos.getInstance().getAnalysisResultsManagers();
-			//			for (IAnalysisResultsManager arManager : arManagers) {
-			//				HopperStepAnalysisResult rs = (HopperStepAnalysisResult)arManager.getPreviousAnalysisResult(flashStep);
-			//				if (rs!=null) {
-			//					results.add(rs);
-			//				}
-			//			}
+			// List<HopperStepAnalysisResult> results = new
+			// ArrayList<HopperStepAnalysisResult>();
+			// List<IAnalysisResultsManager> arManagers=
+			// Matos.getInstance().getAnalysisResultsManagers();
+			// for (IAnalysisResultsManager arManager : arManagers) {
+			// HopperStepAnalysisResult rs =
+			// (HopperStepAnalysisResult)arManager.getPreviousAnalysisResult(flashStep);
+			// if (rs!=null) {
+			// results.add(rs);
+			// }
+			// }
 
 			// looking at retreived results
 			StepAnalysisResult sar = null;
-			/*	if (results.size()==1) {
-				sar = results.get(0);
-			} else if (results.size()>1) { 
-				// case of several Analysis Results Manager. Should not arrived...
-				// TODO sort dy date and use the younger
-				Out.log.println("More than one previous analysis result retreived. Nothing done...");
-				//javastep.updateLastAnalysisResult(results.get(0));
-			} else {
-				// no results... 
-			}*/
+			/*
+			 * if (results.size()==1) { sar = results.get(0); } else if
+			 * (results.size()>1) { // case of several Analysis Results Manager.
+			 * Should not arrived... // TODO sort dy date and use the younger
+			 * Out.log.println(
+			 * "More than one previous analysis result retreived. Nothing done..."
+			 * ); //javastep.updateLastAnalysisResult(results.get(0)); } else {
+			 * // no results... }
+			 */
 
-			if (sar!=null) {
+			if (sar != null) {
 				flashStep.updateLastAnalysisResult(sar);
-				String toolTip =sar.toHTML(flashStep);
-				boolean modified = toolTip.indexOf("red")>0;
-				rowData.add(modified?"M":""); //Modified column
+				String toolTip = sar.toHTML(flashStep);
+				boolean modified = toolTip.indexOf("red") > 0;
+				rowData.add(modified ? "M" : ""); // Modified column
 				toolTipModified.add(numRowInCampaign, toolTip);
 
-				if (   sar.getVerdict().equals(Step.verdictAsString.get(Verdict.PASSED)) 
-						|| sar.getVerdict().equals(Step.verdictAsString.get(Verdict.FAILED)) ) { 
-					rowData.add( sar.getVerdict() ); //Verdict column
+				if (sar.getVerdict().equals(Step.verdictAsString.get(Verdict.PASSED))
+						|| sar.getVerdict().equals(Step.verdictAsString.get(Verdict.FAILED))) {
+					rowData.add(sar.getVerdict()); // Verdict column
 					// yvain rowData.add( sar.getComment() ); //Comments column
 
 					// yvain String repPath = sar.getReportPath();
-					//					if ((repPath==null)||(repPath.equals(""))) {
-					//					repPath = rs.report.getAbsolutePath();
-					//					}
-					//toolTipReport.add(numRowInCampaign, repPath);
+					// if ((repPath==null)||(repPath.equals(""))) {
+					// repPath = rs.report.getAbsolutePath();
+					// }
+					// toolTipReport.add(numRowInCampaign, repPath);
 				} else { // verdict is 'Skipped'
-					rowData.add( sar.getVerdict()+": "+sar.getReason());
+					rowData.add(sar.getVerdict() + ": " + sar.getReason());
 					toolTipReport.add(numRowInCampaign, sar.getReason());
 				}
 			} else {
-				//Configuration column
-				if(null != flashStep.getXmlfilepath()){
+				// Configuration column
+				if (null != flashStep.getXmlfilepath()) {
 					File configfile = new File(flashStep.getXmlfilepath());
-					rowData.add(configfile.getName()); 
-				}
-				else {
+					rowData.add(configfile.getName());
+				} else {
 					PhoneInterface phone = AutomaticPhoneDetection.getInstance().getDevice();
-					String defaultConfigFileName = Configuration.getInstance().getDefaultConfig().get(phone.getClass().getName());
-					if (defaultConfigFileName != null){
+					String defaultConfigFileName = Configuration.getInstance().getDefaultConfig()
+							.get(phone.getClass().getName());
+					if (defaultConfigFileName != null) {
 						rowData.add(defaultConfigFileName);
-						File file = new File(Configuration.defaultPhoneConfigPath+defaultConfigFileName);
+						File file = new File(Configuration.defaultPhoneConfigPath
+								+ defaultConfigFileName);
 						flashStep.setXmlfilepath(file.toString());
-					}
-					else 
+					} else
 						rowData.add(NOT_SELECTED);
 				}
-				rowData.add(""); //Modified column
+				rowData.add(""); // Modified column
 				toolTipModified.add(numRowInCampaign, "");
-				rowData.add(""); //Verdict column
+				rowData.add(""); // Verdict column
 				if (isNokia) {
-					if(flashStep.getParam().get(HopperStep.PARAM_TIME)!=null)
-						rowData.add(flashStep.getParam().get(HopperStep.PARAM_TIME)); 
+					if (flashStep.getParam().get(HopperStep.PARAM_TIME) != null)
+						rowData.add(flashStep.getParam().get(HopperStep.PARAM_TIME));
 					else {
-						rowData.add( "20000" );
+						rowData.add("20000");
 						flashStep.getParam().put(HopperStep.PARAM_TIME, "20000");
 					}
 				} else {
-					if(flashStep.getParam().get(HopperStep.PARAM_NBEVENTS)!=null)
-						rowData.add(flashStep.getParam().get(HopperStep.PARAM_NBEVENTS)); 
+					if (flashStep.getParam().get(HopperStep.PARAM_NBEVENTS) != null)
+						rowData.add(flashStep.getParam().get(HopperStep.PARAM_NBEVENTS));
 					else {
-						rowData.add( "2000" ); 
+						rowData.add("2000");
 						flashStep.getParam().put(HopperStep.PARAM_NBEVENTS, "2000");
 					}
-					if(flashStep.getParam().get(HopperStep.PARAM_THROTTLE)!=null)
-						rowData.add(flashStep.getParam().get(HopperStep.PARAM_THROTTLE)); 
+					if (flashStep.getParam().get(HopperStep.PARAM_THROTTLE) != null)
+						rowData.add(flashStep.getParam().get(HopperStep.PARAM_THROTTLE));
 					else {
-						rowData.add( "0" ); 
+						rowData.add("0");
 						flashStep.getParam().put(HopperStep.PARAM_THROTTLE, "0");
 					}
 				}
-				
+
 				toolTipReport.add(numRowInCampaign, "");
 			}
 		}
@@ -551,18 +585,24 @@ public class HopperCheckListTable extends CheckListTable {
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.orange.atk.atkUI.coregui.CheckListTable#clear()
 	 */
 	@Override
 	public void clear() {
-			remove(tablePane);
-			initTable();
-			repaint();
+		remove(tablePane);
+		initTable();
+		repaint();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.orange.atk.atkUI.coregui.CheckListTable#updateAllAfterRemoving(java.util.Vector)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.orange.atk.atkUI.coregui.CheckListTable#updateAllAfterRemoving(java
+	 * .util.Vector)
 	 */
 	@Override
 	public void updateAllAfterRemoving(Vector<Integer> campRemovedRows) {
@@ -583,13 +623,16 @@ public class HopperCheckListTable extends CheckListTable {
 		CoreGUIPlugin.mainFrame.updateButtons();
 	}
 
-
-	/* (non-Javadoc)
-	 * @see com.orange.atk.atkUI.coregui.CheckListTable#updateStep(com.orange.atk.atkUI.corecli.Step)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.orange.atk.atkUI.coregui.CheckListTable#updateStep(com.orange.atk
+	 * .atkUI.corecli.Step)
 	 */
 	@Override
 	public void updateStep(Step step) {
-		Step flashStep = (Step)step;
+		Step flashStep = (Step) step;
 
 		int index_in_campaign = getCampaign().indexOf(step);
 		int index_in_table = getIndexInTable(index_in_campaign);
@@ -597,63 +640,79 @@ public class HopperCheckListTable extends CheckListTable {
 
 		// gets back previous results for the step
 		List<HopperStepAnalysisResult> results = new ArrayList<HopperStepAnalysisResult>();
-		/*	List<IAnalysisResultsManager> arManagers= Matos.getInstance().getAnalysisResultsManagers();
-		for (IAnalysisResultsManager arManager : arManagers) {
-			HopperStepAnalysisResult rs = (HopperStepAnalysisResult)arManager.getPreviousAnalysisResult(flashStep);
-			if (rs!=null) {
-				results.add(rs);
-			}
-		}*/
+		/*
+		 * List<IAnalysisResultsManager> arManagers=
+		 * Matos.getInstance().getAnalysisResultsManagers(); for
+		 * (IAnalysisResultsManager arManager : arManagers) {
+		 * HopperStepAnalysisResult rs =
+		 * (HopperStepAnalysisResult)arManager.getPreviousAnalysisResult
+		 * (flashStep); if (rs!=null) { results.add(rs); } }
+		 */
 		// looking at retreived results
-		if (results.size()==1) {
+		if (results.size() == 1) {
 			flashStep.updateLastAnalysisResult(results.get(0));
-		} else if (results.size()>1) { 
-			// case of several Analysis Results Manager. Should not arrived...
-			// TODO sort dy date and use the younger
-			Out.log.println("More than one previous analysis result retreived. Nothing done...");
-			//flashStep.updateLastAnalysisResult(results.get(0));
-		} else {
-			// no results... nothing to do
-		}
+		} else
+			if (results.size() > 1) {
+				// case of several Analysis Results Manager. Should not
+				// arrived...
+				// TODO sort dy date and use the younger
+				Logger.getLogger(this.getClass()).warn(
+						"More than one previous analysis result retreived. Nothing done...");
+				// flashStep.updateLastAnalysisResult(results.get(0));
+			} else {
+				// no results... nothing to do
+			}
 
 		Verdict userVerdict = flashStep.getUserVerdict();
 		if (userVerdict != Verdict.NONE) {
 			if (userVerdict == Verdict.PASSED || userVerdict == Verdict.FAILED) {
-				model.setValueAt(Step.verdictAsString.get(userVerdict), index_in_table, COLUMN_VERDICT);
+				model.setValueAt(Step.verdictAsString.get(userVerdict), index_in_table,
+						COLUMN_VERDICT);
 				String repPath = flashStep.getOutFilePath();
 				toolTipReport.set(index_in_campaign, repPath);
-			} else { //verdict is 'skipped'
-				if (flashStep.getSkippedMessage() != null && flashStep.getSkippedMessage().length() != 0) {
-					model.setValueAt(Step.verdictAsString.get(userVerdict) + ": " + flashStep.getSkippedMessage(), index_in_table, COLUMN_VERDICT);
+			} else { // verdict is 'skipped'
+				if (flashStep.getSkippedMessage() != null
+						&& flashStep.getSkippedMessage().length() != 0) {
+					model.setValueAt(
+							Step.verdictAsString.get(userVerdict) + ": "
+									+ flashStep.getSkippedMessage(), index_in_table, COLUMN_VERDICT);
 					toolTipReport.set(index_in_campaign, flashStep.getSkippedMessage());
 				} else {
-					model.setValueAt(Step.verdictAsString.get(userVerdict), index_in_table, COLUMN_VERDICT);
+					model.setValueAt(Step.verdictAsString.get(userVerdict), index_in_table,
+							COLUMN_VERDICT);
 				}
 			}
 		} else {
 			Verdict verdict = flashStep.getVerdict();
-			if (verdict == Verdict.PASSED || verdict == Verdict.FAILED){
+			if (verdict == Verdict.PASSED || verdict == Verdict.FAILED) {
 				model.setValueAt(Step.verdictAsString.get(verdict), index_in_table, COLUMN_VERDICT);
 				String repPath = flashStep.getOutFilePath();
 				toolTipReport.set(index_in_campaign, repPath);
-			} else if (verdict == Verdict.NONE) {
-				model.setValueAt(Step.verdictAsString.get(verdict), index_in_table, COLUMN_VERDICT);
-			} else { // verdict is 'Skipped'
-				if (flashStep.getSkippedMessage() != null && flashStep.getSkippedMessage().length() != 0) {
-					model.setValueAt(Step.verdictAsString.get(verdict) + ": " + flashStep.getSkippedMessage(), index_in_table, COLUMN_VERDICT);
-					toolTipReport.set(index_in_campaign, flashStep.getSkippedMessage());
-				} else {
-					model.setValueAt(Step.verdictAsString.get(verdict), index_in_table, COLUMN_VERDICT);
+			} else
+				if (verdict == Verdict.NONE) {
+					model.setValueAt(Step.verdictAsString.get(verdict), index_in_table,
+							COLUMN_VERDICT);
+				} else { // verdict is 'Skipped'
+					if (flashStep.getSkippedMessage() != null
+							&& flashStep.getSkippedMessage().length() != 0) {
+						model.setValueAt(
+								Step.verdictAsString.get(verdict) + ": "
+										+ flashStep.getSkippedMessage(), index_in_table,
+								COLUMN_VERDICT);
+						toolTipReport.set(index_in_campaign, flashStep.getSkippedMessage());
+					} else {
+						model.setValueAt(Step.verdictAsString.get(verdict), index_in_table,
+								COLUMN_VERDICT);
+					}
 				}
-			}
 		}
 
 		StepAnalysisResult sar = flashStep.getLastAnalysisResult();
 		String toolTip = "";
-		if (sar!=null) {
+		if (sar != null) {
 			toolTip = sar.toHTML(flashStep);
-			boolean modified = toolTip.indexOf("red")>0;
-			model.setValueAt(modified?"M":"", index_in_table, COLUMN_MODIFIED);
+			boolean modified = toolTip.indexOf("red") > 0;
+			model.setValueAt(modified ? "M" : "", index_in_table, COLUMN_MODIFIED);
 			toolTipModified.set(index_in_campaign, toolTip);
 		}
 
@@ -662,26 +721,28 @@ public class HopperCheckListTable extends CheckListTable {
 	/**
 	 * The model for this table for.
 	 */
-	private static class FlashCheckListTableModel extends CheckListTableModel{
+	private static class FlashCheckListTableModel extends CheckListTableModel {
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 
 		public boolean isCellEditable(int row, int col) {
-			if (col == COLUMN_TIME ||col ==COLUMN_PHONECONFIG || col==COLUMN_THROTTLE){
+			if (col == COLUMN_TIME || col == COLUMN_PHONECONFIG || col == COLUMN_THROTTLE) {
 				return true;
 			}
 			return false;
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.orange.atk.atkUI.coregui.CheckListTable#isRowModified(int)
 	 */
 	@Override
 	public boolean isRowModified(int row) {
-		String m = (String)model.getValueAt(row, COLUMN_MODIFIED );
+		String m = (String) model.getValueAt(row, COLUMN_MODIFIED);
 		return !m.equals("");
 	}
 
@@ -693,7 +754,9 @@ public class HopperCheckListTable extends CheckListTable {
 		this.toolTipFlashFile = toolTipFlashFile;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.orange.atk.atkUI.coregui.CheckListTable#getNumColumnVerdict()
 	 */
 	@Override
@@ -703,15 +766,19 @@ public class HopperCheckListTable extends CheckListTable {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.orange.atk.atkUI.coregui.CheckListTable#getValueAt(int)
 	 */
 	public String getValueAt(int numRow) {
-		return (String)model.getValueAt(numRow, COLUMN_NBROW);
+		return (String) model.getValueAt(numRow, COLUMN_NBROW);
 	}
 
 	private boolean enabledUserAction = true;
-	/* (non-Javadoc)
-	 * @see com.orange.atk.atkUI.coregui.CheckListTable#enableUserActions(boolean)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.orange.atk.atkUI.coregui.CheckListTable#enableUserActions(boolean)
 	 */
 	@Override
 	public void enableUserActions(boolean b) {
@@ -723,6 +790,5 @@ public class HopperCheckListTable extends CheckListTable {
 	public boolean isEnableUserActions() {
 		return enabledUserAction;
 	}
-
 
 }

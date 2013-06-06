@@ -44,7 +44,7 @@ public class MixScriptCampaign extends Campaign {
 	public Campaign readCampaign(XMLParser parser) {
 		Campaign camp = new MixScriptCampaign();
 		Element root = parser.getRoot();
-		Element[] flashStepList = parser.getElements(root, MixScriptStep.type);
+		Element[] flashStepList = parser.getElements(root, MixScriptStep.TYPE);
 		for (int i=0; i<flashStepList.length; i++) {
 			String flashFilePath = flashStepList[i].attributeValue("file");
 			MixScriptStep step = new MixScriptStep(flashFilePath, new File(flashFilePath));

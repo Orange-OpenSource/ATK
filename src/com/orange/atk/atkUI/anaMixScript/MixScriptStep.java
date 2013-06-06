@@ -23,7 +23,6 @@
  */
 package com.orange.atk.atkUI.anaMixScript;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -46,10 +45,8 @@ import com.orange.atk.atkUI.corecli.Alert;
 import com.orange.atk.atkUI.corecli.Campaign;
 import com.orange.atk.atkUI.corecli.Configuration;
 import com.orange.atk.atkUI.corecli.IAnalysisMonitor;
-import com.orange.atk.atkUI.corecli.LicenceException;
 import com.orange.atk.atkUI.corecli.Step;
 import com.orange.atk.atkUI.corecli.utils.Digest;
-import com.orange.atk.atkUI.corecli.utils.Out;
 import com.orange.atk.atkUI.corecli.utils.StringUtilities;
 import com.orange.atk.atkUI.corecli.utils.XMLOutput;
 import com.orange.atk.graphAnalyser.CreateGraph;
@@ -58,9 +55,7 @@ import com.orange.atk.graphAnalyser.PerformanceGraph;
 import com.orange.atk.launcher.LaunchJATK;
 import com.orange.atk.phone.DefaultPhone;
 import com.orange.atk.phone.PhoneException;
-import com.orange.atk.phone.detection.AutomaticPhoneDetection;
 import com.orange.atk.platform.Platform;
-
 
 /**
  * 
@@ -72,17 +67,12 @@ public class MixScriptStep extends Step {
 	/**
 	 * Path to the flash file to analyse.
 	 */
-	Map<String, PerformanceGraph> mapPerfGraph;
-	Map<String, GraphMarker> mapAction = null;
 	private String mixScriptFilePath;
 	private File flashFile;
 	private File realFlashFile;
-	private CreateGraph JaTKCharts;
-	private String JATKpath="C:" + File.separator + "Program Files"
-	+ File.separator + "JATK";
-	private LaunchJATK exec;
+	private String jATKpath = "C:" + File.separator + "Program Files" + File.separator + "JATK";
 
-	public final static String type = "mixscript"; 
+	public static final String TYPE = "mixscript";
 
 	/**
 	 * Builds a flash step with the path to the flash file and the name of the
@@ -98,8 +88,6 @@ public class MixScriptStep extends Step {
 		this.realFlashFile = realFlashFile;
 	}
 
-
-
 	public boolean isLocal() {
 		return !mixScriptFilePath.startsWith("http");
 	}
@@ -110,9 +98,9 @@ public class MixScriptStep extends Step {
 	 * @see com.orange.atk.atkUI.corecli.Step#analyse()
 	 */
 	@Override
-	//public Verdict analyse(StatusBar statusBar, String profileName, IAnalysisMonitor monitor)
-	public Verdict analyse(IAnalysisMonitor monitor)
-	throws LicenceException {
+	// public Verdict analyse(StatusBar statusBar, String profileName,
+	// IAnalysisMonitor monitor)
+	public Verdict analyse(IAnalysisMonitor monitor) {
 
 		try {
 			check();
@@ -122,10 +110,9 @@ public class MixScriptStep extends Step {
 			this.outFilePath = null;
 			this.verdict = Verdict.SKIPPED;
 			this.skippedMessage = a.getMessage().trim();
-			newLastAnalysisResult(new MixScriptStepAnalysisResult(
-					getFlashFileDigest(), outFilePath, getFlashFileName(),
-					Calendar.getInstance(), verdictAsString.get(verdict), null,
-					null, null, Configuration.getVersion()));
+			newLastAnalysisResult(new MixScriptStepAnalysisResult(getFlashFileDigest(),
+					outFilePath, getFlashFileName(), Calendar.getInstance(),
+					verdictAsString.get(verdict), null, null, null, Configuration.getVersion()));
 			return verdict;
 		}
 		String tempDir = Platform.TMP_DIR;
@@ -133,26 +120,17 @@ public class MixScriptStep extends Step {
 		Element flashResultsElem = mixScriptResults.root();
 		flashResultsElem.addAttribute("flashfile", mixScriptFilePath);
 		Calendar cal = new GregorianCalendar();
-		String currentDate = cal.get(Calendar.DAY_OF_MONTH) + "."
-		+ cal.get(Calendar.MONTH) + "." + cal.get(Calendar.YEAR);
+		String currentDate = cal.get(Calendar.DAY_OF_MONTH) + "." + cal.get(Calendar.MONTH) + "."
+				+ cal.get(Calendar.YEAR);
 		flashResultsElem.addAttribute("date", currentDate);
 		flashResultsElem.addAttribute("matosversion", Configuration.getVersion());
-		// Verdict verdict = Verdict.PASSED; //anaflash analysis
-		// AnajatkPhase anaflashPhase = new AnajatkPhase(flashFile,
-		// (MixScriptSecurityProfile)profile, flashResultsElem);
+
 		try {
 			// on lance le test
-			//init
-			//	statusBar.setMessage("Check Initialisation");
-
-			verdict= launchtest();
-		
-			//outFilePath = outFilePath + File.separator + "report.html";
+			verdict = launchtest();
 		} catch (Exception e) {
-			// TODO handle Phone exception 
-			Out.log.println("Problem in analysis of the following flash file: "
-					+ mixScriptFilePath);
-			e.printStackTrace();
+			Logger.getLogger(this.getClass()).error(
+					"Problem in analysis of the following flash file: " + mixScriptFilePath, e);
 		}
 		mixScriptResults.generate();
 
@@ -162,149 +140,133 @@ public class MixScriptStep extends Step {
 		} else {
 			reportFile = new File(tempDir, "report.html");
 		}
-		//		File flashResultsFile = mixScriptResults.getFile();
-		//		FlashReportGenerator reportGenerator = new FlashReportGenerator(profile
-		//				.getSecurityProfileParser(), flashResultsFile, reportFile);
-		try {
-			//
-			// verdict = reportGenerator.generateResult();
-		} catch (Exception e) {
-			e.printStackTrace();
-			Alert.raise(e, "Problem when generating results");
-		}
-		this.outFilePath = reportFile.getAbsolutePath();
-		//	this.verdict = verdict;
 
-		newLastAnalysisResult(new MixScriptStepAnalysisResult(getFlashFileDigest(),
-				outFilePath, getFlashFileName(), Calendar.getInstance(),
-				verdictAsString.get(verdict), null, null, null, Configuration
-				.getVersion()));
+		this.outFilePath = reportFile.getAbsolutePath();
+
+		newLastAnalysisResult(new MixScriptStepAnalysisResult(getFlashFileDigest(), outFilePath,
+				getFlashFileName(), Calendar.getInstance(), verdictAsString.get(verdict), null,
+				null, null, Configuration.getVersion()));
 		return verdict;
 	}
 
+	public Verdict launchtest() {
 
-	public Verdict launchtest()
-	{
-
-		//get test filename
+		// get test filename
 		File file = new File(mixScriptFilePath);
 		String testfilename = file.getName();
 		testfilename = testfilename.replace(".tst", "");
 		testfilename = testfilename.replace(".xml", "");
-		int loop =Campaign.getTemploop();
+		int loop = Campaign.getTemploop();
 
-		outFilePath = outFilePath  +Platform.FILE_SEPARATOR+"MixScript"+Platform.FILE_SEPARATOR+"Loop"+String.valueOf(loop)+Platform.FILE_SEPARATOR+ testfilename;
-		File tmpfile =new File(outFilePath);
+		outFilePath = outFilePath + Platform.FILE_SEPARATOR + "MixScript" + Platform.FILE_SEPARATOR
+				+ "Loop" + loop + Platform.FILE_SEPARATOR + testfilename;
+		File tmpfile = new File(outFilePath);
 
-
-		if(!tmpfile.exists())
-			if(!tmpfile.mkdirs())
-				Logger.getLogger(this.getClass() ).warn("Can't Create dir "+tmpfile.getPath());
-
-		tmpfile =new File(new File(new File(outFilePath).getParent()).getParent()+Platform.FILE_SEPARATOR+"MixScriptExecution.txt");
-		if(Campaign.isFirstloop())
-		{
-			if(tmpfile.exists())
-				if(!tmpfile.delete())
-					Logger.getLogger(this.getClass() ).warn("Can't Create dir "+tmpfile.getPath());
-
-			Campaign.setFirstloop(false);	
+		if (!tmpfile.exists() && !tmpfile.mkdirs()) {
+			Logger.getLogger(this.getClass()).warn("Can't Create dir " + tmpfile.getPath());
 		}
-		if(!tmpfile.exists())
+
+		tmpfile = new File(new File(new File(outFilePath).getParent()).getParent()
+				+ Platform.FILE_SEPARATOR + "MixScriptExecution.txt");
+		if (Campaign.isFirstloop()) {
+			if (tmpfile.exists() && !tmpfile.delete()) {
+				Logger.getLogger(this.getClass()).warn("Can't Create dir " + tmpfile.getPath());
+			}
+
+			Campaign.setFirstloop(false);
+		}
+		if (!tmpfile.exists()) {
 			try {
 				tmpfile.createNewFile();
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				Logger.getLogger(this.getClass()).error(e1);
 			}
-			//write Loop ScriptName dans le fichier
-			try {
-				PrintStream ps = new PrintStream(new FileOutputStream(tmpfile,true));
-				SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		}
 
-				ps.println(spf.format(new Date())+" Loop "+String.valueOf(loop)+" "+file.getName());
-				ps.flush();
-				ps.close();
-				ps=null;
+		try {
+			PrintStream ps = new PrintStream(new FileOutputStream(tmpfile, true));
+			SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-			} catch (FileNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			ps.println(spf.format(new Date()) + " Loop " + loop + " " + file.getName());
+			ps.flush();
+			ps.close();
+			ps = null;
+
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			Logger.getLogger(this.getClass()).error(e1);
+		}
+
+		Verdict verdict = Verdict.NONE;
+
+		LaunchJATK exec = new LaunchJATK(outFilePath, jATKpath, mixScriptFilePath,
+				this.realFlashFile.getAbsolutePath(), LaunchJATK.PDF_TYPE);
+		Campaign.setLaunchExec(exec);
+
+		if (exec.getCurrentPhone() instanceof DefaultPhone) {
+			JOptionPane.showMessageDialog(null, "Can't Detect device");
+			return Verdict.INITFAILED;
+		}
+
+		// copy test file
+		File outputdirF = null;
+		String tempoutputdir = outFilePath;
+		File filetst = new File(mixScriptFilePath);
+		if (realFlashFile.exists()) {
+			outputdirF = new File(tempoutputdir);
+			if (!outputdirF.exists() && !outputdirF.mkdir()) {
+				Logger.getLogger(this.getClass()).warn("Can't make dir " + outputdirF.getPath());
 			}
+			Logger.getLogger(this.getClass()).debug("outputdirF" + outputdirF);
+			Logger.getLogger(this.getClass()).debug("testfilename" + testfilename);
+			Logger.getLogger(this.getClass()).debug("filetst.getName()" + filetst.getName());
+			Logger.getLogger(this.getClass()).debug(
+					"all" + outputdirF + Platform.FILE_SEPARATOR + filetst.getName());
 
+			Logger.getLogger(this.getClass()).debug(
+					"try to copy " + mixScriptFilePath + " to " + outputdirF
+							+ Platform.FILE_SEPARATOR + filetst.getName());
+			copyfile(new File(outputdirF + Platform.FILE_SEPARATOR + filetst.getName()),
+					realFlashFile);
 
-			Verdict verdict = Verdict.NONE;
+		}
+		CreateGraph jatkCharts = new CreateGraph();
+		String xmlconfilepath = getXmlfilepath();
+		currentxmlfilepath = this.getXmlfilepath();
+		Logger.getLogger(this.getClass()).debug("xmlconfilepath:" + xmlconfilepath);
 
-			exec= new LaunchJATK(outFilePath,JATKpath, mixScriptFilePath, this.realFlashFile.getAbsolutePath(),LaunchJATK.PDF_TYPE);
-			Campaign.setLaunchExec(exec);
+		jatkCharts.createPerfGraphsAndMarkers(xmlconfilepath);
+		jatkCharts.createEmptyDataset();
+		jatkCharts.initializeTimeAxis();
+		Map<String, PerformanceGraph> mapPerfGraph = jatkCharts.getMapPerfGraph();
+		Map<String, GraphMarker> mapAction = jatkCharts.getMapAction();
 
-			if(exec.getCurrentPhone() instanceof DefaultPhone)
-			{
-				JOptionPane.showMessageDialog(null, "Can't Detect device");
-				return Verdict.INITFAILED;
-			}
-
-
-
-			//copy test file 
-			File outputdirF = null;
-			String tempoutputdir = outFilePath;
-			File filetst = new File(mixScriptFilePath);
-			if (realFlashFile.exists()) {
-				outputdirF = new File(tempoutputdir);
-				if (!outputdirF.exists())
-					if(!outputdirF.mkdir())
-						Logger.getLogger(this.getClass() ).warn("Can't make dir "+outputdirF.getPath());
-				Logger.getLogger(this.getClass() ).debug("outputdirF"+outputdirF);
-				Logger.getLogger(this.getClass() ).debug("testfilename"+testfilename);
-				Logger.getLogger(this.getClass() ).debug("filetst.getName()"+filetst.getName());
-				Logger.getLogger(this.getClass() ).debug("all"+outputdirF +Platform.FILE_SEPARATOR+
-						filetst.getName());
-
-				Logger.getLogger(this.getClass() ).debug("try to copy "+mixScriptFilePath+" to "+outputdirF +Platform.FILE_SEPARATOR+
-						filetst.getName());
-				copyfile(new File(outputdirF +Platform.FILE_SEPARATOR+
-						filetst.getName()), realFlashFile);
-
-			}			
-			JaTKCharts = new CreateGraph();
-			//	PhoneInterface phoneDefault =AutomaticPhoneDetection.getDevice();
-			String xmlconfilepath=getXmlfilepath();
-			currentxmlfilepath=this.getXmlfilepath();
-			Logger.getLogger(this.getClass() ).debug("xmlconfilepath:"+ xmlconfilepath);
-
-			JaTKCharts.createPerfGraphsAndMarkers(xmlconfilepath);
-			JaTKCharts.createEmptyDataset();
-			JaTKCharts.initializeTimeAxis();
-			mapPerfGraph = JaTKCharts.getMapPerfGraph();
-			mapAction = JaTKCharts.getMapAction();
-
-			exec.setMapPerfGraph(mapPerfGraph);
-			exec.setMapAction(mapAction);
-			String result =null;
-			try {
-				result = exec.launchNewTest(xmlconfilepath, false);
-			} catch (FileNotFoundException e) {
-				// TODO handle exception
-				e.printStackTrace();
-			} catch (PhoneException pe) {
-				pe.printStackTrace();
-			}
-            if(result!=null)
-			verdict = (result.contains("PASSED")) ? Verdict.PASSED: Verdict.TESTFAILED;
-			exec.stopExecution();
-			exec=null;
-			return verdict;	
+		exec.setMapPerfGraph(mapPerfGraph);
+		exec.setMapAction(mapAction);
+		String result = null;
+		try {
+			result = exec.launchNewTest(xmlconfilepath, false);
+		} catch (FileNotFoundException e) {
+			// TODO handle exception
+			Logger.getLogger(this.getClass()).error(e);
+		} catch (PhoneException pe) {
+			Logger.getLogger(this.getClass()).error(pe);
+		}
+		if (result != null) {
+			verdict = (result.contains("PASSED")) ? Verdict.PASSED : Verdict.TESTFAILED;
+		}
+		exec.stopExecution();
+		exec = null;
+		return verdict;
 	}
-
 
 	public boolean copyfile(File newfile, File originalFile) {
 
 		if (originalFile.exists()) {
 
-			if (newfile.exists()) {
-				if(!newfile.delete())
-					Logger.getLogger(this.getClass() ).debug("Can't delete "+newfile.getPath());
+			if (newfile.exists() && !newfile.delete()) {
+				Logger.getLogger(this.getClass()).debug("Can't delete " + newfile.getPath());
 			}
 
 			// copy file to output dir
@@ -312,10 +274,10 @@ public class MixScriptStep extends Step {
 				newfile.createNewFile();
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				Logger.getLogger(this.getClass()).error(e1);
 			}
-			FileChannel in = null; // canal d'entrée
-			FileChannel out = null; // canal de sortie
+			FileChannel in = null;
+			FileChannel out = null;
 
 			try {
 				// Init
@@ -325,8 +287,8 @@ public class MixScriptStep extends Step {
 				// Copie depuis le in vers le out
 				in.transferTo(0, in.size(), out);
 			} catch (Exception e) {
-				e.printStackTrace(); // n'importe quelle exception
-			} finally { // finalement on ferme
+				Logger.getLogger(this.getClass()).error(e);
+			} finally {
 				if (in != null) {
 					try {
 						in.close();
@@ -352,11 +314,9 @@ public class MixScriptStep extends Step {
 	 */
 	public void init() {
 		if (!initialized) {
-			if (mixScriptFilePath != null
-					&& (flashFile == null || !flashFile.exists())) {
+			if (mixScriptFilePath != null && (flashFile == null || !flashFile.exists())) {
 				String extension = ".tst";
-				if(AutomaticPhoneDetection.getInstance().isNokia())
-					extension = ".xml";
+
 				if (mixScriptFilePath.endsWith(extension)) {
 					flashFile = Configuration.fileResolver.getFile(mixScriptFilePath,
 							"tmpmixScript", extension, login, password, useragent);
@@ -386,29 +346,32 @@ public class MixScriptStep extends Step {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.orange.atk.atkUI.corecli.Step#completeExternalToolCommandLine
+	 * @see com.orange.atk.atkUI.corecli.Step#completeExternalToolCommandLine
 	 * (java.lang.String)
 	 */
 	@Override
 	public String completeExternalToolCommandLine(String cmdline) {
-		String sup_cmdLine = super.completeExternalToolCommandLine(cmdline);
-		if (sup_cmdLine != null) {
-			cmdline = sup_cmdLine;
+		String cmdToExecute = cmdline;
+		String supCmdLine = super.completeExternalToolCommandLine(cmdToExecute);
+		if (supCmdLine != null) {
+			cmdToExecute = supCmdLine;
 		}
 
 		// replace %SWF% by coresponding
-		if (cmdline.indexOf("%SWF%") > 0) {
-			init(); // just to be sure that files are resolved
-			cmdline = cmdline.replaceAll("%SWF%", flashFile.getAbsolutePath());
+		if (cmdToExecute.indexOf("%SWF%") > 0) {
+			// just to be sure that files are resolved
+			init();
+			cmdToExecute = cmdToExecute.replaceAll("%SWF%", flashFile.getAbsolutePath());
 		} else {
-			return null; // not for this Step
+			// not for this Step
+			return null;
 		}
 
-		if (cmdline.indexOf("%") > 0) { // unable to complet all...
+		if (cmdToExecute.indexOf('%') > 0) {
+			// unable to complet all...
 			return null;
 		} else {
-			return cmdline;
+			return cmdToExecute;
 		}
 
 	}
@@ -426,8 +389,8 @@ public class MixScriptStep extends Step {
 		} else {
 			shortName = StringUtilities.guessName(mixScriptFilePath, ".sis");
 		}
-		if (shortName.lastIndexOf(".") != -1) {
-			shortName = shortName.substring(0, shortName.lastIndexOf("."));
+		if (shortName.lastIndexOf('.') != -1) {
+			shortName = shortName.substring(0, shortName.lastIndexOf('.'));
 		}
 		return shortName;
 	}
@@ -439,7 +402,7 @@ public class MixScriptStep extends Step {
 	 */
 	@Override
 	public void save(Element root, int stepNumber) {
-		Element anaElem = root.addElement(type);
+		Element anaElem = root.addElement(TYPE);
 		anaElem.addAttribute("name", "MixScriptstep_" + stepNumber);
 		anaElem.addAttribute("file", getFlashFilePath());
 		if (getLogin() != null) {
@@ -449,7 +412,7 @@ public class MixScriptStep extends Step {
 		if (getUseragent() != null) {
 			anaElem.addAttribute("useragent", getUseragent());
 		}
-		if (getXmlfilepath()!= null){
+		if (getXmlfilepath() != null) {
 			anaElem.addAttribute("configfile", getXmlfilepath());
 		}
 	}
@@ -457,8 +420,7 @@ public class MixScriptStep extends Step {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.orange.atk.atkUI.corecli.Step#writeInCampaign(org.dom4j.Element
+	 * @see com.orange.atk.atkUI.corecli.Step#writeInCampaign(org.dom4j.Element
 	 * )
 	 */
 	@Override
@@ -479,8 +441,7 @@ public class MixScriptStep extends Step {
 		if (mixScriptFilePath == null) {
 			return null;
 		}
-		return mixScriptFilePath
-		.substring(mixScriptFilePath.lastIndexOf(File.separator) + 1);
+		return mixScriptFilePath.substring(mixScriptFilePath.lastIndexOf(File.separator) + 1);
 	}
 
 	public File getFlashFile() {
@@ -500,12 +461,10 @@ public class MixScriptStep extends Step {
 				fis = new FileInputStream(realFlashFile);
 				digest = Digest.runSHA1(fis);
 			} catch (FileNotFoundException e) {
-				e.printStackTrace();
+				Logger.getLogger(this.getClass()).error(e);
 			}
 		}
 		return digest;
 	}
-
-
 
 }
