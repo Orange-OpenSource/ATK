@@ -145,6 +145,21 @@ public class FileViewDialog extends /* JDialog */JFrame {
 				}
 				editorPane = createEditorPaneHTML();
 				break;
+			case LOG :
+				editorPane = createEditorPaneTXT();
+				this.setTitle("Log file - " + uri);
+				JMenuItem itemRefresh = new JMenuItem("Refresh");
+				itemRefresh.setToolTipText("Reload the file.");
+				itemRefresh.setActionCommand("refresh");
+				itemRefresh.addActionListener(listener);
+				menuFile.add(itemRefresh);
+				JMenuItem itemSaveAs = new JMenuItem("Save log as...");
+				itemSaveAs.setToolTipText("Save this log as...");
+				itemSaveAs.setActionCommand("saveLogAs");
+				itemSaveAs.setIcon(IconResizer.resize16x16(new ImageIcon(CoreGUIPlugin
+						.getIconURL("tango/txt2.png"))));
+				itemSaveAs.addActionListener(listener);
+				menuFile.add(itemSaveAs);
 			default :
 				break;
 		}
