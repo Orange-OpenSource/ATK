@@ -33,7 +33,6 @@ import org.apache.log4j.Logger;
 import com.orange.atk.atkUI.corecli.Alert;
 import com.orange.atk.atkUI.corecli.Configuration;
 import com.orange.atk.atkUI.guiHopper.HopperGUI;
-import com.orange.atk.atkUI.guiMixScript.MixScriptGUI;
 import com.orange.atk.atkUI.guiScript.JatkGUI;
 import com.orange.atk.platform.Platform;
 
@@ -54,7 +53,6 @@ public class CoreGUIPlugin {
 
 		guiCommons.add(new JatkGUI());
 		guiCommons.add(new HopperGUI());
-		guiCommons.add(new MixScriptGUI());
 
 		mainFrame = new MatosGUI();
 	}
