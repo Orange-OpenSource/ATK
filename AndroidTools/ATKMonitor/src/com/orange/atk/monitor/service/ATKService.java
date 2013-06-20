@@ -27,6 +27,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -45,6 +46,10 @@ abstract class ATKService extends Service {
 	protected ServerSocket serverSocket;
 	protected boolean _stop = false;
 
+	BufferedReader in = null;
+	PrintWriter out = null;
+	Socket socket = null;
+	
 	protected Context _context;  
 
 	public void onStart(Intent intent, int startId) {
@@ -54,24 +59,37 @@ abstract class ATKService extends Service {
 		_context = this.getApplicationContext();
 		_stop = false;
 	}
-	
+	private void releaseSocket(){
+		Log.v(TAG,"releaseSocket");
+		if (in != null){
+			try {
+				in.close();
+				if (out != null) 
+					out.close();
+				if (socket != null) 
+					socket.close();
+				if (serverSocket != null) 
+					serverSocket.close();
+			} catch (IOException e) {
+				Log.e(TAG, "", e);
+			}
+		}
+		releaseAfterLoop();
+	}
 	public void run() {
-		BufferedReader in = null;
-		PrintWriter out = null;
-		Socket socket = null;
+		
 		do{
 
 			
 			try {    
 				String inputline;
-				Log.v(TAG,"run"); 
-				serverSocket = ServerSocketFactory.getDefault().createServerSocket(this.getPort()); 
-				Log.v(TAG,"after serverSocket"); 
+				serverSocket = ServerSocketFactory.getDefault().createServerSocket(this.getPort());  
 				socket = serverSocket.accept();
 				initBeforeLoop();
 
-				if (_stop ) 
-					throw new Exception("to finally");
+				if (_stop ){
+					break;
+				}
 				Log.v(TAG,"after accept");
 				in = new BufferedReader( new InputStreamReader(socket.getInputStream()),50);
 				out = new PrintWriter(socket.getOutputStream(),true);
@@ -83,27 +101,16 @@ abstract class ATKService extends Service {
 					if (_stop) break;
 				}
 			}
-			catch (Exception e)
-				{Log.v(TAG,"Exception "+e);}
+			catch (BindException e){
+				Log.e(TAG, "", e);
+			}catch (IOException e){
+				Log.e(TAG, "", e);
+			}
 			finally {
-				Log.v(TAG,"finally");
-				if (in != null){
-					try {
-						in.close();
-						if (out != null) 
-							out.close();
-						if (socket != null) 
-							socket.close();
-						if (serverSocket != null) 
-							serverSocket.close();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				releaseAfterLoop();
+				releaseSocket();
 			}
 		}while(!_stop);
+			releaseSocket();
 	}
 
 	abstract int getPort();
