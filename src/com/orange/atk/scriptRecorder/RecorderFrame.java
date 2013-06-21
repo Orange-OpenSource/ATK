@@ -87,6 +87,8 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 	private JPhoneStatusButton jbtPhoneStatus;
 	private JButton jbtRecord;
 	private JButton jbtStop;
+	//button to launch script like robotium
+	private JButton jbtLikeRobotium;
 	/** Button to display Error Frame */
 	private JButton errorButton = new JButton(ResourceManager.getInstance().getString("SEE"));
 	/** Message displayed when an error occured */
@@ -302,7 +304,16 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 
 			}
 		});
+		
+		jbtLikeRobotium = new JButton(new ImageIcon(this.getClass().getResource("camera.png")));
+		jbtLikeRobotium.setToolTipText("Launch Script on command like robotium does");
+		jbtLikeRobotium.addActionListener(new ActionListener(){
 
+			public void actionPerformed(ActionEvent arg0) {
+				runLikeSolo();
+
+			}
+		});
 
 
 		String[] arg2 ={"-No Mode-"};
@@ -338,6 +349,11 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 		jtb.add(jbtPlay);
 		jtb.addSeparator();
 		jtb.add(jbtscreenshot);
+		//add likesolo button
+		jtb.addSeparator();
+		jtb.add(jbtLikeRobotium);
+	
+		
 		this.add(jtb, BorderLayout.NORTH);
 		jbtStop.setEnabled(false);
 		//	jcbPhone.setEnabled(true);
@@ -350,6 +366,7 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 		jmiStop.setEnabled(false);
 		jcbPhonemode.setEnabled(false);
 		jcbPhonemode.setVisible(false);
+		
 
 		/*Central Tabbed Pane Creation*/
 		jtp = new JTabbedPane();
@@ -534,6 +551,14 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 		}else{
 			JOptionPane.showMessageDialog(this, "Error : no Phone, or no Mode selected","Error",JOptionPane.ERROR_MESSAGE);
 		}
+	}
+	
+	//launch Script like robotium
+	
+	protected void  runLikeSolo(){
+		
+		JOptionPane.showMessageDialog(this, "Click on Like solo button","Error",JOptionPane.ERROR_MESSAGE);
+		
 	}
 
 	protected void takeScreenshot() {

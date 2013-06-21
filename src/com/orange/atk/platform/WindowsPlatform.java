@@ -278,6 +278,16 @@ public class WindowsPlatform extends Platform {
 		return JATKPath!=null ? JATKPath:"C:\\Program Files\\ATK";
 	}
 	
+	@Override
+	public String getJAPKtoolPath() {
+		// TODO Auto-generated method stub
+		
+		String ATKPath=getJATKPath() ;
+		
+		return ATKPath+Platform.FILE_SEPARATOR+ "AndroidTools"+Platform.FILE_SEPARATOR+
+				"apktoolWin";
+	}
+	
 	/**
 	 * get adb executable location
 	 */
@@ -299,4 +309,6 @@ public class WindowsPlatform extends Platform {
 
 		return null;
 	}
+
+	
 }

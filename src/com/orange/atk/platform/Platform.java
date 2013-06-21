@@ -63,6 +63,7 @@ public abstract class Platform {
 
 
 	public abstract String getJATKPath();
+	public abstract String getJAPKtoolPath();
 	public abstract String getDefaultADBLocation();
  
 }
