@@ -206,7 +206,7 @@ public class JatkCheckListTable extends CheckListTable {
 		submenuLaunchInExternalTool.setToolTipText("Launch an external tool one the selected step");
 		// initLaunchExternalTool();
 
-		popup.add(JatkGUIAction.ANALYSESELECTIONFLASH.getAsMenuItem("Launch selection"));
+		popup.add(JatkGUIAction.ANALYSESELECTEDTASKS.getAsMenuItem("Launch selection"));
 		popup.add(MatosAction.VIEWREPORT.getAsMenuItem("Open latest report"));
 		popup.add(JatkGUIAction.SETSCREENSHOTREFERENCEDIR
 				.getAsMenuItem("Set Reference Screenshots"));

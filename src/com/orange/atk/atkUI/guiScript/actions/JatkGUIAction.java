@@ -38,13 +38,13 @@ import com.orange.atk.atkUI.guiHopper.actions.StopScript;
  */
 public enum JatkGUIAction {
 
-	ADDFLASHANIMATION ("AddScriptAction", new AddScriptAction("AddScriptAction", new ImageIcon(CoreGUIPlugin.getIconURL("tango/add.png")), "Add a script to the current check-list.")),
+	ADDTASK ("AddScriptAction", new AddScriptAction("AddScriptAction", new ImageIcon(CoreGUIPlugin.getIconURL("tango/add.png")), "Add a script to the current check-list.")),
 
-	ANALYSEALLFLASH ("LaunchAllScript", new LaunchAllScript("LaunchAllScript", new ImageIcon(CoreGUIPlugin.getIconURL("tango/noatunplay.png")), "Launch all scripts of the check-list.")),
+	ANALYSEALLTASK ("LaunchAllScript", new LaunchAllScript("LaunchAllScript", new ImageIcon(CoreGUIPlugin.getIconURL("tango/noatunplay.png")), "Launch all scripts of the check-list.")),
 
-	STOPSCRIPT ("StopScript", new StopScript("StopScript", new ImageIcon(CoreGUIPlugin.getIconURL("tango/noatunstop.png")), "Stop the current task.")),
+	STOPTASK ("StopScript", new StopScript("StopScript", new ImageIcon(CoreGUIPlugin.getIconURL("tango/noatunstop.png")), "Stop the current task.")),
 
-	ANALYSESELECTIONFLASH ("LaunchSelectedScript", new LaunchSelectedScript("LaunchSelectedScript", new ImageIcon(CoreGUIPlugin.getIconURL("tango/play-selection.png")), "Launch selected Script of the check-list.")),
+	ANALYSESELECTEDTASKS ("LaunchSelectedScript", new LaunchSelectedScript("LaunchSelectedScript", new ImageIcon(CoreGUIPlugin.getIconURL("tango/play-selection.png")), "Launch selected Script of the check-list.")),
 
 	SETSCREENSHOTREFERENCEDIR ("SetScreenshotReferenceDir", new SetScreenShotReferenceDir("SetScreenshotReferenceDir", new ImageIcon(CoreGUIPlugin.getIconURL("tango/camera_icon.jpg")),"Set the Reference directory for Screenshot Comparator")),
 	

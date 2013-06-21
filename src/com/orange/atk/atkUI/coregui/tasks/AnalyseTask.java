@@ -113,6 +113,7 @@ public class AnalyseTask extends UITask {
 			for (int j = 0; j < CoreGUIPlugin.guiCommons.size(); j++) {
 				CoreGUIPlugin.guiCommons.get(j).disableButtonsButStop();
 			}
+			CoreGUIPlugin.mainFrame.disableButtonsButStop();
 			statusBar.setLength(length);
 			// Yvain statusBar.setMessage("Analysing " + length +
 			// " step(s)...");

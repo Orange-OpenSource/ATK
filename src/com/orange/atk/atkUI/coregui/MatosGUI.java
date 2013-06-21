@@ -25,6 +25,7 @@ package com.orange.atk.atkUI.coregui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -55,6 +56,7 @@ import org.apache.log4j.Logger;
 import com.orange.atk.atkUI.corecli.Alert;
 import com.orange.atk.atkUI.corecli.Campaign;
 import com.orange.atk.atkUI.corecli.Configuration;
+import com.orange.atk.atkUI.corecli.Step;
 import com.orange.atk.atkUI.coregui.actions.MatosAction;
 import com.orange.atk.phone.detection.AutomaticPhoneDetection;
 
@@ -358,35 +360,41 @@ public class MatosGUI extends JFrame {
 
 		// building the tool bar
 		JToolBar toolBar = new JToolBar();
+
 		toolBar.setFloatable(false);
 		toolBar.add(MatosAction.NEWCHECKLIST.getAsJButton());
 		toolBar.add(MatosAction.OPEN.getAsJButton());
 		toolBar.add(MatosAction.ADDDIR.getAsJButton());
 		toolBar.add(MatosAction.SAVEALLALL.getAsJButton());
 		toolBar.add(MatosAction.SAVEAS.getAsJButton());
-		toolBar.addSeparator();
+		toolBar.addSeparator(new Dimension(30, 30));
+
+		toolBar.add(MatosAction.ADDTASK.getAsJButton());
 		toolBar.add(MatosAction.COPY.getAsJButton());
 		toolBar.add(MatosAction.PASTE.getAsJButton());
 		toolBar.add(MatosAction.REMOVE.getAsJButton());
-		toolBar.addSeparator();
-		toolBar.add(MatosAction.OPENRECORDER.getAsJButton());
+		toolBar.addSeparator(new Dimension(30, 30));
+		toolBar.add(MatosAction.ANALYSEALLTASKS.getAsJButton());
+		toolBar.add(MatosAction.ANALYSESELECTEDTASK.getAsJButton());
+		toolBar.add(MatosAction.STOPTASK.getAsJButton());
+		toolBar.add(MatosAction.VIEWREPORT.getAsJButton());
 
-		toolBar.addSeparator();
+		toolBar.addSeparator(new Dimension(30, 30));
+		toolBar.add(MatosAction.OPENRECORDER.getAsJButton());
 		toolBar.add(MatosAction.MONITOR.getAsJButton());
 		toolBar.add(MatosAction.BENCHMARK.getAsJButton());
+		toolBar.add(MatosAction.ARODATANALYSER.getAsJButton());
 
 		// adds an Exit nutton at rigthmost
 		toolBar.add(Box.createHorizontalGlue());
 		phoneStatusButton = new JPhoneStatusButton();
 		toolBar.add(phoneStatusButton);
 
-		toolBar.add(MatosAction.EXIT.getAsJButton());
-
-		JPanel upperBars = new JPanel();
-		upperBars.setLayout(new BorderLayout());
-		upperBars.add(menuBar, BorderLayout.NORTH);
-		upperBars.add(toolBar, BorderLayout.CENTER);
-		pane.add(upperBars, BorderLayout.NORTH);
+		setJMenuBar(menuBar);
+		JPanel upperBars = new JPanel(new BorderLayout());
+		upperBars.add(toolBar, BorderLayout.WEST);
+		upperBars.add(phoneStatusButton, BorderLayout.EAST);
+		pane.add(upperBars, BorderLayout.PAGE_START);
 		pane.add(tabbedPane, BorderLayout.CENTER);
 		pane.add(statusBar, BorderLayout.SOUTH);
 		add(pane, BorderLayout.CENTER);
@@ -439,7 +447,6 @@ public class MatosGUI extends JFrame {
 		setVisible(true);
 		statusBar.uiPostInit();
 	}
-
 	/**
 	 * Updates title of content tabs with the number of thep they contain.
 	 */
@@ -518,6 +525,8 @@ public class MatosGUI extends JFrame {
 			MatosAction.CONFIRMVERDICT.setEnabled(false);
 			MatosAction.MODIFYVERDICT.setEnabled(false);
 			MatosAction.STATISTICSALL.setEnabled(false);
+			MatosAction.ANALYSEALLTASKS.setEnabled(false);
+			MatosAction.ANALYSESELECTEDTASK.setEnabled(false);
 
 		} else {
 			MatosAction.NEWCHECKLIST.setEnabled(true);
@@ -530,6 +539,8 @@ public class MatosGUI extends JFrame {
 			MatosAction.ANALYSEALLALLTAB.setEnabled(true);
 			MatosAction.ANALYSESELECTIONALLTAB.setEnabled(true);
 			MatosAction.STATISTICSALL.setEnabled(true);
+			MatosAction.ANALYSEALLTASKS.setEnabled(false);
+			MatosAction.ANALYSESELECTEDTASK.setEnabled(false);
 
 			if (nbRowCurrentTabSelected > 0) {
 				MatosAction.SAVESELECTIONAS.setEnabled(true);
@@ -564,6 +575,28 @@ public class MatosGUI extends JFrame {
 		// selected analisys tab hav to to so
 		guiCommonSelected.updateButtons();
 
+		CheckListTable checkListTable = guiCommonSelected.getCheckListTable();
+		if (checkListTable != null) {
+			boolean hasRow = (checkListTable.getStepNumber() > 0);
+			MatosAction.ANALYSEALLTASKS.setEnabled(hasRow);
+			boolean isRowSelected = (checkListTable.getSelectedRowCount() > 0);
+			MatosAction.ANALYSESELECTEDTASK.setEnabled(isRowSelected);
+
+			if (checkListTable.getSelectedRowCount() == 1) {
+				Step step = checkListTable.getSelectedStep();
+				// REPORT
+				String repPath = step.getOutFilePath();
+				if ((repPath == null) || (repPath.trim().length() == 0)) {
+					MatosAction.VIEWREPORT.setEnabled(false);
+				} else {
+					MatosAction.VIEWREPORT.setEnabled(true);
+				}
+			} else {
+				MatosAction.VIEWREPORT.setEnabled(isRowSelected);
+			}
+		}
+		MatosAction.STOPTASK.setEnabled(false);
+
 		// no analysis GUI plugins have to do so...
 		for (IGUICommon guiCommon : othersPlugins/* CoreGUIPlugin.guiCommons */) {
 			guiCommon.updateButtons();
@@ -595,6 +628,14 @@ public class MatosGUI extends JFrame {
 			MatosAction.EXIT.setEnabled(true); // exit always available
 			MatosAction.VIEWLOG.setEnabled(true);
 		}
+	}
+
+	public void disableButtonsButStop() {
+		enableUserActions(true);
+		MatosAction.ADDTASK.setEnabled(false);
+		MatosAction.ANALYSEALLTASKS.setEnabled(false);
+		MatosAction.ANALYSESELECTEDTASK.setEnabled(false);
+		MatosAction.STOPTASK.setEnabled(true);
 	}
 
 	/**

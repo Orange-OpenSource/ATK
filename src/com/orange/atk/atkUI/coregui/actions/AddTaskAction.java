@@ -1,3 +1,5 @@
+package com.orange.atk.atkUI.coregui.actions;
+
 /*
  * Software Name : ATK
  *
@@ -16,41 +18,26 @@
  * limitations under the License.
  * 
  * ------------------------------------------------------------------
- * File Name   : LaunchAllScript.java
- *
- * Created     : 28/05/2007
- * Author(s)   : Aurore PENAULT
+
  */
-package com.orange.atk.atkUI.guiHopper.actions;
 
 import java.awt.event.ActionEvent;
 
 import javax.swing.Icon;
 
-import com.orange.atk.atkUI.corecli.Campaign;
+import com.orange.atk.atkUI.coregui.AnalysisGUICommon;
 import com.orange.atk.atkUI.coregui.CoreGUIPlugin;
-import com.orange.atk.atkUI.coregui.MatosGUI;
-import com.orange.atk.atkUI.coregui.SelectDialog;
-import com.orange.atk.atkUI.coregui.actions.MatosAbstractAction;
-import com.orange.atk.atkUI.coregui.tasks.AnalyseTask;
-import com.orange.atk.atkUI.guiHopper.HopperGUI;
-import com.orange.atk.atkUI.guiHopper.guihopperLink;
 
 /**
  * 
- * @author Aurore PENAULT
+ * @author Nicolas MOTEAU
  * @since JDK5.0
  */
-public class LaunchAllScript extends MatosAbstractAction {
+public class AddTaskAction extends MatosAbstractAction {
 
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @param name
-	 * @param icon
-	 * @param shortDescription
-	 */
-	public LaunchAllScript(String name, Icon icon, String shortDescription) {
+	public AddTaskAction(String name, Icon icon, String shortDescription) {
 		super(name, icon, shortDescription);
 	}
 
@@ -61,16 +48,8 @@ public class LaunchAllScript extends MatosAbstractAction {
 	 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent e) {
-
-		HopperGUI flashGUI = guihopperLink.getFlashGUI();
-		if (MatosGUI.outputDir == null || MatosGUI.outputDir.equals("")) {
-			int ret = SelectDialog.showDialog(CoreGUIPlugin.mainFrame, true);
-			if (ret != SelectDialog.OK_OPTION) {
-				return;
-			}
-		}
-		Campaign.setExecuteloop(false);
-		new AnalyseTask(CoreGUIPlugin.mainFrame.statusBar, flashGUI.getCheckListTable(), true);
+		AnalysisGUICommon guiCommonSelected = CoreGUIPlugin.mainFrame.getSelectedAnalysisPane();
+		guiCommonSelected.getAddScriptAction().actionPerformed(e);
 	}
 
 }
