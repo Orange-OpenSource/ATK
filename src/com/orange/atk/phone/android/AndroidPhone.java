@@ -26,6 +26,7 @@ package com.orange.atk.phone.android;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -78,6 +79,7 @@ import com.orange.atk.util.Position;
  */
 public class AndroidPhone implements PhoneInterface {
 
+	private static final String ARO_APK_PATH = "ARO\\ARODataCollector_OpenSource_v2.2.1.1.apk";
 	private final static EventListenerList listeners = new EventListenerList();
 	private final static String ATK_MONITOR_VERSION = "2.9";
 	private boolean isInitResDone = false;
@@ -654,16 +656,14 @@ public class AndroidPhone implements PhoneInterface {
 			while ((line = in.readLine()) != null) {
 				if (line.contains("Sending event #")) {
 					mainLogger.addInfotoActionLogger("Monkey", line, new Date(), new Date());
-				} else
-					if (line.contains("Events injected") || line.contains(":Dropped:")
-							|| line.contains("Monkey")
-							|| line.contains("System appears to have crashed")) {
-						mainLogger.addInfotoActionLogger("Monkey", line, new Date(), new Date());
-						mainLogger.addInfoToDocumentLogger(line, -1, "");
-					} else
-						if (line.contains("Network stats")) {
-							mainLogger.addInfoToDocumentLogger(line, -1, "");
-						}
+				} else if (line.contains("Events injected") || line.contains(":Dropped:")
+						|| line.contains("Monkey")
+						|| line.contains("System appears to have crashed")) {
+					mainLogger.addInfotoActionLogger("Monkey", line, new Date(), new Date());
+					mainLogger.addInfoToDocumentLogger(line, -1, "");
+				} else if (line.contains("Network stats")) {
+					mainLogger.addInfoToDocumentLogger(line, -1, "");
+				}
 				if ((!line.equals("")) && (!line.contains("Send"))) {
 					Logger.getLogger(this.getClass()).debug("Monkey log: " + line);
 					lastLine = line;
@@ -858,7 +858,8 @@ public class AndroidPhone implements PhoneInterface {
 			for (int i = 0; i < listRes.size(); i++) {
 				String[] n = listRes.get(i).split("_");
 				if ((n[0].equals("Cpu") || n[0].equals("Memory") || n[0].equals("Data sent") || n[0]
-						.equals("Data received")) && n.length > 1) {
+						.equals("Data received"))
+						&& n.length > 1) {
 					// We check that the process is not already in the list
 					// to avoid to initialize twice the same process
 					boolean alreadypresent = false;
@@ -890,44 +891,58 @@ public class AndroidPhone implements PhoneInterface {
 		}
 
 	}
+
 	private int checkMonitor() {
+		return checkPackage("com.orange.atk.monitor");
+	}
+
+	private void installATKMonitor() throws PhoneException {
+		installApk(Platform.getInstance().getJATKPath() + Platform.FILE_SEPARATOR + "AndroidTools"
+				+ Platform.FILE_SEPARATOR + "ATKMonitor.apk");
+
+	}
+
+	public int checkARODataCollector() {
+		return checkPackage("com.att.android.arodatacollector");
+	}
+
+	public void installARODataCollector() throws PhoneException {
+		installApk(ARO_APK_PATH);
+	}
+
+	private int checkPackage(String packagename) {
 		String startCmd = "pm list packages";
 		try {
 			String[] result = executeShellCommand(startCmd, true);
 			for (String res : result) {
-				if (res.contains("com.orange.atk.monitor")) {
+				Logger.getLogger(this.getClass()).debug(res);
+				if (res.contains(packagename)) {
 					return 0;
 				}
 			}
 		} catch (PhoneException e) {
-			Logger.getLogger(this.getClass()).debug("unable to check monitor");
+			Logger.getLogger(this.getClass()).debug("unable to check " + packagename);
 		}
-		Logger.getLogger(this.getClass()).debug("atk monitor not found");
+		Logger.getLogger(this.getClass()).debug(packagename + " not found");
 		return -1;
 	}
-	private void installATKMonitor() throws PhoneException {
-		Logger.getLogger(this.getClass()).debug("Pushing ATK Monitor on phone");
-		// push ATKMonitor to the Device
+
+	private void installApk(String filepath) throws PhoneException {
+		String filename = new File(filepath).getName();
+		Logger.getLogger(this.getClass()).debug("Pushing " + filename + " on the device");
 		try {
-			String result = adevice.uninstallPackage("com.orange.atk.monitor");
-			if (result != null) {
-				Logger.getLogger(this.getClass()).debug("Result of the uninstall: " + result);
-			}
-			result = adevice.installPackage(Platform.getInstance().getJATKPath()
-					+ Platform.FILE_SEPARATOR + "AndroidTools" + Platform.FILE_SEPARATOR
-					+ "ATKMonitor.apk", true);
+			String result = adevice.installPackage(filepath, true);
 			if (result != null) {
 				Logger.getLogger(this.getClass()).debug("Result of the push: " + result);
 			}
 		} catch (InstallException e) {
-			throw new PhoneException("ATK Monitor - unable to install ATK Monitor");
+			throw new PhoneException("unable to install " + filepath);
 		}
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			Logger.getLogger(this.getClass()).debug("Unable to wait install termination");
 		}
-
 	}
 
 	public void sendEmail(String Subject, String Msg, String EmailDest, String NameDest,
@@ -1049,7 +1064,7 @@ public class AndroidPhone implements PhoneInterface {
 			}
 		} catch (PhoneException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger(this.getClass()).error(e);
 		}
 		return isRooted;
 	}
@@ -1148,17 +1163,6 @@ public class AndroidPhone implements PhoneInterface {
 										.next();
 								listener.newTcpDumpLine(line);
 							}
-							/*
-							 * if
-							 * (line.matches(NetworkAnalysisUtils.regexToMatch))
-							 * { Logger.getLogger(this.getClass()
-							 * ).debug("Line="+line); for
-							 * (Iterator<TcpdumpLineListener> iterator =
-							 * tcpdumpListeners.iterator(); iterator
-							 * .hasNext();) { TcpdumpLineListener listener =
-							 * (TcpdumpLineListener) iterator.next();
-							 * listener.newTcpDumpLine(line); }
-							 */
 						}
 					}
 				}
@@ -1191,8 +1195,7 @@ public class AndroidPhone implements PhoneInterface {
 					killTcmdump();
 				}
 			} catch (PhoneException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Logger.getLogger(this.getClass()).error(e);
 			}
 		}
 	}
@@ -1228,7 +1231,7 @@ public class AndroidPhone implements PhoneInterface {
 			if (outMonitor != null)
 				outMonitor.close();
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			Logger.getLogger(this.getClass()).error(e1);
 		}
 		if (tcpdumpThread != null) {
 			tcpdumpThread.interrupt();
@@ -1239,10 +1242,10 @@ public class AndroidPhone implements PhoneInterface {
 				removeTcpdumpFromDevice();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Logger.getLogger(this.getClass()).error(e);
 			} catch (PhoneException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Logger.getLogger(this.getClass()).error(e);
 			}
 		}
 		Logger.getLogger(this.getClass()).debug("End of Testing Mode");
@@ -1349,7 +1352,7 @@ public class AndroidPhone implements PhoneInterface {
 				startTestingMode();
 		} catch (PhoneException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			Logger.getLogger(this.getClass()).error(e1);
 		}
 		try {
 			openSocket(PORT_ATK_MONITOR);
@@ -1378,7 +1381,7 @@ public class AndroidPhone implements PhoneInterface {
 				startTestingMode();
 		} catch (PhoneException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			Logger.getLogger(this.getClass()).error(e1);
 		}
 		try {
 			openSocket(PORT_ATK_MONITOR);
@@ -1415,7 +1418,7 @@ public class AndroidPhone implements PhoneInterface {
 			}
 		} catch (PhoneException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			Logger.getLogger(this.getClass()).error(e1);
 		}
 		try {
 			openSocket(PORT_ATK_MONITOR);
@@ -1549,9 +1552,8 @@ public class AndroidPhone implements PhoneInterface {
 					nameAndroid += " " + vendor + " " + model;
 				else
 					return nameAndroid += " " + vendor;
-			} else
-				if (model != null)
-					nameAndroid += " " + model;
+			} else if (model != null)
+				nameAndroid += " " + model;
 		}
 		return nameAndroid;
 	}
@@ -1563,8 +1565,7 @@ public class AndroidPhone implements PhoneInterface {
 			try {
 				Thread.sleep(200);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Logger.getLogger(AndroidPhone.class.getName()).error(e);
 			}
 			vendor = device.getProperty("ro.product.manufacturer");
 			times++;
@@ -1580,7 +1581,7 @@ public class AndroidPhone implements PhoneInterface {
 				Thread.sleep(200);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Logger.getLogger(AndroidPhone.class.getName()).error(e);
 			}
 			model = device.getProperty("ro.build.product");
 			times++;
