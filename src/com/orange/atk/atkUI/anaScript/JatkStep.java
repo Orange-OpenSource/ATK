@@ -134,9 +134,8 @@ public class JatkStep extends Step {
 			// init is done each time a test is launch
 			verdict = launchtest();
 		} catch (Exception e) {
-			Logger.getLogger(this.getClass()).error(
-					"Problem running the following test file: " + jatktestFilePath);
-			Logger.getLogger(this.getClass()).error(e);
+			Logger.getLogger(this.getClass())
+				.error("Problem running the following test file: " + jatktestFilePath, e);
 		}
 		jatkResults.generate();
 
