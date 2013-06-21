@@ -16,6 +16,9 @@
   <classPath>
     <mainClass>com.orange.atk.launcher.LaunchGUIJATK</mainClass>
     <cp>.\jar\ATK.jar</cp>
+    <cp>.\jar\xstream-1.4.4.jar</cp>
+    <cp>.\jar\xpp3_min-1.1.4c.jar</cp>
+    <cp>.\jar\xmlpull-1.1.3.1.jar</cp>
     <cp>.\jar\avalon-framework-cvs-20020806.jar</cp>
     <cp>.\jar\castor-1.1-xml.jar</cp>
     <cp>.\jar\ddmlib.jar</cp>
