@@ -213,7 +213,17 @@ public class CreateGraph implements TcpdumpLineListener {
 		} catch (IOException e1) {
 			Logger.getLogger(this.getClass()).error(e1);
 		}
-
+		for (int i = 0; i < tempVectGraph.size(); i++) {
+			Graph g = tempVectGraph.get(i);
+			String name = (String) g.getName();
+			String mycolor = (String) g.getColor();
+			String ycomment = g.getYcomment();
+			String unit = g.getUnit();
+			if (!unit.equals(""))
+				ycomment += " (" + unit + ")";
+			int scale = Integer.parseInt(g.getScale());
+			addPerfGraph(path, name, mycolor, i, ycomment, unit, scale);
+		}
 		// add data
 		fillAllDataset();
 		// initialize time axis
