@@ -23,17 +23,14 @@
  */
 package com.orange.atk.results.logger.documentGenerator;
 
-
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
-import java.util.Vector;
+import java.util.List;
 
 import com.orange.atk.platform.Platform;
 import com.orange.atk.results.logger.log.DocumentLogger;
 import com.orange.atk.results.logger.log.Message;
-
 
 /**
  * This class is used to create a simple report in text format.
@@ -53,31 +50,32 @@ public class TextGenerator implements DocumentGenerator {
 	}
 
 	/**
-	 * @see com.orange.atk.results.logger.documentGenerator.DocumentGenerator#dumpInStream(boolean, com.orange.atk.results.logger.log.DocumentLogger)
+	 * @see com.orange.atk.results.logger.documentGenerator.DocumentGenerator#dumpInStream(boolean,
+	 *      com.orange.atk.results.logger.log.DocumentLogger)
 	 */
 	public void dumpInStream(boolean isParseException, DocumentLogger dl) {
-		Vector<Message> v = dl.getMsgsLogged();
+		List<Message> v = dl.getMsgsLogged();
 		for (int i = 0; i < v.size(); i++) {
 			try {
 				Message m = v.get(i);
 				SimpleDateFormat formatter = new SimpleDateFormat("H:mm:ssSSS");
 				String dateString = formatter.format(m.getTimestamp());
 				switch (m.getType()) {
-				case Message.INFO_MSG:
-					outputStream.write(("[" + dateString + "] "
-							+ m.getMessage() + Platform.LINE_SEP).getBytes());
-					break;
-				case Message.WARN_MSG:
-					outputStream.write(("[" + dateString + "] WARN : "
-							+ m.getMessage() + Platform.LINE_SEP).getBytes());
-					break;
-				case Message.ERROR_MSG:
-					outputStream.write(("[" + dateString + "] ERROR : "
-							+ m.getMessage() + " l." + m.getLine() + " "
-							+ m.getScriptName() + Platform.LINE_SEP).getBytes());
-					break;
-				default:
-					break;
+					case Message.INFO_MSG :
+						outputStream.write(("[" + dateString + "] "
+								+ m.getMessage() + Platform.LINE_SEP).getBytes());
+						break;
+					case Message.WARN_MSG :
+						outputStream.write(("[" + dateString + "] WARN : "
+								+ m.getMessage() + Platform.LINE_SEP).getBytes());
+						break;
+					case Message.ERROR_MSG :
+						outputStream.write(("[" + dateString + "] ERROR : "
+								+ m.getMessage() + " l." + m.getLine() + " "
+								+ m.getScriptName() + Platform.LINE_SEP).getBytes());
+						break;
+					default :
+						break;
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
