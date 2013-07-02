@@ -15,7 +15,9 @@ public interface ATKScriptParserTreeConstants
   public int JJTTABLE = 7;
   public int JJTSTRING = 8;
   public int JJTNUMBER = 9;
-  public int JJTVARIABLE = 10;
+  public int JJTBOOLEAN = 10;
+  public int JJTFLOAT = 11;
+  public int JJTVARIABLE = 12;
 
 
   public String[] jjtNodeName = {
@@ -29,7 +31,9 @@ public interface ATKScriptParserTreeConstants
     "TABLE",
     "STRING",
     "NUMBER",
+    "BOOLEAN",
+    "FLOAT",
     "VARIABLE",
   };
 }
-/* JavaCC - OriginalChecksum=d41ceff4cfa62ddc44577355ce36fcc8 (do not edit this line) */
+/* JavaCC - OriginalChecksum=d5bf8aaf654c85ef11262e35474519de (do not edit this line) */
