@@ -35,7 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
@@ -49,7 +48,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -68,7 +66,6 @@ import org.apache.log4j.Logger;
 
 import com.orange.atk.atkUI.anaScript.JatkCampaign;
 import com.orange.atk.atkUI.anaScript.JatkStep;
-import com.orange.atk.atkUI.anaScript.JatkStepAnalysisResult;
 import com.orange.atk.atkUI.corecli.Campaign;
 import com.orange.atk.atkUI.corecli.Configuration;
 import com.orange.atk.atkUI.corecli.Step;
@@ -92,28 +89,27 @@ import com.orange.atk.phone.detection.AutomaticPhoneDetection;
  */
 public class JatkCheckListTable extends CheckListTable {
 
+	private static final int TOOLTIP_DISMISS_AFTER = 10000; // 10sec
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	// First columns defined in CheckListTable
-	public static final int COLUMN_COMMENTS = COLUMN_VERDICT + 1;
-	public static final int COLUMN_SCREENSHOT = COLUMN_COMMENTS + 1;
+	static final int COLUMN_COMMENTS = COLUMN_VERDICT + 1;
+	static final int COLUMN_SCREENSHOT = COLUMN_COMMENTS + 1;
 
-	public static final int NUMBER_OF_COLUMN = COLUMN_SCREENSHOT;
+	private static final int NUMBER_OF_COLUMN = COLUMN_SCREENSHOT;
 
 	private Object[] longValues = {"1000", "ALongWordForAFlashFile.swf", "Config file", "*",
 			"Passed***", "A long comment", "Analyse"};
 
-	boolean completeView = false;
+	private boolean completeView = false;
 
 	// -- Table management --
 	private TableColumn screenShotsColumn;
-	private TableColumn analyserColumn;
 	private TableColumn commentsColumn;
-
-	static public JMenu submenuLaunchInExternalTool;
 
 	/**
 	 * Builds and initialize a new CheckList Table for Flash content.
@@ -124,11 +120,10 @@ public class JatkCheckListTable extends CheckListTable {
 		super();
 		campaign = new JatkCampaign();
 
-		ToolTipManager.sharedInstance().setDismissDelay(10000); // 10sec
+		ToolTipManager.sharedInstance().setDismissDelay(TOOLTIP_DISMISS_AFTER);
 
 		model = new FlashCheckListTableModel();
 		model.setLongValues(longValues);
-		// table = new JTable(model){
 		table = new JTable(model) {
 			public boolean getScrollableTracksViewportHeight() {
 				if (getParent() instanceof JViewport) {
@@ -187,7 +182,7 @@ public class JatkCheckListTable extends CheckListTable {
 	 * @param table
 	 *            the target table
 	 */
-	public void givePopupMenuToTable(JTable table) {
+	private void givePopupMenuToTable(JTable table) {
 		JPopupMenu popUp = createTablePopUp();
 		table.addMouseListener(new JatkMouseListener(popUp, this));
 	}
@@ -200,16 +195,11 @@ public class JatkCheckListTable extends CheckListTable {
 	private JPopupMenu createTablePopUp() {
 		JPopupMenu popup = new JPopupMenu();
 
-		submenuLaunchInExternalTool = new JMenu("Run external tool");
-		submenuLaunchInExternalTool.setToolTipText("Launch an external tool one the selected step");
-		// initLaunchExternalTool();
-
 		popup.add(JatkGUIAction.ANALYSESELECTEDTASKS.getAsMenuItem("Launch selection"));
 		popup.add(MatosAction.VIEWANALYZER.getAsMenuItem("Analyzer"));
 		popup.add(MatosAction.VIEWREPORT.getAsMenuItem("Open latest report"));
 		popup.add(JatkGUIAction.SETSCREENSHOTREFERENCEDIR
 				.getAsMenuItem("Set Reference Screenshots"));
-		// popup.add(submenuLaunchInExternalTool);
 		popup.addSeparator();
 		popup.add(MatosAction.COPY.getAsMenuItem("Copy"));
 		popup.add(MatosAction.PASTE.getAsMenuItem("Paste under"));
@@ -304,8 +294,9 @@ public class JatkCheckListTable extends CheckListTable {
 			// return false;
 			// }
 
-			if (Campaign.isExecute())
+			if (Campaign.isExecute()) {
 				return false;
+			}
 
 			// On ne supporte que les string et les file en entree
 			if (!((info.isDataFlavorSupported(DataFlavor.stringFlavor)) || (info
@@ -333,7 +324,7 @@ public class JatkCheckListTable extends CheckListTable {
 			try {
 				uriListFlavor = new DataFlavor(URI_LIST_MIME_TYPE);
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+				Logger.getLogger(this.getClass()).error(e);
 			}
 
 			try {
@@ -348,17 +339,12 @@ public class JatkCheckListTable extends CheckListTable {
 						File f = it.next();
 						String extension = ".tst";
 
-						if (AutomaticPhoneDetection.getInstance().isNokia())
-							extension = ".xml";
 						if (f.getAbsolutePath().endsWith(extension)) {
 							dd_flashPathVect.add(new File(f.getAbsolutePath()));
 						}
 					}
 
-				} else if (transferable.isDataFlavorSupported(uriListFlavor)) { // gnome
-																				// &
-																				// KDE's
-																				// way
+				} else if (transferable.isDataFlavorSupported(uriListFlavor)) {
 					String s = (String) transferable.getTransferData(uriListFlavor);
 					String[] uris = s.split(System.getProperty("line.separator"));
 					for (int i = 0; i < uris.length; i++) {
@@ -366,8 +352,6 @@ public class JatkCheckListTable extends CheckListTable {
 							File f = new File(new URI(uris[i].trim()));
 							String extension = ".tst";
 
-							if (AutomaticPhoneDetection.getInstance().isNokia())
-								extension = ".xml";
 							if (f.exists() && f.getAbsolutePath().endsWith(extension)) {
 								dd_flashPathVect.add(new File(f.getAbsolutePath()));
 							}
@@ -389,10 +373,10 @@ public class JatkCheckListTable extends CheckListTable {
 					try {
 						trans.getTransferData(DataFlavor.stringFlavor);
 					} catch (UnsupportedFlavorException e) {
-						e.printStackTrace();
+						Logger.getLogger(this.getClass()).error(e);
 						return false;
 					} catch (IOException e) {
-						e.printStackTrace();
+						Logger.getLogger(this.getClass()).error(e);
 						return false;
 					}
 
@@ -440,14 +424,11 @@ public class JatkCheckListTable extends CheckListTable {
 				}
 
 			} catch (UnsupportedFlavorException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Logger.getLogger(this.getClass()).error(e);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Logger.getLogger(this.getClass()).error(e);
 			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Logger.getLogger(this.getClass()).error(e);
 			}
 
 			return false;
@@ -501,7 +482,7 @@ public class JatkCheckListTable extends CheckListTable {
 			}
 			try {
 				this.setText((String) model.getValueAt(row, column));
-				int numRow = new Integer((String) model.getValueAt(row, COLUMN_NBROW)).intValue() - 1;
+				int numRow = Integer.valueOf((String) model.getValueAt(row, COLUMN_NBROW)) - 1;
 				if (column == COLUMN_TESTNAME) {
 					this.setToolTipText((String) toolTipFlashFile.get(numRow));
 				}
@@ -547,9 +528,6 @@ public class JatkCheckListTable extends CheckListTable {
 						this.setBackground(new Color(255, 250, 205));
 					}
 				}
-				if (column == COLUMN_PHONECONFIG) {
-
-				}
 				if (column == COLUMN_COMMENTS) {
 					this.setToolTipText((String) model.getValueAt(row, column));
 
@@ -566,8 +544,6 @@ public class JatkCheckListTable extends CheckListTable {
 							});
 				}
 				if (column == COLUMN_SCREENSHOT) {
-					// JButton button =new JButton("OK");
-					//
 
 					this.setToolTipText((String) toolTipReport.get(numRow));
 					Verdict screenshotVerdict = Verdict.NONE;
@@ -596,39 +572,6 @@ public class JatkCheckListTable extends CheckListTable {
 					if (verdict == Verdict.SKIPPED) {
 						this.setBackground(new Color(255, 250, 205));
 					}
-					// button.addMouseListener(new MouseListener(){
-					//
-					// public void mouseClicked(MouseEvent arg0) {
-					// Logger.getLogger(this.getClass() ).debug("mouse clik");
-					// if(arg0.getClickCount() == 1)
-					// {
-					// launchScreenShotComparison compScreenShot= new
-					// launchScreenShotComparison("C:\\Documents and Settings\\bvqj2105\\workspace\\prototype\\src\\images\\ref1","C:\\Documents and Settings\\bvqj2105\\workspace\\prototype\\src\\images\\test1");
-					// }
-					// }
-					//
-					// public void mousePressed(MouseEvent arg0) {
-					// Logger.getLogger(this.getClass()
-					// ).debug("mouse pressed");
-					// }
-					//
-					// public void mouseReleased(MouseEvent arg0) {
-					//
-					// }
-					//
-					// public void mouseEntered(MouseEvent arg0) {
-					//
-					// }
-					//
-					// public void mouseExited(MouseEvent arg0) {
-					//
-					// }
-					//
-					// });
-					// button.setVisible(true);
-					// this.add(button);
-
-					// GeneralRenderer buttonColumn = new GeneralRenderer();
 				}
 				if (completeView) {
 					if (column == COLUMN_COMMENTS) {
@@ -640,122 +583,15 @@ public class JatkCheckListTable extends CheckListTable {
 				// throwed when table is modified (cleared,...) and repainted at
 				// same time...
 				// when numRow becomes > nb row in table
-				// ae.printStackTrace(Out.log);
+				Logger.getLogger(this.getClass()).error("error", ae);
 			} catch (NumberFormatException nfe) {
 				// case numRow retriving get a null (see overwritten method
 				// MyTableModel.getValueAt(..))
-				// nfe.printStackTrace(Out.log);
+				Logger.getLogger(this.getClass()).error("error", nfe);
 			}
 			return null;
 		}
 	}
-
-	// class ButtonRenderer extends AbstractCellEditor
-	// implements TableCellRenderer, TableCellEditor, ActionListener
-	// {
-	// JTable table;
-	// JButton renderButton;
-	// JButton editButton;
-	// String text;
-	// private int nbclick=0;
-	//
-	// public ButtonRenderer(JTable table, int column)
-	// {
-	// super();
-	// this.table = table;
-	// renderButton = new JButton("render");
-	// //renderButton.addActionListener( this );
-	// editButton = new JButton("edit");
-	// editButton.setFocusPainted( false );
-	// // editButton.addActionListener( this );
-	//
-	// TableColumnModel columnModel = table.getColumnModel();
-	// columnModel.getColumn(column).setCellRenderer( this );
-	// columnModel.getColumn(column).setCellEditor( this );
-	// }
-	//
-	// public Component getTableCellRendererComponent(
-	// JTable table, Object value, boolean isSelected, boolean hasFocus, int
-	// row, int column)
-	// {
-	// if (hasFocus)
-	// {
-	// renderButton.setForeground(table.getForeground());
-	// renderButton.setBackground(UIManager.getColor("Button.background"));
-	// }
-	// else if (isSelected)
-	// {
-	// renderButton.setForeground(table.getSelectionForeground());
-	// renderButton.setBackground(table.getSelectionBackground());
-	// Logger.getLogger(this.getClass() ).debug("isselected"+row+","+column);
-	// //
-	// // if (nbclick>0){
-	// // launchScreenShotComparison compScreenShot= new
-	// launchScreenShotComparison("C:\\Documents and Settings\\bvqj2105\\workspace\\prototype\\src\\images\\ref1","C:\\Documents and Settings\\bvqj2105\\workspace\\prototype\\src\\images\\test1");
-	// // } nbclick++;
-	// }
-	// else
-	// {
-	// renderButton.setForeground(table.getForeground());
-	// renderButton.setBackground(UIManager.getColor("Button.background"));
-	// }
-	//
-	// //renderButton.setText( (value == null) ? "" : value.toString() );
-	// java.net.URL passedURL = CoreGUIPlugin.getIconURL("tango/apply.png");
-	//
-	// renderButton.setIcon(new ImageIcon( passedURL,
-	// Step.verdictAsString.get(Verdict.PASSED)));
-	// // renderButton.addMouseListener(new MouseListener(){
-	// //
-	// // public void mouseClicked(MouseEvent arg0) {
-	// // Logger.getLogger(this.getClass() ).debug("mouse clik");
-	// // if(arg0.getClickCount() == 1)
-	// // {
-	// // launchScreenShotComparison compScreenShot= new
-	// launchScreenShotComparison("C:\\Documents and Settings\\bvqj2105\\workspace\\prototype\\src\\images\\ref1","C:\\Documents and Settings\\bvqj2105\\workspace\\prototype\\src\\images\\test1");
-	// // }
-	// // }
-	// //
-	// // public void mousePressed(MouseEvent arg0) {
-	// // Logger.getLogger(this.getClass() ).debug("mouse pressed");
-	// // }
-	// //
-	// // public void mouseReleased(MouseEvent arg0) {
-	// //
-	// // }
-	// //
-	// // public void mouseEntered(MouseEvent arg0) {
-	// //
-	// // }
-	// //
-	// // public void mouseExited(MouseEvent arg0) {
-	// //
-	// // }
-	// //
-	// // });
-	// return renderButton;
-	// }
-	//
-	// public Component getTableCellEditorComponent(
-	// JTable table, Object value, boolean isSelected, int row, int column)
-	// {
-	// text = (value == null) ? "" : value.toString();
-	// editButton.setText( text );
-	// return editButton;
-	// }
-	//
-	// public Object getCellEditorValue()
-	// {
-	// return text;
-	// }
-	//
-	// public void actionPerformed(ActionEvent e)
-	// {
-	// fireEditingStopped();
-	// Logger.getLogger(this.getClass() ).debug( e.getActionCommand() + " : " +
-	// table.getSelectedRow());
-	// }
-	// }
 
 	/*
 	 * (non-Javadoc)
@@ -786,8 +622,6 @@ public class JatkCheckListTable extends CheckListTable {
 
 		if (model.getRowCount() == 0)
 			rowNumberInGUI = table.getRowCount();
-		// String numRowInNumbers =
-		// Integer.valueOf(table.getRowCount()+1).toString();
 		numRowInNumbers = Integer.valueOf(rowNumberInGUI + 1).toString();
 
 		int numRowInCampaign = campaign.size();
@@ -797,94 +631,36 @@ public class JatkCheckListTable extends CheckListTable {
 		toolTipFlashFile.add(numRowInCampaign, flashURI);
 
 		if (checkPreviousResults) {
-			// check for previous results
-			// List<JatkStepAnalysisResult> results = new
-			// ArrayList<JatkStepAnalysisResult>();
-			// List<IAnalysisResultsManager> arManagers=
-			// Matos.getInstance().getAnalysisResultsManagers();
-			// for (IAnalysisResultsManager arManager : arManagers) {
-			// JatkStepAnalysisResult rs =
-			// (JatkStepAnalysisResult)arManager.getPreviousAnalysisResult(flashStep);
-			// if (rs!=null) {
-			// results.add(rs);
-			// }
-			// }
-
-			// looking at retreived results
-			StepAnalysisResult sar = null;
-			/*
-			 * if (results.size()==1) { sar = results.get(0); } else if
-			 * (results.size()>1) { // case of several Analysis Results Manager.
-			 * Should not arrived... // TODO sort dy date and use the younger
-			 * Out.log.println(
-			 * "More than one previous analysis result retreived. Nothing done..."
-			 * ); //javastep.updateLastAnalysisResult(results.get(0)); } else {
-			 * // no results... }
-			 */
-
-			if (sar != null) {
-				flashStep.updateLastAnalysisResult(sar);
-				String toolTip = sar.toHTML(flashStep);
-				boolean modified = toolTip.indexOf("red") > 0;
-				rowData.add(modified ? "M" : ""); // Modified column
-				toolTipModified.add(numRowInCampaign, toolTip);
-
-				if (sar.getVerdict().equals(Step.verdictAsString.get(Verdict.PASSED))
-						|| sar.getVerdict().equals(Step.verdictAsString.get(Verdict.FAILED))) {
-					rowData.add(sar.getVerdict()); // Verdict column
-					rowData.add(sar.getComment()); // Comments column
-					String repPath = sar.getReportPath();
-					// if ((repPath==null)||(repPath.equals(""))) {
-					// repPath = rs.report.getAbsolutePath();
-					// }
-					toolTipReport.add(numRowInCampaign, repPath);
-				} else { // verdict is 'Skipped'
-					rowData.add(sar.getVerdict() + ": " + sar.getReason());
-					toolTipReport.add(numRowInCampaign, sar.getReason());
-				}
+			// Configuration column
+			if (null != flashStep.getXmlfilepath()) {
+				File configfile = new File(flashStep.getXmlfilepath());
+				rowData.add(configfile.getName());
 			} else {
-				// Configuration column
-				if (null != flashStep.getXmlfilepath()) {
-					File configfile = new File(flashStep.getXmlfilepath());
-					rowData.add(configfile.getName());
-				} else {
-					PhoneInterface phone = AutomaticPhoneDetection.getInstance().getDevice();
-					String defaultConfigFileName = Configuration.getInstance().getDefaultConfig()
-							.get(phone.getClass().getName());
-					if (defaultConfigFileName != null) {
-						rowData.add(defaultConfigFileName);
-						File file = new File(Configuration.defaultPhoneConfigPath
-								+ defaultConfigFileName);
-						flashStep.setXmlfilepath(file.toString());
-					} else
-						rowData.add(NOT_SELECTED);
-				}
-
-				rowData.add(""); // Modified column
-				toolTipModified.add(numRowInCampaign, "");
-				rowData.add(""); // Verdict column
-				rowData.add(""); // Comments column
-				toolTipReport.add(numRowInCampaign, "");
+				PhoneInterface phone = AutomaticPhoneDetection.getInstance().getDevice();
+				String defaultConfigFileName = Configuration.getInstance().getDefaultConfig()
+						.get(phone.getClass().getName());
+				if (defaultConfigFileName != null) {
+					rowData.add(defaultConfigFileName);
+					File file = new File(Configuration.defaultPhoneConfigPath
+							+ defaultConfigFileName);
+					flashStep.setXmlfilepath(file.toString());
+				} else
+					rowData.add(NOT_SELECTED);
 			}
+
+			rowData.add(""); // Modified column
+			toolTipModified.add(numRowInCampaign, "");
+			rowData.add(""); // Verdict column
+			rowData.add(""); // Comments column
+			toolTipReport.add(numRowInCampaign, "");
+
 		}
 
-		// TODO implementation of complete view
-		/*
-		 * if (completeView){ int numCid =
-		 * CoreGUI.cidTable.getNumCIDFromGUI(flashstep.id_cid); if (numCid ==
-		 * -1){ rowData.add("");//editor's list number }else{ rowData.add(new
-		 * Integer(numCid).toString());//editor's list number }
-		 * rowData.add(flashStep.cidName); rowData.add(flashStep.sms);
-		 * rowData.add(flashStep.httpAuthorized);
-		 * rowData.add(flashStep.service); rowData.add(flashStep.version);
-		 * rowData.add(flashStep.terminal); }
-		 */
 		model.insertRow(rowNumberInGUI, rowData);
 		campaign.add(numRowInCampaign, flashStep);
 		if (selectIt) {
 			selectARow(rowNumberInGUI);
 		}
-
 	}
 
 	/*
@@ -953,72 +729,48 @@ public class JatkCheckListTable extends CheckListTable {
 	public void updateStep(Step step) {
 		Step flashStep = (Step) step;
 
-		int index_in_campaign = getCampaign().indexOf(step);
-		int index_in_table = getIndexInTable(index_in_campaign);
-		centerRow(index_in_table);
-
-		// gets back previous results for the step
-		List<JatkStepAnalysisResult> results = new ArrayList<JatkStepAnalysisResult>();
-		/*
-		 * List<IAnalysisResultsManager> arManagers=
-		 * Matos.getInstance().getAnalysisResultsManagers(); for
-		 * (IAnalysisResultsManager arManager : arManagers) {
-		 * JatkStepAnalysisResult rs =
-		 * (JatkStepAnalysisResult)arManager.getPreviousAnalysisResult
-		 * (flashStep); if (rs!=null) { results.add(rs); } }
-		 */
-		// looking at retreived results
-		if (results.size() == 1) {
-			flashStep.updateLastAnalysisResult(results.get(0));
-		} else if (results.size() > 1) {
-			// case of several Analysis Results Manager. Should not
-			// arrived...
-			// TODO sort dy date and use the younger
-			Logger.getLogger(this.getClass()).warn(
-					"More than one previous analysis result retreived. Nothing done...");
-			// flashStep.updateLastAnalysisResult(results.get(0));
-		} else {
-			// no results... nothing to do
-		}
+		int indexInCampaign = getCampaign().indexOf(step);
+		int indexInTable = getIndexInTable(indexInCampaign);
+		centerRow(indexInTable);
 
 		Verdict userVerdict = flashStep.getUserVerdict();
 		if (userVerdict != Verdict.NONE) {
 			if (userVerdict == Verdict.PASSED || userVerdict == Verdict.FAILED) {
-				model.setValueAt(Step.verdictAsString.get(userVerdict), index_in_table,
+				model.setValueAt(Step.verdictAsString.get(userVerdict), indexInTable,
 						COLUMN_VERDICT);
 				String repPath = flashStep.getOutFilePath();
-				toolTipReport.set(index_in_campaign, repPath);
+				toolTipReport.set(indexInCampaign, repPath);
 			} else { // verdict is 'skipped'
 				if (flashStep.getSkippedMessage() != null
 						&& flashStep.getSkippedMessage().length() != 0) {
 					model.setValueAt(
 							Step.verdictAsString.get(userVerdict) + ": "
-									+ flashStep.getSkippedMessage(), index_in_table, COLUMN_VERDICT);
-					toolTipReport.set(index_in_campaign, flashStep.getSkippedMessage());
+									+ flashStep.getSkippedMessage(), indexInTable, COLUMN_VERDICT);
+					toolTipReport.set(indexInCampaign, flashStep.getSkippedMessage());
 				} else {
-					model.setValueAt(Step.verdictAsString.get(userVerdict), index_in_table,
+					model.setValueAt(Step.verdictAsString.get(userVerdict), indexInTable,
 							COLUMN_VERDICT);
 				}
 			}
 		} else {
 			Verdict verdict = flashStep.getVerdict();
 			if (verdict == Verdict.PASSED || verdict == Verdict.FAILED) {
-				model.setValueAt(Step.verdictAsString.get(verdict), index_in_table, COLUMN_VERDICT);
+				model.setValueAt(Step.verdictAsString.get(verdict), indexInTable, COLUMN_VERDICT);
 				String repPath = flashStep.getOutFilePath();
-				toolTipReport.set(index_in_campaign, repPath);
+				toolTipReport.set(indexInCampaign, repPath);
 			} else if (verdict == Verdict.NONE) {
-				model.setValueAt(Step.verdictAsString.get(verdict), index_in_table,
+				model.setValueAt(Step.verdictAsString.get(verdict), indexInTable,
 						COLUMN_VERDICT);
 			} else { // verdict is 'Skipped'
 				if (flashStep.getSkippedMessage() != null
 						&& flashStep.getSkippedMessage().length() != 0) {
 					model.setValueAt(
 							Step.verdictAsString.get(verdict) + ": "
-									+ flashStep.getSkippedMessage(), index_in_table,
+									+ flashStep.getSkippedMessage(), indexInTable,
 							COLUMN_VERDICT);
-					toolTipReport.set(index_in_campaign, flashStep.getSkippedMessage());
+					toolTipReport.set(indexInCampaign, flashStep.getSkippedMessage());
 				} else {
-					model.setValueAt(Step.verdictAsString.get(verdict), index_in_table,
+					model.setValueAt(Step.verdictAsString.get(verdict), indexInTable,
 							COLUMN_VERDICT);
 				}
 			}
@@ -1029,8 +781,8 @@ public class JatkCheckListTable extends CheckListTable {
 		if (sar != null) {
 			toolTip = sar.toHTML(flashStep);
 			boolean modified = toolTip.indexOf("red") > 0;
-			model.setValueAt(modified ? "M" : "", index_in_table, COLUMN_MODIFIED);
-			toolTipModified.set(index_in_campaign, toolTip);
+			model.setValueAt(modified ? "M" : "", indexInTable, COLUMN_MODIFIED);
+			toolTipModified.set(indexInCampaign, toolTip);
 		}
 
 	}
@@ -1085,27 +837,6 @@ public class JatkCheckListTable extends CheckListTable {
 			campaign.movesample(campaignIndexRemovedRows, rowIndexDst);
 			// order IHM
 			reorderrow();
-
-			// updateAllAfterRemoving(campaignIndexRemovedRows);
-
-			// Step tempstep =campaign.get(rowIndexSrc);
-			// addRow(tempstep, rowIndexDst, true, true);
-
-			// dataVector.add(rowIndexDst, r);
-			// fireTableRowsInserted(rowIndexDst, rowIndexDst);
-
-			/*
-			 * opyoneRow(rowIndexSrc); Vector<Integer> campaignIndexRemovedRows
-			 * = new Vector<Integer>();
-			 * 
-			 * campaignIndexRemovedRows.add( getNumCampaign(rowIndexSrc) );
-			 * model.removeRow(rowIndexSrc);
-			 * updateAllAfterRemoving(campaignIndexRemovedRows); pasteatEnd();
-			 * CoreGUIPlugin.mainFrame.updateButtons();
-			 * CoreGUIPlugin.mainFrame.setModified(true);
-			 * CoreGUIPlugin.mainFrame.updateContentTabsTitle();
-			 */
-
 		}
 
 		public void reorderrow() {
