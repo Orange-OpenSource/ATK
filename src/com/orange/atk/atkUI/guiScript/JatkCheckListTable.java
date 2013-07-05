@@ -101,8 +101,7 @@ public class JatkCheckListTable extends CheckListTable {
 	public static final int COLUMN_COMMENTS = COLUMN_VERDICT + 1;
 	public static final int COLUMN_SCREENSHOT = COLUMN_COMMENTS + 1;
 
-	public static final int COLUMN_ANALYSER = COLUMN_SCREENSHOT + 1;
-	public static final int NUMBER_OF_COLUMN = COLUMN_ANALYSER;
+	public static final int NUMBER_OF_COLUMN = COLUMN_SCREENSHOT;
 
 	private Object[] longValues = {"1000", "ALongWordForAFlashFile.swf", "Config file", "*",
 			"Passed***", "A long comment", "Analyse"};
@@ -156,7 +155,6 @@ public class JatkCheckListTable extends CheckListTable {
 		model.addColumn("Verdict");
 		model.addColumn("Comments");
 		model.addColumn("ScreenShots Comparison");
-		model.addColumn("Analyser");
 
 		constructTable();
 
@@ -207,6 +205,7 @@ public class JatkCheckListTable extends CheckListTable {
 		// initLaunchExternalTool();
 
 		popup.add(JatkGUIAction.ANALYSESELECTEDTASKS.getAsMenuItem("Launch selection"));
+		popup.add(MatosAction.VIEWANALYZER.getAsMenuItem("Analyzer"));
 		popup.add(MatosAction.VIEWREPORT.getAsMenuItem("Open latest report"));
 		popup.add(JatkGUIAction.SETSCREENSHOTREFERENCEDIR
 				.getAsMenuItem("Set Reference Screenshots"));
@@ -260,11 +259,6 @@ public class JatkCheckListTable extends CheckListTable {
 		screenShotsColumn = table.getColumnModel().getColumn(COLUMN_SCREENSHOT);
 		GeneralRenderer screenShotsRenderer = new GeneralRenderer();
 		screenShotsColumn.setCellRenderer(screenShotsRenderer);
-
-		analyserColumn = table.getColumnModel().getColumn(COLUMN_ANALYSER);
-		GeneralRenderer AnalyserRenderer = new GeneralRenderer();
-		analyserColumn.setCellRenderer(AnalyserRenderer);
-
 	}
 
 	public JComboBox getComboBoxPhoneConfig() {
@@ -361,69 +355,68 @@ public class JatkCheckListTable extends CheckListTable {
 						}
 					}
 
-				} else
-					if (transferable.isDataFlavorSupported(uriListFlavor)) { // gnome
+				} else if (transferable.isDataFlavorSupported(uriListFlavor)) { // gnome
 																				// &
 																				// KDE's
 																				// way
-						String s = (String) transferable.getTransferData(uriListFlavor);
-						String[] uris = s.split(System.getProperty("line.separator"));
-						for (int i = 0; i < uris.length; i++) {
-							if (uris[i].trim().length() > 0) {
-								File f = new File(new URI(uris[i].trim()));
-								String extension = ".tst";
+					String s = (String) transferable.getTransferData(uriListFlavor);
+					String[] uris = s.split(System.getProperty("line.separator"));
+					for (int i = 0; i < uris.length; i++) {
+						if (uris[i].trim().length() > 0) {
+							File f = new File(new URI(uris[i].trim()));
+							String extension = ".tst";
 
-								if (AutomaticPhoneDetection.getInstance().isNokia())
-									extension = ".xml";
-								if (f.exists() && f.getAbsolutePath().endsWith(extension)) {
-									dd_flashPathVect.add(new File(f.getAbsolutePath()));
-								}
+							if (AutomaticPhoneDetection.getInstance().isNokia())
+								extension = ".xml";
+							if (f.exists() && f.getAbsolutePath().endsWith(extension)) {
+								dd_flashPathVect.add(new File(f.getAbsolutePath()));
 							}
 						}
-					} else {
-						// On récupère l'emplacement du Drop
-						JTable.DropLocation dl = (JTable.DropLocation) info.getDropLocation();
-
-						// On récupère la ligne de destinatop du drop
-						int dstRow = dl.getRow();
-
-						// on récupère l'objet de transfert
-						Transferable trans = info.getTransferable();
-
-						// On récupère la donnée utile depuis l'objet de
-						// transfert (l'emplacement d'origine de la ligne à
-						// bouger)
-						try {
-							trans.getTransferData(DataFlavor.stringFlavor);
-						} catch (UnsupportedFlavorException e) {
-							e.printStackTrace();
-							return false;
-						} catch (IOException e) {
-							e.printStackTrace();
-							return false;
-						}
-
-						// on effectue les modifications sur la JTable
-						JTable table = (JTable) info.getComponent();
-						FlashCheckListTableModel m = (FlashCheckListTableModel) table.getModel();
-
-						if (dstRow < 0) {
-							dstRow = 0;
-						}
-						if (dstRow > m.getRowCount() - 1) {
-							dstRow = m.getRowCount() - 1;
-						}
-
-						SortedSet<Integer> campaignIndexRemovedRows = new TreeSet<Integer>();
-						int[] temp = table.getSelectedRows();
-
-						for (int i = 0; i < temp.length; i++) {
-							campaignIndexRemovedRows.add(temp[i]);
-						}
-
-						m.moveRow(campaignIndexRemovedRows, dstRow);
-						return true;
 					}
+				} else {
+					// On récupère l'emplacement du Drop
+					JTable.DropLocation dl = (JTable.DropLocation) info.getDropLocation();
+
+					// On récupère la ligne de destinatop du drop
+					int dstRow = dl.getRow();
+
+					// on récupère l'objet de transfert
+					Transferable trans = info.getTransferable();
+
+					// On récupère la donnée utile depuis l'objet de
+					// transfert (l'emplacement d'origine de la ligne à
+					// bouger)
+					try {
+						trans.getTransferData(DataFlavor.stringFlavor);
+					} catch (UnsupportedFlavorException e) {
+						e.printStackTrace();
+						return false;
+					} catch (IOException e) {
+						e.printStackTrace();
+						return false;
+					}
+
+					// on effectue les modifications sur la JTable
+					JTable table = (JTable) info.getComponent();
+					FlashCheckListTableModel m = (FlashCheckListTableModel) table.getModel();
+
+					if (dstRow < 0) {
+						dstRow = 0;
+					}
+					if (dstRow > m.getRowCount() - 1) {
+						dstRow = m.getRowCount() - 1;
+					}
+
+					SortedSet<Integer> campaignIndexRemovedRows = new TreeSet<Integer>();
+					int[] temp = table.getSelectedRows();
+
+					for (int i = 0; i < temp.length; i++) {
+						campaignIndexRemovedRows.add(temp[i]);
+					}
+
+					m.moveRow(campaignIndexRemovedRows, dstRow);
+					return true;
+				}
 
 				JTable.DropLocation dl = (JTable.DropLocation) info.getDropLocation();
 
@@ -527,35 +520,29 @@ public class JatkCheckListTable extends CheckListTable {
 					if (userVerdict != Verdict.NONE) {
 						if (userVerdict == Verdict.PASSED) {
 							this.setIcon(suitImages[0]);
-						} else
-							if (userVerdict == Verdict.FAILED) {
-								this.setIcon(suitImages[1]);
-							} else
-								if (userVerdict == Verdict.SKIPPED) {
-									this.setIcon(suitImages[2]);
-								}
+						} else if (userVerdict == Verdict.FAILED) {
+							this.setIcon(suitImages[1]);
+						} else if (userVerdict == Verdict.SKIPPED) {
+							this.setIcon(suitImages[2]);
+						}
 					} else {
 						if (verdict == Verdict.PASSED) {
 							this.setIcon(suitImages[0]);
-						} else
-							if (verdict == Verdict.FAILED) {
-								this.setIcon(suitImages[1]);
-							} else
-								if (verdict == Verdict.SKIPPED) {
-									this.setIcon(suitImages[2]);
-								} else
-									if (verdict == Verdict.NONE) {
-										this.setIcon(null);
-									} else {
-										this.setIcon(null);
-									}
+						} else if (verdict == Verdict.FAILED) {
+							this.setIcon(suitImages[1]);
+						} else if (verdict == Verdict.SKIPPED) {
+							this.setIcon(suitImages[2]);
+						} else if (verdict == Verdict.NONE) {
+							this.setIcon(null);
+						} else {
+							this.setIcon(null);
+						}
 					}
 					if (userVerdict == verdict && verdict != Verdict.NONE) {
 						this.setBackground(new Color(224, 238, 224));
-					} else
-						if (userVerdict != verdict && userVerdict != Verdict.NONE) {
-							this.setBackground(new Color(238, 213, 210));
-						}
+					} else if (userVerdict != verdict && userVerdict != Verdict.NONE) {
+						this.setBackground(new Color(238, 213, 210));
+					}
 					if (verdict == Verdict.SKIPPED) {
 						this.setBackground(new Color(255, 250, 205));
 					}
@@ -594,13 +581,11 @@ public class JatkCheckListTable extends CheckListTable {
 					if (screenshotVerdict != Verdict.NONE) {
 						if (screenshotVerdict == Verdict.PASSED) {
 							this.setIcon(suitImages[0]);
-						} else
-							if (screenshotVerdict == Verdict.FAILED) {
-								this.setIcon(suitImages[1]);
-							} else
-								if (screenshotVerdict == Verdict.SKIPPED) {
-									this.setIcon(suitImages[2]);
-								}
+						} else if (screenshotVerdict == Verdict.FAILED) {
+							this.setIcon(suitImages[1]);
+						} else if (screenshotVerdict == Verdict.SKIPPED) {
+							this.setIcon(suitImages[2]);
+						}
 					} else {
 						this.setIcon(new ImageIcon(CoreGUIPlugin
 								.getIconURL("tango/camera_icon.png"),
@@ -644,11 +629,6 @@ public class JatkCheckListTable extends CheckListTable {
 					// this.add(button);
 
 					// GeneralRenderer buttonColumn = new GeneralRenderer();
-				}
-
-				if (column == COLUMN_ANALYSER) {
-					this.setIcon(new ImageIcon(CoreGUIPlugin.getIconURL("tango/analyser.png"),
-							"Launch Analyser"));
 				}
 				if (completeView) {
 					if (column == COLUMN_COMMENTS) {
@@ -990,17 +970,16 @@ public class JatkCheckListTable extends CheckListTable {
 		// looking at retreived results
 		if (results.size() == 1) {
 			flashStep.updateLastAnalysisResult(results.get(0));
-		} else
-			if (results.size() > 1) {
-				// case of several Analysis Results Manager. Should not
-				// arrived...
-				// TODO sort dy date and use the younger
-				Logger.getLogger(this.getClass()).warn(
-						"More than one previous analysis result retreived. Nothing done...");
-				// flashStep.updateLastAnalysisResult(results.get(0));
-			} else {
-				// no results... nothing to do
-			}
+		} else if (results.size() > 1) {
+			// case of several Analysis Results Manager. Should not
+			// arrived...
+			// TODO sort dy date and use the younger
+			Logger.getLogger(this.getClass()).warn(
+					"More than one previous analysis result retreived. Nothing done...");
+			// flashStep.updateLastAnalysisResult(results.get(0));
+		} else {
+			// no results... nothing to do
+		}
 
 		Verdict userVerdict = flashStep.getUserVerdict();
 		if (userVerdict != Verdict.NONE) {
@@ -1027,23 +1006,22 @@ public class JatkCheckListTable extends CheckListTable {
 				model.setValueAt(Step.verdictAsString.get(verdict), index_in_table, COLUMN_VERDICT);
 				String repPath = flashStep.getOutFilePath();
 				toolTipReport.set(index_in_campaign, repPath);
-			} else
-				if (verdict == Verdict.NONE) {
+			} else if (verdict == Verdict.NONE) {
+				model.setValueAt(Step.verdictAsString.get(verdict), index_in_table,
+						COLUMN_VERDICT);
+			} else { // verdict is 'Skipped'
+				if (flashStep.getSkippedMessage() != null
+						&& flashStep.getSkippedMessage().length() != 0) {
+					model.setValueAt(
+							Step.verdictAsString.get(verdict) + ": "
+									+ flashStep.getSkippedMessage(), index_in_table,
+							COLUMN_VERDICT);
+					toolTipReport.set(index_in_campaign, flashStep.getSkippedMessage());
+				} else {
 					model.setValueAt(Step.verdictAsString.get(verdict), index_in_table,
 							COLUMN_VERDICT);
-				} else { // verdict is 'Skipped'
-					if (flashStep.getSkippedMessage() != null
-							&& flashStep.getSkippedMessage().length() != 0) {
-						model.setValueAt(
-								Step.verdictAsString.get(verdict) + ": "
-										+ flashStep.getSkippedMessage(), index_in_table,
-								COLUMN_VERDICT);
-						toolTipReport.set(index_in_campaign, flashStep.getSkippedMessage());
-					} else {
-						model.setValueAt(Step.verdictAsString.get(verdict), index_in_table,
-								COLUMN_VERDICT);
-					}
 				}
+			}
 		}
 
 		StepAnalysisResult sar = flashStep.getLastAnalysisResult();
