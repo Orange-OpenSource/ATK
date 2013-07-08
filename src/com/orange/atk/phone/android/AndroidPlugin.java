@@ -17,7 +17,7 @@ public class AndroidPlugin implements Plugin{
 	static {
 		PluginManager.register(AndroidPlugin.class.getName());
 	}
-	private  AndroidDebugBridge bridge;
+	private static  AndroidDebugBridge bridge; //private
 	private static String defaultAdbLocation = Platform.getInstance().getDefaultADBLocation();
 	private static String adbLocation;
 
@@ -147,6 +147,11 @@ public class AndroidPlugin implements Plugin{
 	@Override
 	public String getName() {
 		return "Android";
+	}
+	@Override
+	public AndroidDebugBridge getAdb() {
+		// TODO Auto-generated method stub
+		return bridge;
 	}
 
 

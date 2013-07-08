@@ -1,7 +1,7 @@
 /*
  * Software Name : ATK
  *
- * Copyright (C) 2007 - 2012 France Télécom
+ * Copyright (C) 2007 - 2012 France TÃ©lÃ©com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,6 +82,10 @@ public class ActionToExecute {
 	private static final String PARAMETER_IS_NOT = " parameter is not ";
 	private static final String AN_INTEGER = "an Integer";
 	private static final String A_STRING = "a String";
+
+	private static final String A_FLOAT = "a Float";
+	private static final String A_BOOLEAN = "a Boolean";
+	private static final String A_LONG = "a Long";
 
 	// Special values
 	private static final String LOOP = "loop";
@@ -264,7 +268,7 @@ public class ActionToExecute {
 	 *         file not found, unable to open file, ...)
 	 */
 	public Boolean actionInclude(ASTINCLUDE node, Variable[] args) {
-		
+
 		String include = args[0].getString();
 		String scriptPath = interpreter.getInternalState().getCurrentScript();
 
@@ -274,14 +278,14 @@ public class ActionToExecute {
 			generateError(
 					node,
 					"File "
-					+ include
-					+ " could not be include. Possible reasons are : "
-					+ Platform.LINE_SEP
-					+ " - The named file does not exist"
-					+ Platform.LINE_SEP
-					+ " - The named file is a directory rather than a regular file"
-					+ Platform.LINE_SEP
-					+ " - You do not have enough rights to read the file");
+							+ include
+							+ " could not be include. Possible reasons are : "
+							+ Platform.LINE_SEP
+							+ " - The named file does not exist"
+							+ Platform.LINE_SEP
+							+ " - The named file is a directory rather than a regular file"
+							+ Platform.LINE_SEP
+							+ " - You do not have enough rights to read the file");
 			mainLogger.addInfotoActionLogger("Error JATK","action Include File not found", new Date(),new Date());
 			return Boolean.FALSE;
 		} catch (ParseException e) {
@@ -292,7 +296,7 @@ public class ActionToExecute {
 		return Boolean.TRUE;
 	}
 
-	
+
 	public static void fetchIncludeScript(ATKScriptParserVisitor interpreter, ASTINCLUDE node, String scriptPath, String include) throws FileNotFoundException, ParseException {
 		String includefile=null;
 		if(scriptPath == null) throw new FileNotFoundException();
@@ -345,10 +349,10 @@ public class ActionToExecute {
 		}
 		//continue in body of the include
 		for (int i=1; i<node.jjtGetNumChildren() ; i++)
-			 node.jjtGetChild(i).jjtAccept(interpreter, null);
-	
+			node.jjtGetChild(i).jjtAccept(interpreter, null);
+
 	}
-	
+
 	/**
 	 * Call when ASTFUNCTION.getName() is equals to FillStorage. Fill the phone RMS
 	 * It calls the {@link PhoneInterface}.fillStorage function with good parameters.
@@ -852,18 +856,18 @@ public class ActionToExecute {
 	}
 
 	private BufferedImage rotate(BufferedImage img, int angle) { 
-        int w = img.getWidth();   
-        int h = img.getHeight();   
-        BufferedImage dimg;
-        double sin = Math.abs(Math.sin(Math.toRadians(angle))), cos = Math.abs(Math.cos(Math.toRadians(angle))); 
-        int neww = (int)Math.floor(w*cos+h*sin), newh = (int)Math.floor(h*cos+w*sin); 
-        dimg = new BufferedImage(neww, newh, BufferedImage.TYPE_INT_RGB);   
-        Graphics2D g = dimg.createGraphics();   
-        g.translate((neww-w)/2, (newh-h)/2); 
-        g.rotate(Math.toRadians(angle), w/2, h/2); 
-        g.drawImage(img, null, 0, 0);
-        return dimg;   
-    }  
+		int w = img.getWidth();   
+		int h = img.getHeight();   
+		BufferedImage dimg;
+		double sin = Math.abs(Math.sin(Math.toRadians(angle))), cos = Math.abs(Math.cos(Math.toRadians(angle))); 
+		int neww = (int)Math.floor(w*cos+h*sin), newh = (int)Math.floor(h*cos+w*sin); 
+		dimg = new BufferedImage(neww, newh, BufferedImage.TYPE_INT_RGB);   
+		Graphics2D g = dimg.createGraphics();   
+		g.translate((neww-w)/2, (newh-h)/2); 
+		g.rotate(Math.toRadians(angle), w/2, h/2); 
+		g.drawImage(img, null, 0, 0);
+		return dimg;   
+	}  
 
 	/**
 	 * Call when ASTFUNCTION.getName() is equals to SendEmail. It sends an email.
@@ -1597,6 +1601,88 @@ public class ActionToExecute {
 			generateError(node, ERRMSG_INVALID_NUMBER_OF_ARGUMENTS);
 			return Boolean.FALSE;
 		}
+	}
+	/**
+	 * Call when ASTFUNCTION is solo Function
+	 * @param node
+	 *            Node of the AST which generates this call 
+	 * @param args
+	 *            array of parameter given to the function in the
+	 *            script. 
+	 * @return Boolean.TRUE if OK, Boolean.FALSE if the function is not
+	 *         implemented or if a problem happens (invalid number of parameter,
+	 *         ...)
+	 */
+	public Boolean actionExecuteSoloMethod(ASTFUNCTION node, Variable[] args) {
+		if(node.getValue().toLowerCase().contains("StartRobotiumTestOn".toLowerCase())) {
+			actionStartRobotiumTestOn(node, args);
+		} else {
+			String [] commands=null;
+			if(args!=null&& args.length > 0) {
+				commands=new String[(2+(2*args.length))];
+				commands[0]=node.getValue();
+				commands[1]=String.valueOf(args.length);
+				int j=2;
+				for(int i=0;i<args.length;i++) {
+					commands[j]=args[i].get_type();
+					j++;
+				}
+				for(int i=0;i<args.length;i++) {
+					commands[j]=args[i].get_value();
+					j++;
+				}
+			} else {
+				commands=new String[2];
+				commands[0]=node.getValue();
+				commands[1]="0";
+			}
+			try {
+				getPhoneInterface().sendCommandToExecuteToSolo(commands);
+			} catch (PhoneException e) {
+				generateWarning(node, e);
+			}
+		}
+		return Boolean.TRUE;
+	}
+
+	public Boolean actionStartRobotiumTestOn(ASTFUNCTION node, Variable[] args) {
+		if (!checkNumberArguments(4, args.length, node.getLineNumber()))  {
+			return Boolean.FALSE;
+		}
+		try {  
+			String packName;
+			String activityName;
+			String packsourceDir;
+			int versionCode;
+			if(args[0].isString()) {
+				packName=args[0].getString();
+				if(args[1].isString()) {
+					activityName=args[1].getString();
+					if(args[2].isString()) {
+						packsourceDir=args[2].getString();
+						if(args[3].isInteger()) {
+							versionCode = args[3].getInteger();
+						} else {
+							generateError(node, FOURTH + PARAMETER_IS_NOT  +AN_INTEGER);
+							return Boolean.FALSE;	
+						}
+					} else {
+						generateError(node, THIRD + PARAMETER_IS_NOT  +A_STRING);
+						return Boolean.FALSE;	
+					}
+				} else {
+					generateError(node, SECOND + PARAMETER_IS_NOT + A_STRING);
+					return Boolean.FALSE;	
+				}
+			} else {
+				generateError(node, FIRST + PARAMETER_IS_NOT + A_STRING);
+				return Boolean.FALSE; 	
+			}
+			getPhoneInterface().setApkToTestWithRobotiumParam(packName, activityName, packsourceDir, versionCode);	
+		} catch (PhoneException e)  { 
+			generateWarning(node, e);
+		}
+		return Boolean.TRUE;
 	}
 
 }

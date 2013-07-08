@@ -28,7 +28,9 @@ import java.util.List;
 
 import javax.swing.text.BadLocationException;
 
+import com.orange.atk.interpreter.ast.ASTBOOLEAN;
 import com.orange.atk.interpreter.ast.ASTCOMMENT;
+import com.orange.atk.interpreter.ast.ASTFLOAT;
 import com.orange.atk.interpreter.ast.ASTFUNCTION;
 import com.orange.atk.interpreter.ast.ASTINCLUDE;
 import com.orange.atk.interpreter.ast.ASTLOOP;
@@ -163,6 +165,14 @@ public class SurroundLoopVisitor implements ATKScriptParserVisitor {
 
 	public Object visit(ASTINCLUDE node, Object data) {
 		return visit( (SimpleNode)node,data);
+	}
+
+	public Object visit(ASTBOOLEAN node, Object data) {
+		return visit( (SimpleNode) node,data);
+	}
+
+	public Object visit(ASTFLOAT node, Object data) {
+		return visit( (SimpleNode) node,data);
 	}
 
 
