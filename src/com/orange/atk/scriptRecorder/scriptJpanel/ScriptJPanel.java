@@ -386,7 +386,7 @@ public class ScriptJPanel extends JScrollPane {
 					 @Override
 					 public void run() {
 					// recframe.getViewsFunction();
-						 recframe.selectApk();
+						 recframe.selectAPK();
 					    if(!RecorderFrame.PackageName.equalsIgnoreCase("")&& !RecorderFrame.MainActivityName.equalsIgnoreCase("")&&
 				    		 !RecorderFrame.PackageSourceDir.equalsIgnoreCase("")) {
 								int index = tree.getSelectionRows()[tree.getSelectionCount()-1];

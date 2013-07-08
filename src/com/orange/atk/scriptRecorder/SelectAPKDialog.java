@@ -35,9 +35,9 @@ public class SelectAPKDialog extends JDialog {
 	private JButton ok;
 	private JButton cancel;
 	private  JScrollPane jScrollPane1=null;
-	private  String[] allUID;
-	private  String[] allUIDBup;
-	private  String[] listUID;
+	private  String[] AllInstalledApk;//contains all informations about an apk
+	private  String[] AllInstalledApkBup;//contains just the package name of apk
+	private  String[] listApks;
 	private    JList jList1;
 	private  RecorderFrame parent;
 	
@@ -62,64 +62,62 @@ public class SelectAPKDialog extends JDialog {
 			JOptionPane.showMessageDialog(null, "Can't Detect device");
 			return;
 			}
-		allUID =null;
-		AutomaticPhoneDetection.getInstance().pauseDetection();
+		AllInstalledApk =null;
 		Object[] apks = AllAPK.toArray();
-		allUID = Arrays.copyOf(apks, apks.length, String[].class);
+		AllInstalledApk = Arrays.copyOf(apks, apks.length, String[].class);
 		AutomaticPhoneDetection.getInstance().resumeDetection();
-		if (allUID!=null) {
-			allUIDBup= new String [allUID.length];
-			for(int i=0; i< allUID.length; i++) {
-				int index = allUID[i].indexOf(",");
+		if (AllInstalledApk!=null) {
+			AllInstalledApkBup= new String [AllInstalledApk.length];
+			for(int i=0; i< AllInstalledApk.length; i++) {
+				int index = AllInstalledApk[i].indexOf(",");
 				if(index!=-1) {
-					allUIDBup[i]= allUID[i].substring(0, allUID[i].indexOf(","));
+					AllInstalledApkBup[i]= AllInstalledApk[i].substring(0, AllInstalledApk[i].indexOf(","));
 					} else { 
-						allUIDBup[i]= allUID[i];
+						AllInstalledApkBup[i]= AllInstalledApk[i];
 					} 
 				}
 			}
-		if (allUID!=null) {
-			jList1 = new JList(allUIDBup);
-			listUID = allUID;
+		if (AllInstalledApk!=null) {
+			jList1 = new JList(AllInstalledApkBup);
+			listApks = AllInstalledApk;
 			jList1.setDoubleBuffered(false);
 			jList1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			jList1.setCellRenderer(new MyListRenderer());
 			jScrollPane1 = new JScrollPane(jList1);
-			//listUID = allUID;
 			globalFilePanel.setBorder(new TitledBorder("Start writing and press enter to filter"));
             ok = new JButton("OK");
 			ok.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e){
 					int indice =jList1.getSelectedIndex();
-					String listProg="";
+					String selectedApk="";
 					if(indice>=0) {
-						listProg=listProg+listUID[indice];
-						Logger.getLogger(this.getClass() ).debug("Selected array "+listProg);
-						fileFilter.setText(listProg);
+						selectedApk=selectedApk+listApks[indice];
+						Logger.getLogger(this.getClass() ).debug("Selected array "+selectedApk);
+						fileFilter.setText(selectedApk);
 						SelectAPKDialog.this.dispose();
 						RecorderFrame.MainActivityName="";
 						RecorderFrame.PackageName="";
 						RecorderFrame.PackageSourceDir="";
 						RecorderFrame.Versioncode=-1;
-						if(listProg.contains("Foreground App")) {
+						if(selectedApk.contains("Foreground App")) {
 							RecorderFrame.MainActivityName="CurrentApp";
 							RecorderFrame.PackageName="CurrentApp";
 							RecorderFrame.PackageSourceDir="CurrentApp";
 							RecorderFrame.Versioncode=-1;
 							} else {
-								if (listProg.indexOf(",")!=-1) {
-									RecorderFrame.PackageName=listProg.substring(0, listProg.indexOf(","));
-									listProg=listProg.substring( listProg.indexOf(",")+1);
+								if (selectedApk.indexOf(",")!=-1) {
+									RecorderFrame.PackageName=selectedApk.substring(0, selectedApk.indexOf(","));
+									selectedApk=selectedApk.substring( selectedApk.indexOf(",")+1);
 									}
-								if (listProg.indexOf(",")!=-1) {
-									RecorderFrame.MainActivityName=listProg.substring(0, listProg.indexOf(","));
-									listProg=listProg.substring( listProg.indexOf(",")+1);
+								if (selectedApk.indexOf(",")!=-1) {
+									RecorderFrame.MainActivityName=selectedApk.substring(0, selectedApk.indexOf(","));
+									selectedApk=selectedApk.substring( selectedApk.indexOf(",")+1);
 									}
-								if (listProg.indexOf(",")!=-1) {
-									RecorderFrame.PackageSourceDir=listProg.substring(0, listProg.indexOf(","));
-									listProg=listProg.substring( listProg.indexOf(",")+1);
+								if (selectedApk.indexOf(",")!=-1) {
+									RecorderFrame.PackageSourceDir=selectedApk.substring(0, selectedApk.indexOf(","));
+									selectedApk=selectedApk.substring( selectedApk.indexOf(",")+1);
 									}
-								RecorderFrame.Versioncode=Integer.valueOf(listProg);
+								RecorderFrame.Versioncode=Integer.valueOf(selectedApk);
 								Logger.getLogger(this.getClass() ).debug("Package: "+RecorderFrame.PackageName+" || VersionCode :  "
 								+RecorderFrame.Versioncode+" || MainActivity :  " +RecorderFrame.MainActivityName+" || Source Directory : "
 										+RecorderFrame.PackageSourceDir);
@@ -157,7 +155,7 @@ public class SelectAPKDialog extends JDialog {
         	}
         this.add(buttonsPanel, BorderLayout.SOUTH);
         this.setTitle("Select APK to test with Robotium");
-		if (allUID!=null){ 
+		if (AllInstalledApk!=null){ 
 			this.setSize(new Dimension(370,400));
 			} else {
 				this.setSize(new Dimension(370,130));
@@ -168,29 +166,29 @@ public class SelectAPKDialog extends JDialog {
 	private void filterList() {
        	String filterValue = fileFilter.getText();
        	int number = 0;
-           for(String UID : allUID) {
+           for(String UID : AllInstalledApk) {
        		if(UID.contains(filterValue)) {
        			number++;
        			}
        		}
-           listUID =  new String[number];
+           listApks =  new String[number];
            int i=0;
-           for(String UID : allUID) {
+           for(String UID : AllInstalledApk) {
         	   if(UID.contains(filterValue)){
-        		   listUID[i] = UID;
+        		   listApks[i] = UID;
         		   i++;
         		   }
         	   }
-           String []listUIDBup=new String[number];
-           for(int j=0; j< listUID.length; j++) {
-        	   int index = allUID[j].indexOf(",");
+           String []listApksBup=new String[number];
+           for(int j=0; j< listApks.length; j++) {
+        	   int index = AllInstalledApk[j].indexOf(",");
         	   if(index!=-1) {
-        		   listUIDBup[j]= listUID[j].substring(0, listUID[j].indexOf(","));
+        		   listApksBup[j]= listApks[j].substring(0, listApks[j].indexOf(","));
         		   } else {
-        			   listUIDBup[j]= listUID[j];
+        			   listApksBup[j]= listApks[j];
         			   }
         	   }
-           jList1.setListData(listUIDBup);
+           jList1.setListData(listApksBup);
            }
 	
 	private class MyListRenderer extends DefaultListCellRenderer  {  
@@ -198,23 +196,25 @@ public class SelectAPKDialog extends JDialog {
 
 		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
     	       super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-    	       if ((index == 0)&&(value.toString().contains("Foreground App"))) { 
-    	    	   setForeground(Color.BLUE);
-    	    	   }
-    	       String listProg=""+listUID[index];
+    	       String selectedApk=""+listApks[index];
     	       String apkpath ="";
-    	       if (listProg.indexOf(",")!=-1) {
-					listProg=listProg.substring( listProg.indexOf(",")+1);
+    	       if (selectedApk.indexOf(",")!=-1) {
+					selectedApk=selectedApk.substring( selectedApk.indexOf(",")+1);
 					}
-				if (listProg.indexOf(",")!=-1) {
-					listProg=listProg.substring( listProg.indexOf(",")+1);
+				if (selectedApk.indexOf(",")!=-1) {
+					selectedApk=selectedApk.substring( selectedApk.indexOf(",")+1);
 					}
-				if (listProg.indexOf(",")!=-1) {
-					apkpath=listProg.substring(0, listProg.indexOf(","));
+				if (selectedApk.indexOf(",")!=-1) {
+					apkpath=selectedApk.substring(0, selectedApk.indexOf(","));
 					}
     	       if (apkpath.startsWith("/system")) { 
-    	    	   setForeground(Color.RED);
-    	    	   }
+    	    	   setForeground(Color.LIGHT_GRAY);
+    	       } else {
+    	    	   setForeground(Color.darkGray);
+    	    	   if ((index == 0)&&(value.toString().contains("Foreground App"))) { 
+        	    	   setForeground(Color.BLUE);
+        	    	   }
+    	       }
     	       return this;
     	       }
 		}

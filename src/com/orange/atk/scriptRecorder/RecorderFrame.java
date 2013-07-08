@@ -811,7 +811,6 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 	}
 	
 	protected void  startUiAtomatorViewer(){
-		//DebugBridge.init();
 		new AndroidPlugin().getAdb();
 		DebugBridge.setInitialised(new AndroidPlugin().getAdb());
 		UiAutomatorViewer window = new UiAutomatorViewer();
@@ -821,35 +820,15 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 		}
 	
 	protected ArrayList<String> getForegroundApp() {
-		ArrayList<String> allapk= controller.getForegroundApp();
-		return allapk;
+		return controller.getForegroundApp();
 		}
 	
-	public void selectApk() {
-		
+	public void selectAPK() {
 		ArrayList <String> allApk = controller.getAllInstalledAPK();
 		ArrayList <String> apk = controller.getForegroundApp();
 		if(allApk!=null) { 
 			glassPane.stop();
 			new SelectAPKDialog(this,allApk).show();
-			Thread thread = new Thread() {
-				@Override
-				public void run() {
-					controller.setTestAPKWithRobotiumParam(RecorderFrame.PackageName,RecorderFrame.MainActivityName,RecorderFrame.PackageSourceDir,RecorderFrame.Versioncode);
-					controller.newFileForRobotium();
-					jbtStop.setEnabled(false);
-					jbtPlay.setEnabled(true);
-					jbtRecord.setEnabled(true);
-					jbtscreenshot.setEnabled(false);
-					jmiTakeSS.setEnabled(false);
-					jcbPhonemode.setEnabled(true);
-					jmiRecord.setEnabled(true);
-					jmiStop.setEnabled(false);
-					updateScript();
-					setModified(false);
-
-				}
-			};
 			if(RecorderFrame.PackageName.equalsIgnoreCase("NONE")&&RecorderFrame.MainActivityName.equalsIgnoreCase("NONE")&&
 					RecorderFrame.PackageSourceDir.equalsIgnoreCase("NONE")) {
 				RecorderFrame.MainActivityName="";
@@ -862,9 +841,6 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 				RecorderFrame.MainActivityName=apk.get(1);
 				RecorderFrame.PackageSourceDir=apk.get(2);
 				RecorderFrame.Versioncode=Integer.parseInt(apk.get(3));
-				thread.start();
-			} else {
-				thread.start();
 			}
 		} else {
 			glassPane.stop();
@@ -877,27 +853,36 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 			int r=JOptionPane.showConfirmDialog(this, "The script has been modified. Do you want to save this modifications?");
 			if (r==JOptionPane.OK_OPTION){
 				save();
-				}else if(r==JOptionPane.CANCEL_OPTION){
-					return;
-					}
+			}else if(r==JOptionPane.CANCEL_OPTION){
+				return;
 			}
+		}
 		Thread progress = new Thread(){
 			@Override
 			public void run() {
 				glassPane.setText("Getting all installed APK");
 				glassPane.start();
-				Thread progress1 = new Thread(){
-					@Override 
-					public void run() {
-						selectApk();	
-						}
-					};
-					progress1.start();
-					}
-			};
-			progress.start();
+				selectAPK();
+				if(!RecorderFrame.PackageName.equalsIgnoreCase("")&& !RecorderFrame.MainActivityName.equalsIgnoreCase("")&&
+				   !RecorderFrame.PackageSourceDir.equalsIgnoreCase("")) {
+					controller.setTestAPKWithRobotiumParam(RecorderFrame.PackageName,RecorderFrame.MainActivityName,RecorderFrame.PackageSourceDir,RecorderFrame.Versioncode);
+					controller.newFileForRobotium();
+					jbtStop.setEnabled(false);
+					jbtPlay.setEnabled(true);
+					jbtRecord.setEnabled(true);
+					jbtscreenshot.setEnabled(false);
+					jmiTakeSS.setEnabled(false);
+					jcbPhonemode.setEnabled(true);
+					jmiRecord.setEnabled(true);
+					jmiStop.setEnabled(false);
+					updateScript();
+					setModified(false);
+				}
 			}
-	
+		};
+		progress.start();
+	}
+
 	public void updateAST () {
 		jsPanel.update();
 	}

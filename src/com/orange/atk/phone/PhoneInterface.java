@@ -673,8 +673,6 @@ public interface PhoneInterface {
 	public boolean isDisabledPhone();
 	
 	//add robotium task
-	public String  getViewFromRobotium(String packName, String activityName, String packsourceDir, int versionCode)throws PhoneException;
-	
 	public void sendCommandToExecuteToSolo(Object[] commands)throws PhoneException;
 	
 	public void setApkToTestWithRobotiumParam(String packName, String activityName, String packsourceDir, int versionCode)throws PhoneException;

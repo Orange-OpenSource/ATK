@@ -1645,32 +1645,28 @@ public class AndroidPhone implements PhoneInterface {
 
 	//add Robotium task
 	protected String  [] executeShellCommand(String cmd) throws PhoneException{
-
 		IShellOutputReceiver receiver;
 		list =new ArrayList<String>();
 		receiver = shellOutputReceiver;
-		
-			try {
-				
-				adevice.executeShellCommand(cmd, receiver );
-			} catch (TimeoutException e) {
-				Logger.getLogger(this.getClass()).debug(e.getMessage());
-			} catch (AdbCommandRejectedException e) {
-				Logger.getLogger(this.getClass()).debug(e.getMessage());
-			} catch (ShellCommandUnresponsiveException e) {
-				Logger.getLogger(this.getClass()).debug(e.getMessage());
-			} catch (IOException e) {
-				Logger.getLogger(this.getClass()).debug(e.getMessage());
+
+		try {
+			adevice.executeShellCommand(cmd, receiver);
+		} catch (TimeoutException e) {
+			Logger.getLogger(this.getClass() ).debug("/****error while executing  : "+cmd + " :"+ e.getMessage());
+			throw new PhoneException(e.getMessage());
+		} catch (AdbCommandRejectedException e) {
+			Logger.getLogger(this.getClass() ).debug("/****error  while executing  : "+cmd  +" :"+  e.getMessage());
+			throw new PhoneException(e.getMessage());
+		} catch (ShellCommandUnresponsiveException e) {
+			Logger.getLogger(this.getClass() ).debug("/****error while executing  : "+cmd + " :"+  e.getMessage());
+			if(!cmd.contains("am instrument")) {
+				throw new PhoneException(e.getMessage());
 			}
-		
-		//return   list.toArray(new String[]{});
+		} catch (IOException e) {
+			Logger.getLogger(this.getClass() ).debug("/****error  while executing  : "+cmd + " :"+ e.getMessage());
+			throw new PhoneException(e.getMessage());
+		}
 			return null;
-	}
-	
-	@Override
-	public String getViewFromRobotium(String packName, String activityName,
-			String packsourceDir, int versionCode) throws PhoneException {
-		return null;
 	}
 
 	@Override
