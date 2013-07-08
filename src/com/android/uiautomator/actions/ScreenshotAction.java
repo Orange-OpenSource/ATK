@@ -16,13 +16,6 @@
 
 package com.android.uiautomator.actions;
 
-import com.android.ddmlib.IDevice;
-import com.android.uiautomator.DebugBridge;
-import com.android.uiautomator.UiAutomatorHelper;
-import com.android.uiautomator.UiAutomatorHelper.UiAutomatorException;
-import com.android.uiautomator.UiAutomatorHelper.UiAutomatorResult;
-import com.android.uiautomator.UiAutomatorViewer;
-
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -39,9 +32,16 @@ import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 
+import com.android.ddmlib.IDevice;
+import com.android.uiautomator.DebugBridge;
+import com.android.uiautomator.UiAutomatorHelper;
+import com.android.uiautomator.UiAutomatorHelper.UiAutomatorException;
+import com.android.uiautomator.UiAutomatorHelper.UiAutomatorResult;
+import com.android.uiautomator.UiAutomatorViewer;
+
 public class ScreenshotAction {
 	private UiAutomatorViewer mViewer;
-	private static IDevice adevice=null;
+	private static IDevice adevice = null;
 
 	public ScreenshotAction(UiAutomatorViewer viewer) {
 		mViewer = viewer;
@@ -49,13 +49,13 @@ public class ScreenshotAction {
 	private IDevice pickDevice() {
 		List<IDevice> devices = DebugBridge.getDevices();
 		if (devices.size() == 0) {
-			Logger.getLogger(this.getClass() ).debug("/****  no device detected ***/");
+			Logger.getLogger(this.getClass()).debug("/****  no device detected ***/");
 			return null;
 		} else if (devices.size() == 1) {
 			return devices.get(0);
 		} else {
-			for(int i=0;i<devices.size(); i++){
-				Logger.getLogger(this.getClass() ).debug(devices.get(i).getName());
+			for (int i = 0; i < devices.size(); i++) {
+				Logger.getLogger(this.getClass()).debug(devices.get(i).getName());
 			}
 			DevicePickerDialog dlg = new DevicePickerDialog(mViewer, devices);
 			return dlg.getSelectedDevice();
@@ -70,10 +70,10 @@ public class ScreenshotAction {
 		private final List<IDevice> mDevices;
 		private final String[] mDeviceNames;
 		private static int sSelectedDeviceIndex;
-		private  boolean cancelClicked=false;
+		private boolean cancelClicked = false;
 
 		public DevicePickerDialog(JFrame parentShell, List<IDevice> devices) {
-			super(parentShell,ModalityType.APPLICATION_MODAL );
+			super(parentShell, ModalityType.APPLICATION_MODAL);
 
 			mDevices = devices;
 			mDeviceNames = new String[mDevices.size()];
@@ -81,7 +81,7 @@ public class ScreenshotAction {
 				mDeviceNames[i] = devices.get(i).getName();
 			}
 			JLabel jlabel = new JLabel("Select Device");
-			JComboBox jc = new JComboBox<>(mDeviceNames);
+			JComboBox jc = new JComboBox(mDeviceNames);
 			JButton ok;
 			JButton cancel;
 			ok = new JButton("OK");
@@ -94,23 +94,23 @@ public class ScreenshotAction {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					JComboBox cb = (JComboBox)e.getSource();
+					JComboBox cb = (JComboBox) e.getSource();
 					sSelectedDeviceIndex = cb.getSelectedIndex();
 				}
 			});
 			ok.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e){
+				public void actionPerformed(ActionEvent e) {
 					DevicePickerDialog.this.dispose();
 				}
 			});
 			cancel.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e){
-					cancelClicked=true;
+				public void actionPerformed(ActionEvent e) {
+					cancelClicked = true;
 					DevicePickerDialog.this.dispose();
 				}
 			});
-			JPanel buttonsPanel = new JPanel();	
-			JPanel comboPanel = new JPanel(new FlowLayout());	
+			JPanel buttonsPanel = new JPanel();
+			JPanel comboPanel = new JPanel(new FlowLayout());
 			comboPanel.add(jlabel);
 			comboPanel.add(jc);
 			buttonsPanel.add(ok);
@@ -127,25 +127,25 @@ public class ScreenshotAction {
 
 		}
 		public IDevice getSelectedDevice() {
-			if(cancelClicked) {
+			if (cancelClicked) {
 				return null;
 			}
 			return mDevices.get(sSelectedDeviceIndex);
 		}
 	}
 
-
-	public void screenshotAction (String cmd, final String glassPaneMesg){
-		final String command=cmd;
+	public void screenshotAction(String cmd, final String glassPaneMesg) {
+		final String command = cmd;
 		if (!DebugBridge.isInitialized()) {
-			Logger.getLogger(this.getClass() ).debug("/**** adb not initialized***/");
+			Logger.getLogger(this.getClass()).debug("/**** adb not initialized***/");
 			return;
 		}
-		if(UiAutomatorViewer.dumpXMLFirstTime) {
+		if (UiAutomatorViewer.dumpXMLFirstTime) {
 			adevice = pickDevice();
 		}
 		if (adevice == null) {
-			JOptionPane.showMessageDialog(mViewer, "no device detected ","Error",JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(mViewer, "no device detected ", "Error",
+					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		Thread thread = new Thread() {
@@ -158,15 +158,19 @@ public class ScreenshotAction {
 					public void run() {
 						UiAutomatorResult result = null;
 						try {
-							if(command.equals("views")){
-							result =UiAutomatorHelper.takeSnapshot(adevice, mViewer,command); 
-							mViewer.setModel(result.model, result.uiHierarchy, result.screenshot);
+							if (command.equals("views")) {
+								result = UiAutomatorHelper.takeSnapshot(adevice, mViewer, command);
+								mViewer.setModel(result.model, result.uiHierarchy,
+										result.screenshot);
 							} else {
 								UiAutomatorHelper.executeRobotiumCommand(command);
 							}
 						} catch (UiAutomatorException e) {
-							JOptionPane.showMessageDialog(mViewer, "Error while executing "+ e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-							Logger.getLogger(this.getClass() ).debug("/**** Error while taking snapshot ***/"+e.getMessage()); 
+							JOptionPane.showMessageDialog(mViewer,
+									"Error while executing " + e.getMessage(), "Error",
+									JOptionPane.ERROR_MESSAGE);
+							Logger.getLogger(this.getClass()).debug(
+									"/**** Error while taking snapshot ***/" + e.getMessage());
 							mViewer.glassPane.stop();
 							return;
 						}
@@ -175,7 +179,7 @@ public class ScreenshotAction {
 				progress1.start();
 			}
 		};
-		thread.start();	
+		thread.start();
 	}
 
 }
