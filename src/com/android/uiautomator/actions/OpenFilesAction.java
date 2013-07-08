@@ -57,7 +57,6 @@ public class OpenFilesAction {
 					Logger.getLogger(this.getClass() ).debug("/****OpenFilesAction. Error While Reading ScreenshotFile***/");
 					return;
 				}    
-
 			}
 			mViewer.setModel(model, d.getXmlDumpFile(), img);
 		}

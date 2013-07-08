@@ -23,11 +23,6 @@
 
 package com.android.uiautomator.robotiumTask;
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -50,10 +45,8 @@ import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
 import com.android.uiautomator.UiAutomatorHelper;
 import com.android.uiautomator.UiAutomatorViewer;
-import com.android.uiautomator.UiAutomatorHelper.UiAutomatorException;
 import com.orange.atk.phone.PhoneException;
 import com.orange.atk.platform.Platform;
-import com.orange.atk.scriptRecorder.RecorderFrame;
 
 
 public class RobotiumTaskForViewer {

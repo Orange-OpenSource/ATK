@@ -101,8 +101,10 @@ public class FunctionDictionnary {
 
 		//TODO implement these features in at least one phone like solo
 		functionDictionnary.add( new String[]{"ExitSolo"} );
-		functionDictionnary.add( new String[]{"AssertCurrentActivity","STRING","STRING","STRING"} );
-		functionDictionnary.add( new String[]{"AssertCurrentActivity","STRING","STRING","STRING","BOOLEAN"} );
+		functionDictionnary.add( new String[]{"AssertCurrentActivity","STRING","Class"} );
+		functionDictionnary.add( new String[]{"AssertCurrentActivity","STRING","Class","BOOLEAN"} );
+		functionDictionnary.add( new String[]{"AssertCurrentActivity","STRING","String"} );
+		functionDictionnary.add( new String[]{"AssertCurrentActivity","STRING","String","BOOLEAN"} );
 		functionDictionnary.add( new String[]{"AssertMemoryNotLow"} );
 		functionDictionnary.add( new String[]{"ClearEditText","INTEGER"} );
 		functionDictionnary.add( new String[]{"ClickInList","INTEGER"} );
@@ -112,8 +114,9 @@ public class FunctionDictionnary {
 		functionDictionnary.add( new String[]{"ClickLongInList","INTEGER","INTEGER","INTEGER"} );
 		functionDictionnary.add( new String[]{"ClickLongOnScreen","FLOAT","FLOAT"} );
 		functionDictionnary.add( new String[]{"ClickLongOnScreen","FLOAT","FLOAT","INTEGER"} );
+		functionDictionnary.add( new String[]{"ClickLongOnText","STRING"} );
 		functionDictionnary.add( new String[]{"ClickLongOnText","STRING","INTEGER"} );
-		functionDictionnary.add( new String[]{"ClickLongOnText","STRING","INTEGER","STRING"} );
+		functionDictionnary.add( new String[]{"ClickLongOnText","STRING","INTEGER","BOOLEAN"} );
 		functionDictionnary.add( new String[]{"ClickLongOnText","STRING","INTEGER","INTEGER"} );
 		functionDictionnary.add( new String[]{"ClickLongOnTextAndPress","STRING","INTEGER"} );
 		functionDictionnary.add( new String[]{"ClickOnActionBarHomeButtom"} );
@@ -125,12 +128,12 @@ public class FunctionDictionnary {
 		functionDictionnary.add( new String[]{"ClickOnImage","INTEGER"} );
 		functionDictionnary.add( new String[]{"ClickOnImageButton","INTEGER"} );
 		functionDictionnary.add( new String[]{"ClickOnMenuItem","STRING"} );
-		functionDictionnary.add( new String[]{"ClickOnMenuItem","STRING","STRING"} );
+		functionDictionnary.add( new String[]{"ClickOnMenuItem","STRING","BOOLEAN"} );
 		functionDictionnary.add( new String[]{"ClickOnRadioButton","INTEGER"} );
 		functionDictionnary.add( new String[]{"ClickOnScreen","FLOAT","FLOAT"} );
 		functionDictionnary.add( new String[]{"ClickOnText","STRING"} );
 		functionDictionnary.add( new String[]{"ClickOnText","STRING","INTEGER"} );
-		functionDictionnary.add( new String[]{"ClickOnText","STRING","INTEGER","STRING"} );
+		functionDictionnary.add( new String[]{"ClickOnText","STRING","INTEGER","BOOLEAN"} );
 		functionDictionnary.add( new String[]{"ClickOnToggleButton","STRING"} );
 		functionDictionnary.add( new String[]{"Drag","FLOAT","FLOAT","FLOAT","FLOAT","INTEGER"} );
 		functionDictionnary.add( new String[]{"EnterText","INTEGER","STRING"} );
@@ -139,24 +142,22 @@ public class FunctionDictionnary {
 		functionDictionnary.add( new String[]{"GetActivityMonitor"} );
 		functionDictionnary.add( new String[]{"GetButton","INTEGER"} );
 		functionDictionnary.add( new String[]{"GetButton","STRING"} );
-		functionDictionnary.add( new String[]{"GetButton","STRING","STRING"} );
+		functionDictionnary.add( new String[]{"GetButton","STRING","BOOLEAN"} );
 		functionDictionnary.add( new String[]{"GetCurrentActivity"} );
 		functionDictionnary.add( new String[]{"GetCurrentViews"} );
-		functionDictionnary.add( new String[]{"GetCurrentViews","STRING"} );
+		functionDictionnary.add( new String[]{"GetCurrentViews","Class"} );
 		functionDictionnary.add( new String[]{"GetEditText","INTEGER"} );
 		functionDictionnary.add( new String[]{"GetEditText","STRING"} );
-		functionDictionnary.add( new String[]{"GetEditText","STRING","STRING"} );
+		functionDictionnary.add( new String[]{"GetEditText","STRING","BOOLEAN"} );
 		functionDictionnary.add( new String[]{"GetImage","INTEGER"} );
 		functionDictionnary.add( new String[]{"GetImageButton","INTEGER"} );
 		functionDictionnary.add( new String[]{"GetString","INTEGER"} );
 		functionDictionnary.add( new String[]{"GetText","INTEGER"} );
 		functionDictionnary.add( new String[]{"GetText","STRING"} );
-		functionDictionnary.add( new String[]{"GetText","STRING","STRING"} );
-		functionDictionnary.add( new String[]{"GetTopParent","STRING"} );
-		functionDictionnary.add( new String[]{"GetViews","STRING","INTEGER"} );
-		functionDictionnary.add( new String[]{"GetViews","INTEGER"} );
+		functionDictionnary.add( new String[]{"GetText","STRING","BOOLEAN"} );
+		functionDictionnary.add( new String[]{"GetView","Class","INTEGER"} );
+		functionDictionnary.add( new String[]{"GetView","INTEGER"} );
 		functionDictionnary.add( new String[]{"GetViews"} );
-		functionDictionnary.add( new String[]{"GetViews","STRING"} );
 		functionDictionnary.add( new String[]{"GoBack"} );
 		functionDictionnary.add( new String[]{"GoBackToActivity","STRING"} );
 		functionDictionnary.add( new String[]{"IsCheckBoxChecked","INTEGER"} );
@@ -182,15 +183,15 @@ public class FunctionDictionnary {
 		functionDictionnary.add( new String[]{"ScrollToUp"} );
 		functionDictionnary.add( new String[]{"ScrollUpList","INTEGER"} );
 		functionDictionnary.add( new String[]{"SearchButton","STRING"} );
-		functionDictionnary.add( new String[]{"SearchButton","STRING","STRING"} );
+		functionDictionnary.add( new String[]{"SearchButton","STRING","BOOLEAN"} );
 		functionDictionnary.add( new String[]{"SearchButton","STRING","INTEGER"} );
-		functionDictionnary.add( new String[]{"SearchButton","STRING","INTEGER","STRING"} );
+		functionDictionnary.add( new String[]{"SearchButton","STRING","INTEGER","BOOLEAN"} );
 		functionDictionnary.add( new String[]{"SearchEditText","STRING"} );
 		functionDictionnary.add( new String[]{"SearchText","STRING"} );
-		functionDictionnary.add( new String[]{"SearchText","STRING","STRING"} );
+		functionDictionnary.add( new String[]{"SearchText","STRING","BOOLEAN"} );
 		functionDictionnary.add( new String[]{"SearchText","STRING","INTEGER"} );
-		functionDictionnary.add( new String[]{"SearchText","STRING","INTEGER","STRING"} );
-		functionDictionnary.add( new String[]{"SearchText","STRING","INTEGER","STRING","STRING"} );
+		functionDictionnary.add( new String[]{"SearchText","STRING","INTEGER","BOOLEAN"} );
+		functionDictionnary.add( new String[]{"SearchText","STRING","INTEGER","BOOLEAN","BOOLEAN"} );
 		functionDictionnary.add( new String[]{"SearchToggleButton","STRING"} );
 		functionDictionnary.add( new String[]{"SearchToggleButton","STRING","INTEGER"} );
 		functionDictionnary.add( new String[]{"SendKey","INTEGER"} );
@@ -206,17 +207,17 @@ public class FunctionDictionnary {
 		functionDictionnary.add( new String[]{"TypeText","INTEGER","STRING"} );
 		functionDictionnary.add( new String[]{"WaitForActivity","STRING"} );
 		functionDictionnary.add( new String[]{"WaitForActivity","STRING","INTEGER"} );
-		functionDictionnary.add( new String[]{"WaitForDialogToClose","LONG"} );
-		functionDictionnary.add( new String[]{"WaitForDialogToOpen","LONG"} );
+		functionDictionnary.add( new String[]{"WaitForDialogToClose","INTEGER"} );//LONG
+		functionDictionnary.add( new String[]{"WaitForDialogToOpen","INTEGER"} );//LONG
 		functionDictionnary.add( new String[]{"WaitForLogMessage","STRING"} );
 		functionDictionnary.add( new String[]{"WaitForLogMessage","STRING","INTEGER"} );
 		functionDictionnary.add( new String[]{"WaitForText","STRING"} );
-		functionDictionnary.add( new String[]{"WaitForText","STRING","INTEGER","LONG"} );
-		functionDictionnary.add( new String[]{"WaitForText","STRING","INTEGER","LONG","STRING"} );
-		functionDictionnary.add( new String[]{"WaitForText","STRING","INTEGER","LONG","STRING","STRING"} );
-		functionDictionnary.add( new String[]{"WaitForView","STRING","INTEGER","INTEGER"} );
-		functionDictionnary.add( new String[]{"WaitForView","STRING","INTEGER","INTEGER","STRING"} );
-		functionDictionnary.add( new String[]{"WaitForView","STRING","INTEGER","STRING"} );
+		functionDictionnary.add( new String[]{"WaitForText","STRING","INTEGER","INTEGER"} );//LONG
+		functionDictionnary.add( new String[]{"WaitForText","STRING","INTEGER","INTEGER","STRING"} );//LONG
+		functionDictionnary.add( new String[]{"WaitForText","STRING","INTEGER","INTEGER","STRING","STRING"} );
+		functionDictionnary.add( new String[]{"WaitForView","Class","INTEGER","INTEGER"} );
+		functionDictionnary.add( new String[]{"WaitForView","Class","INTEGER","INTEGER","STRING"} );
+		functionDictionnary.add( new String[]{"WaitForView","Class","INTEGER","STRING"} );
 		functionDictionnary.add( new String[]{"StartRobotiumTestOn","STRING","STRING","STRING","INTEGER"} );
 	}
 

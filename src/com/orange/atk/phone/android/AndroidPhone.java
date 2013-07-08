@@ -78,6 +78,8 @@ import com.orange.atk.util.Position;
  * 
  */
 public class AndroidPhone implements PhoneInterface {
+	
+	private RobotiumTask robotiumTask=null;
 
 	private static final String ARO_APK_PATH = "ARO\\ARODataCollector_OpenSource_v2.2.1.1.apk";
 	private final static EventListenerList listeners = new EventListenerList();
@@ -333,6 +335,7 @@ public class AndroidPhone implements PhoneInterface {
 
 		// bring the Device found by the fabric
 		adevice = device;
+		robotiumTask= new RobotiumTask(this);
 	}
 
 	public boolean isDisabledPhone() {
@@ -1638,6 +1641,58 @@ public class AndroidPhone implements PhoneInterface {
 
 	public String getConfigFile() {
 		return "android.xml";
+	}
+
+	//add Robotium task
+	protected String  [] executeShellCommand(String cmd) throws PhoneException{
+
+		IShellOutputReceiver receiver;
+		list =new ArrayList<String>();
+		receiver = shellOutputReceiver;
+		
+			try {
+				
+				adevice.executeShellCommand(cmd, receiver );
+			} catch (TimeoutException e) {
+				Logger.getLogger(this.getClass()).debug(e.getMessage());
+			} catch (AdbCommandRejectedException e) {
+				Logger.getLogger(this.getClass()).debug(e.getMessage());
+			} catch (ShellCommandUnresponsiveException e) {
+				Logger.getLogger(this.getClass()).debug(e.getMessage());
+			} catch (IOException e) {
+				Logger.getLogger(this.getClass()).debug(e.getMessage());
+			}
+		
+		//return   list.toArray(new String[]{});
+			return null;
+	}
+	
+	@Override
+	public String getViewFromRobotium(String packName, String activityName,
+			String packsourceDir, int versionCode) throws PhoneException {
+		return null;
+	}
+
+	@Override
+	public void sendCommandToExecuteToSolo(Object[] commands) throws PhoneException {
+		robotiumTask.sendCommandToExecuteToSolo(commands);
+	}
+
+	@Override
+	public void setApkToTestWithRobotiumParam(String packName,
+			String activityName, String packsourceDir, int versionCode)
+			throws PhoneException {
+		robotiumTask.setApkToTestWithRobotiumParam(packName, activityName, packsourceDir, versionCode);
+	}
+
+	@Override
+	public ArrayList<String> getAllInstalledAPK() throws PhoneException {
+		return robotiumTask.getAllInstalledAPK();
+	}
+
+	@Override
+	public ArrayList<String> getForegroundApp() throws PhoneException {
+		return robotiumTask.getForegroundApp();
 	}
 
 }

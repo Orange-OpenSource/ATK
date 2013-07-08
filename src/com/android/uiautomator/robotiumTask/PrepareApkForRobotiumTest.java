@@ -19,6 +19,10 @@
  * File Name   : PrepareApkForRobotiumTest.java
  *
  * Created     : 05/06/2013
+<<<<<<< HEAD
+=======
+ * Author(s)   : D'ALMEIDA Joana
+>>>>>>> addingUiAutomatorViewerRobotiumVersion
  */
 package com.android.uiautomator.robotiumTask;
 
@@ -49,16 +53,13 @@ public class PrepareApkForRobotiumTest {
 		Logger.getLogger(PrepareApkForRobotiumTest.class).debug("/****prepareAPKForRobotiumGetViews ***/ ");
 		String adbLocation = Platform.getInstance().getDefaultADBLocation();
 		String AndroidToolsDir=Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"AndroidTools";
-
 		String createAndbuildTestApkFile =AndroidToolsDir+ Platform.FILE_SEPARATOR+"BuildAndSignApk"+Platform.FILE_SEPARATOR+"build-tools"+
 				Platform.FILE_SEPARATOR+"CreateDexFileAndBuildApk.bat";
 		String resignApkUnderTest = AndroidToolsDir+Platform.FILE_SEPARATOR+"BuildAndSignApk"+Platform.FILE_SEPARATOR+"Sign-tools"+
 				Platform.FILE_SEPARATOR+"ATKSignAPK.bat";
-
-		String TestDir =AndroidToolsDir+Platform.FILE_SEPARATOR+"UiautomatorViewerTask";
+		String TestDir=AndroidToolsDir+Platform.FILE_SEPARATOR+"UiautomatorViewerTask";
 		String testApkSrcDir=AndroidToolsDir+Platform.FILE_SEPARATOR+TestAPK.substring(0, TestAPK.indexOf(".apk"));
 		String TempTestApkDir=TestDir+Platform.FILE_SEPARATOR+TestAPK.substring(0, TestAPK.indexOf(".apk"));
-
 		String TempInitFile=TempTestApkDir+Platform.FILE_SEPARATOR+"bin"+Platform.FILE_SEPARATOR+"com"+Platform.FILE_SEPARATOR+
 				"orange"+Platform.FILE_SEPARATOR+"atk"+Platform.FILE_SEPARATOR+"soloGetViews"+Platform.FILE_SEPARATOR+
 				"init.prop";
@@ -175,7 +176,7 @@ public class PrepareApkForRobotiumTest {
 		}	
 	}
 
-	protected static boolean  createInitFile(String filename,String activityName, String packageName) throws PhoneException{
+	protected static boolean  createInitFile(String filename,String activityName, String packageName) throws PhoneException {
 
 		File initFile=new File(filename);
 		initFile.delete();
