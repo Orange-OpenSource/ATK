@@ -22,6 +22,7 @@ import com.android.uiautomator.actions.ScreenshotAction;
 import com.android.uiautomator.tree.AttributePair;
 import com.android.uiautomator.tree.BasicTreeNode;
 import com.android.uiautomator.tree.UiNode;
+import com.orange.atk.atkUI.coregui.CoreGUIPlugin;
 import com.orange.atk.interpreter.ast.ASTFUNCTION;
 import com.orange.atk.interpreter.ast.ASTNUMBER;
 import com.orange.atk.interpreter.ast.ASTSTRING;
@@ -48,6 +49,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
@@ -105,11 +107,17 @@ public class UiAutomatorViewer extends JFrame {
 	public static boolean dumpXMLFirstTime =true;
 	private ScreenshotAction screenshotAction=null;
 	private OpenFilesAction openFilesAction=null;
+	private static final String icondescr = "ATK";
+	public static ImageIcon icon = null;
 
 	public UiAutomatorViewer() {
 
 		super("UI Automator Viewer");
 		this.setSize(800, 600);
+		URL iconURL = CoreGUIPlugin.getMainIcon();
+		icon = new ImageIcon(iconURL, icondescr);
+		setIconImage(icon.getImage());
+
 
 		screenshotAction = new  ScreenshotAction(UiAutomatorViewer.this);
 		openFilesAction = new OpenFilesAction(UiAutomatorViewer.this);
