@@ -24,6 +24,7 @@
 package com.orange.atk.phone;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -467,5 +468,39 @@ public class PhoneRecorder implements PhoneInterface {
 	public boolean isDisabledPhone() {
 		return false;
 	}
+
+	@Override
+	public String getViewFromRobotium(String packName, String activityName,
+			String packsourceDir, int versionCode) throws PhoneException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void sendCommandToExecuteToSolo(Object[] commands) throws PhoneException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setApkToTestWithRobotiumParam(String packName,
+			String activityName, String packsourceDir, int versionCode)
+			throws PhoneException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ArrayList<String> getAllInstalledAPK() throws PhoneException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<String> getForegroundApp() throws PhoneException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }

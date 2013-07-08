@@ -1,7 +1,7 @@
 /*
  * Software Name : ATK
  *
- * Copyright (C) 2007 - 2012 France Télécom
+ * Copyright (C) 2007 - 2012 France TÃ©lÃ©com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,9 @@ public class Variable {
 	private static final int STRING_TYPE = 0;
 	private static final int INT_TYPE = 1;
 	private static final int TABLE_TYPE = 1;
+
+	private static final int FLOAT_TYPE = 3;
+	private static final int BOOLEAN_TYPE = 4;
 
 	private int _type;
 	private Object _value;
@@ -71,6 +74,35 @@ public class Variable {
 		}
 		return new Variable(INT_TYPE, value);
 	}
+
+	/**
+	 * Create a new variable of type Float.
+	 * 
+	 * @param value
+	 *            value of the variable
+	 * @return a new variable with type Float and value value
+	 * @throws NullPointerException if value is null
+	 */
+	public static Variable createFloat(Float value) throws NullPointerException {
+		if(value == null ){
+			throw new NullPointerException();
+		}
+		return new Variable(FLOAT_TYPE, value);
+	}
+	/**
+	 * Create a new variable of type Boolean.
+	 * 
+	 * @param value
+	 *            value of the variable
+	 * @return a new variable with type Boolean and value value
+	 * @throws NullPointerException if value is null
+	 */
+	public static Variable createBoolean(Boolean value) throws NullPointerException {
+		if(value == null ){
+			throw new NullPointerException();
+		}
+		return new Variable(BOOLEAN_TYPE, value);
+	}
 	/**
 	 * Create a new variable of type Table.
 	 * 
@@ -105,6 +137,22 @@ public class Variable {
 	}
 
 	/**
+	 * Used to test if the current type of the variable is Float
+	 * 
+	 * @return true if type is Float, false otherwise
+	 */
+	public boolean isFloat() {
+		return (_type == FLOAT_TYPE);
+	}
+	/**
+	 * Used to test if the current type of the variable is Boolean
+	 * 
+	 * @return true if type is Boolean, false otherwise
+	 */
+	public boolean isBoolean() {
+		return (_type == BOOLEAN_TYPE);
+	}
+	/**
 	 * Used to test if the current type of the variable is Table
 	 * 
 	 * @return true if type is Table, false otherwise
@@ -124,9 +172,9 @@ public class Variable {
 	 */
 	public String getString() throws ClassCastException {
 		if (isString()) {
-            String returned_value =(String) _value;
-            returned_value=returned_value.replaceAll("'", "");
- 			return (String) returned_value;
+			String returned_value =(String) _value;
+			returned_value=returned_value.replaceAll("'", "");
+			return (String) returned_value;
 		} else {
 			throw new ClassCastException();
 		}
@@ -144,13 +192,11 @@ public class Variable {
 	 */
 	public List<Variable> getTable() throws ClassCastException {
 		if (isTable()) {
- 			return (List<Variable>) _value;
+			return (List<Variable>) _value;
 		} else {
 			throw new ClassCastException();
 		}
-
 	}
-
 	/**
 	 * Get the value of the variable. The type of the variable must be Integer
 	 * type.
@@ -167,4 +213,63 @@ public class Variable {
 			throw new ClassCastException();
 		}
 	}
+
+	/**
+	 * Get the value of the variable. The type of the variable must be Float
+	 * type.
+	 * 
+	 * @return the Float value of the variable.
+	 * @throws ClassCastException
+	 *             if the type is not Float
+	 * @see #isFloat
+	 */
+	public float getFloat() throws ClassCastException {
+		if (isFloat()) {
+			Float returned_value =(float) _value;
+			return (float) returned_value;
+		} else {
+			throw new ClassCastException();
+		}
+
+	}
+	/**
+	 * Get the value of the variable. The type of the variable must be Boolean
+	 * type.
+	 * 
+	 * @return the Boolean value of the variable.
+	 * @throws ClassCastException
+	 *             if the type is not Boolean
+	 * @see #isBoolean
+	 */
+
+	public boolean getBoolean() throws ClassCastException {
+		if (isBoolean()) {
+			Boolean returned_value =(Boolean) _value;
+			return (Boolean) returned_value;
+		} else {
+			throw new ClassCastException();
+		}
+
+	}
+
+	public String get_type() {
+
+		switch(_type){
+			case 0 : return "string";
+			case 1 : return "int";
+			case 3 : return "float";
+			case 4 : return "boolean";
+			default: break;
+		}
+		return null;		
+	}
+	public String get_value() {
+		if (isString()) {
+			String returned_value =(String) _value;
+			returned_value=returned_value.replaceAll("'", "");
+			return (String) returned_value;
+		} 
+		return String.valueOf(_value);		
+	}
+
 }

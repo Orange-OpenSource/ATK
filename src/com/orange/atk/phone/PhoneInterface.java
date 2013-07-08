@@ -24,6 +24,7 @@
 package com.orange.atk.phone;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -670,4 +671,15 @@ public interface PhoneInterface {
 	public String getConfigFile();
 
 	public boolean isDisabledPhone();
+	
+	//add robotium task
+	public String  getViewFromRobotium(String packName, String activityName, String packsourceDir, int versionCode)throws PhoneException;
+	
+	public void sendCommandToExecuteToSolo(Object[] commands)throws PhoneException;
+	
+	public void setApkToTestWithRobotiumParam(String packName, String activityName, String packsourceDir, int versionCode)throws PhoneException;
+
+    public ArrayList<String> getAllInstalledAPK() throws PhoneException;
+    
+    public ArrayList<String> getForegroundApp() throws PhoneException;
 }
