@@ -69,6 +69,21 @@ public class TestJATKInterpreterStackClass{
 		assertEquals(123, stack.popInteger().intValue());
 	}
 	
+	
+	@Test
+	public void testPushPopFloat(){
+		Float f=123.0f;
+		stack.pushFloat(f);
+		assertEquals(f.intValue(), stack.popFloat().intValue());
+	}
+	
+	
+	@Test
+	public void testPushPopBoolean(){
+		stack.pushBoolean(true);
+		assertEquals(true, stack.popBoolean().booleanValue());
+	}
+	
 	@Test
 	public void testIsEmpty(){
 		assertTrue(stack.isEmpty());
@@ -82,6 +97,8 @@ public class TestJATKInterpreterStackClass{
 	public void testPopEmptyStack(){
 		assertEquals(null, stack.popInteger() );
 		assertEquals(null, stack.popString() );
+		assertEquals(null, stack.popFloat() );
+		assertEquals(null, stack.popBoolean() );
 	}
 	
 	@Test
@@ -103,8 +120,28 @@ public class TestJATKInterpreterStackClass{
 	}
 	
 	@Test
+	public void testIsTopFloat(){
+		stack.pushString("aValue1");
+		stack.pushFloat(132.0f);
+		assertTrue(stack.isTopFloat());
+		stack.pushString("aValue2");
+		assertFalse(stack.isTopFloat());
+	}
+	
+	@Test
+	public void testIsTopBoolean(){
+		stack.pushString("aValue1");
+		stack.pushBoolean(true);
+		assertTrue(stack.isTopBoolean());
+		stack.pushString("aValue2");
+		assertFalse(stack.isTopBoolean());
+	}
+	
+	@Test
 	public void testIsTopWithEmptyStack(){
 		assertFalse(stack.isTopString());
 		assertFalse(stack.isTopInteger());
+		assertFalse(stack.isTopFloat());
+		assertFalse(stack.isTopBoolean());
 	}
 }

@@ -29,7 +29,9 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
+import com.orange.atk.interpreter.ast.ASTBOOLEAN;
 import com.orange.atk.interpreter.ast.ASTCOMMENT;
+import com.orange.atk.interpreter.ast.ASTFLOAT;
 import com.orange.atk.interpreter.ast.ASTFUNCTION;
 import com.orange.atk.interpreter.ast.ASTINCLUDE;
 import com.orange.atk.interpreter.ast.ASTLOOP;
@@ -40,6 +42,7 @@ import com.orange.atk.interpreter.ast.ASTStart;
 import com.orange.atk.interpreter.ast.ASTTABLE;
 import com.orange.atk.interpreter.ast.ASTVARIABLE;
 import com.orange.atk.interpreter.ast.SimpleNode;
+import com.orange.atk.interpreter.ast.SoloMethods;
 import com.orange.atk.interpreter.parser.ATKScriptParserVisitor;
 import com.orange.atk.phone.PhoneInterface;
 import com.orange.atk.platform.Platform;
@@ -121,20 +124,29 @@ public class JATKInterpreter implements ATKScriptParserVisitor {
 		tablevariables = stack.toArray(tablevariables);
 		//empty stack
 		while(! stack.empty()) stack.pop();
-		
-		//SEARCH function in action class and invoke it.
-		Method[] functions = actions.getClass().getMethods();
-		for (Method function : functions)
-			if(function.getName().toLowerCase().
-				equals("action"+functionName.toLowerCase()) ) {
-				try {
-					return function.invoke(actions, node,  tablevariables  );
-				
-				} catch (Exception e) {
-					Logger.getLogger(this.getClass() ).debug("erreur during execution of "+function.getName());
-					e.printStackTrace();
-				}
+		if(new SoloMethods().isSoloMethod(functionName)){
+			try {
+				return actions.actionExecuteSoloMethod((ASTFUNCTION)node, tablevariables);
+			} catch (Exception e) {
+				Logger.getLogger(this.getClass() ).debug("erreur during execution of "+functionName);
+				e.printStackTrace();
 			}
+		} else {
+			//SEARCH function in action class and invoke it.
+			Method[] functions = actions.getClass().getMethods();
+			for (Method function : functions)
+				if(function.getName().toLowerCase().
+						equals("action"+functionName.toLowerCase()) ) {
+					try {
+						return function.invoke(actions, node,  tablevariables  );
+
+					} catch (Exception e) {
+						Logger.getLogger(this.getClass() ).debug("erreur during execution of "+function.getName());
+						e.printStackTrace();
+					}
+				}
+		}
+
 		
 		
 	//we don't have found the function
@@ -395,5 +407,17 @@ public class JATKInterpreter implements ATKScriptParserVisitor {
 	 */
 	public PhoneInterface getPhoneInterface() {
 		return phoneInterface;
+	}
+
+	@Override
+	public Object visit(ASTBOOLEAN node, Object data) {
+		stack.pushBoolean(Boolean.parseBoolean(node.getValue()));
+		return Boolean.TRUE;
+	}
+
+	@Override
+	public Object visit(ASTFLOAT node, Object data) {
+		stack.pushFloat(Float.parseFloat(node.getValue()));
+		return Boolean.TRUE;
 	}
 }

@@ -49,7 +49,11 @@ import javax.swing.tree.TreeSelectionModel;
 
 import org.apache.log4j.Logger;
 
+import com.orange.atk.interpreter.ast.ASTFUNCTION;
+import com.orange.atk.interpreter.ast.ASTNUMBER;
+import com.orange.atk.interpreter.ast.ASTSTRING;
 import com.orange.atk.interpreter.ast.ASTStart;
+import com.orange.atk.interpreter.parser.ATKScriptParserTreeConstants;
 import com.orange.atk.scriptRecorder.RecorderFrame;
 import com.orange.atk.scriptRecorder.ScriptController;
 
@@ -370,8 +374,69 @@ public class ScriptJPanel extends JScrollPane {
 		rightPopup.add(jmiModify);*/
 	/*	if(ScriptController.getScriptController().isRecording())
 			jmiRun.setEnabled(false);*/
+		JMenuItem jmiStartIntstrumetation=new JMenuItem("Start instrumentation");
+		jmiStartIntstrumetation.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {	
+				   Thread progress = new Thread(){
+					 @Override
+					 public void run() {
+				     recframe.glassPane.setText("Getting all installed APK");
+					 recframe.glassPane.start();
+					 Thread progress1 = new Thread() {
+					 @Override
+					 public void run() {
+					// recframe.getViewsFunction();
+						 recframe.selectApk();
+					    if(!RecorderFrame.PackageName.equalsIgnoreCase("")&& !RecorderFrame.MainActivityName.equalsIgnoreCase("")&&
+				    		 !RecorderFrame.PackageSourceDir.equalsIgnoreCase("")) {
+								int index = tree.getSelectionRows()[tree.getSelectionCount()-1];
+								ASTStart ast = ScriptController.getScriptController().getAST();
+								
+								ASTFUNCTION startTest = new ASTFUNCTION(ATKScriptParserTreeConstants.JJTFUNCTION);
+					            startTest.setValue("StartRobotiumTestOn");
+								ASTSTRING param1 = new ASTSTRING(ATKScriptParserTreeConstants.JJTSTRING);
+								param1.setValue("'"+RecorderFrame.PackageName+"'");
+								ASTSTRING param2 = new ASTSTRING(ATKScriptParserTreeConstants.JJTSTRING);
+								param2.setValue("'"+RecorderFrame.MainActivityName+"'");
+								ASTSTRING param3 = new ASTSTRING(ATKScriptParserTreeConstants.JJTSTRING);
+								param3.setValue("'"+RecorderFrame.PackageSourceDir+"'");
+								ASTNUMBER param4 = new ASTNUMBER(ATKScriptParserTreeConstants.JJTNUMBER);
+								param4.setValue(String.valueOf(RecorderFrame.Versioncode));
+								startTest.jjtAddChild(param1, 0);
+								startTest.jjtAddChild(param2, 1);
+								startTest.jjtAddChild(param3, 2);
+								startTest.jjtAddChild(param4, 3);
+							   
+								
+								ASTFUNCTION exitSolo = new ASTFUNCTION(ATKScriptParserTreeConstants.JJTFUNCTION);
+								exitSolo.setValue("ExitSolo");
+					            
+					            
+					            int numberOfchild =ast.jjtGetNumChildren();
+					            for(int i =numberOfchild+1; i>index+2; i-- ) {
+					            	ast.jjtAddChild(ast.jjtGetChild(i-2),i);
+					            }
+					            
+					            ast.jjtAddChild(startTest,index+1);
+					            ast.jjtAddChild(exitSolo,index+2);
+								update();
+			              }
+					    }
+					 };
+					 progress1.start();	
+					 }
+					 };
+					 progress.start();
+					 rightPopup.setVisible(false);
+			}
+		});
+		
+		
+		rightPopup.add(jmiStartIntstrumetation);
+
 		
 	}
+	
 	
 
 	/**
@@ -401,5 +466,18 @@ public class ScriptJPanel extends JScrollPane {
 	private void expandTree() {
        for(int i=0;i<tree.getRowCount();i++)  
              tree.expandRow(i);   
+	}
+	
+	public int getSelectedNode(){
+		TreePath[] tps = tree.getSelectionPaths();
+		if (tps !=null){
+			TreePath selected = tree.getSelectionPaths()[tree.getSelectionCount()-1];
+			if(selected!=null){
+				MutableTreeNode selectednode = (MutableTreeNode) selected.getLastPathComponent();
+				MutableTreeNode parent = (MutableTreeNode) selectednode.getParent();
+				return parent.getIndex(selectednode);
+			}
+		}
+		return -1;
 	}
 }
