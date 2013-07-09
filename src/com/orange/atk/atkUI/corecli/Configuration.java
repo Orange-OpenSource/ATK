@@ -79,6 +79,8 @@ public class Configuration {
 	public static final String ADBPATH = "ADBPath";
 	public static final String SCROTATION = "screenshotRotation";
 	public static final String BENCHMARKDIRECTORY = "benchmarkDir";
+	public static final String AROPATH = "aroPath";
+
 	// PDF properties name
 	public static final String pdfEncryptionUserPassword = "pdf.encryption.userpasswd";
 	public static final String pdfEncryptionOwnerPassword = "pdf.encryption.ownerpasswd";
@@ -172,12 +174,13 @@ public class Configuration {
 						File folder = new File(selectedFolder);
 						if (!folder.exists()) {
 							if (!folder.mkdir()) {
-								if (JOptionPane.CANCEL_OPTION == JOptionPane.showConfirmDialog(
-										null,
-										"Could not create the configuration folder in the selected folder.\n"
-												+ "Please selecte a new folder.",
-										"Need to select another folder",
-										JOptionPane.OK_CANCEL_OPTION)) {
+								if (JOptionPane.CANCEL_OPTION == JOptionPane
+										.showConfirmDialog(
+												null,
+												"Could not create the configuration folder in the selected folder.\n"
+														+ "Please selecte a new folder.",
+												"Need to select another folder",
+												JOptionPane.OK_CANCEL_OPTION)) {
 									return false;
 								}
 							}
