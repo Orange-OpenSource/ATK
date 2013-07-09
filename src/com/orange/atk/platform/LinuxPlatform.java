@@ -23,36 +23,23 @@
  */
 package com.orange.atk.platform;
 
-import org.apache.log4j.Logger;
-
-import java.io.File;
-import java.io.FileFilter;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
 
 public class LinuxPlatform extends Platform {
-	private static HashMap <String,String> knownPhones = new HashMap<String,String> ();
+	private static HashMap<String, String> knownPhones = new HashMap<String, String>();
 	private String phoneKey;
-	
-	public LinuxPlatform() {
-		knownPhones.put("ttyACM", "phone.nokiaS60.NokiaS60Phone");
 
+	public LinuxPlatform() {
 	}
-	
 
 	@Override
 	public String getJATKPath() {
-		// TODO Auto-generated method stub
 		return ".";
 	}
 
-	
-
 	@Override
 	public String getDefaultADBLocation() {
-	    return "adb";
+		return "adb";
 	}
-
 
 }
