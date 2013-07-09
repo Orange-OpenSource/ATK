@@ -5,7 +5,7 @@ Name ATK
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 2.15
+!define VERSION 2.17
 !define COMPANY "France Telecom"
 !define URL www.francetelecom.com
 
@@ -40,7 +40,7 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile atk_2_15.exe
+OutFile atk_2_17.exe
 InstallDir $PROGRAMFILES\ATK
 CRCCheck on
 XPStyle on
@@ -337,23 +337,6 @@ SetOutPath $INSTDIR
   DetailPrint "WindowsServicePackMajor: $R0"
   
 
-;Check if Win XP
- GetVersion::WindowsName
-  Pop $R0
-  DetailPrint "WindowsName: $R0"
-Push $R0
-Push "XP"
-Call StrContains
-Pop $0
-StrCmp $0 "" 0 android 
-  MessageBox MB_YESNO "ATK has not been fully tested on Windows $R0  \
-   Do you want to continue ?'" IDYES true IDNO false
-true:
-  Goto android
-false:
-  Goto endinstall
-  
-    
 android:
 
 call GetJavaVersion
@@ -443,7 +426,7 @@ enddownload:
  
 
 ; copy all files except the files preceded by /x
-    File /r /x .gitignore /x *.svn /x nsislog.txt /x jsmooth /x launch4j /x launch4j.log /x manifest* /x octk.* /x README.txt /x \tests_file /x \Output /x \rxtx /x *.nsi /x setup.* /x atk_*.exe /x *.iss /x setup_*.exe /x \export /x RXTXcomm.jar /x \Salome-script *
+    File /r /x .gitignore /x *.svn /x nsislog.txt /x jsmooth /x launch4j /x launch4j.log /x manifest* /x octk.* /x README.txt /x \tests_file /x \Output /x \rxtx /x *.nsi /x setup.* /x atk_*.exe /x *.iss /x setup_*.exe /x \export /x RXTXcomm.jar /x rxtxSerial.dll /x mediatek.jar /x \Salome-script *
     CreateDirectory "$SMPROGRAMS\$StartMenuGroup"
     SetOutPath $INSTDIR
     WriteRegStr HKLM SOFTWARE\ATK\Components ATKpath $INSTDIR
