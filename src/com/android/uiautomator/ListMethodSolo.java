@@ -34,7 +34,7 @@ public class ListMethodSolo {
 	
 	public void clickOnText(String text) {
 	}
-		
+	
 	public void clickOnButton(int index) {
 	}
 	
@@ -85,12 +85,12 @@ public class ListMethodSolo {
 		return false;
 	}
 	
-   	public boolean scrollListToTop(int index) {
-   		return false;
-   	}
-   	
-   	public void scrollListToLine(int index, int line){
-   	}
+	public boolean scrollListToTop(int index) {
+		return false;
+	}
+	
+	public void scrollListToLine(int index, int line){
+	}
 
 	public void scrollToSide(int side) {  
 	}
@@ -125,7 +125,7 @@ public class ListMethodSolo {
 	
 	public void clearEditText(int index) {
 	}
-   
+	
 	public void clickOnImage(int index) {
 	}
 	
@@ -164,7 +164,7 @@ public class ListMethodSolo {
 	}
 	
 	public void sendKey(int key) {
-    }
-	
-	
+	}
+
+
 }

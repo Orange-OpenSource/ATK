@@ -19,7 +19,6 @@ package com.android.uiautomator;
 
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.RawImage;
-import com.android.ddmlib.SyncService;
 import com.android.uiautomator.robotiumTask.RobotiumTaskForViewer;
 import com.android.uiautomator.tree.BasicTreeNode;
 import com.android.uiautomator.tree.RootWindowNode;
@@ -29,15 +28,9 @@ import com.orange.atk.phone.PhoneException;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 import javax.imageio.ImageIO;
@@ -47,14 +40,13 @@ import org.apache.log4j.Logger;
 public class UiAutomatorHelper {
 	private static RobotiumTaskForViewer robotiumTask=null;
 	public static UiAutomatorViewer mViewer=null;
-	//private static  String UIDUMP_DEVICE_PATH = "/sdcard/uidumpfile.xml";  //$NON-NLS-1$
-	
-	
-		
+
+
+
 	private static void getUiHierarchyFile(IDevice device, File dst, String cmd ) throws UiAutomatorException {
-		
+
 		Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper.getUiHierarchyFile***/");
-			
+
 		if(UiAutomatorViewer.dumpXMLFirstTime){
 			robotiumTask= new RobotiumTaskForViewer(device);
 		}
@@ -73,9 +65,9 @@ public class UiAutomatorHelper {
 			} else {
 				dst=null;
 				throw new UiAutomatorException("cann't get view", null);
-				
+
 			}
-			
+
 		} catch (PhoneException e1) {
 			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper. exception while getUiHierarchyFile***/");
 			String msg = "exception while getUiHierarchyFile from Robotium : " + e1.getMessage();
@@ -106,8 +98,8 @@ public class UiAutomatorHelper {
 		tmpDir.deleteOnExit();
 		xmlDumpFile.deleteOnExit();
 		screenshotFile.deleteOnExit(); 
-		
-       //get xml dump file
+
+		//get xml dump file
 		try {
 			UiAutomatorHelper.getUiHierarchyFile(device, xmlDumpFile,cmd);
 		} catch (Exception e) {
@@ -115,7 +107,7 @@ public class UiAutomatorHelper {
 			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper.Error while obtaining UI hierarchy XML file:***/"+ e.getMessage());
 			throw new UiAutomatorException(msg, e);
 		}
-		
+
 		UiAutomatorModel model;
 		try {
 			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper.load UiAutomatorModel ***/");
@@ -126,7 +118,7 @@ public class UiAutomatorHelper {
 			throw new UiAutomatorException(msg, e);
 		}
 
-		
+
 		Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper.getScreenshot***/");
 		RawImage rawImage;
 		try {
@@ -136,15 +128,15 @@ public class UiAutomatorHelper {
 			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper.Error taking device screenshot:***/"+ e.getMessage());
 			throw new UiAutomatorException(msg, e);
 		}
-		
+
 		BasicTreeNode root = model.getXmlRootNode();
 		if ((root instanceof RootWindowNode)) {
 			for (int i = 0; i < ((RootWindowNode)root).getRotation(); i++) {
 				rawImage = rawImage.getRotated();
 			}
 		}
-		
-		
+
+
 		BufferedImage bImage=null; 
 		bImage = new BufferedImage(rawImage.width, rawImage.height,BufferedImage.TYPE_INT_ARGB);
 		int index = 0;
@@ -156,7 +148,7 @@ public class UiAutomatorHelper {
 				index+=increment;
 			}
 		}
-		
+
 		Image screenshot =null;
 		try {
 			ImageIO.write(bImage, "png", screenshotFile);
@@ -166,7 +158,7 @@ public class UiAutomatorHelper {
 			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper.Error while Reading  Screenshot File file:***/"+ e.getMessage());
 			throw new UiAutomatorException(msg, e);
 		}
-		
+
 		return new UiAutomatorResult(xmlDumpFile, model, screenshot);
 	}
 
@@ -192,12 +184,12 @@ public class UiAutomatorHelper {
 	public static void executeRobotiumCommand(String cmd) throws UiAutomatorException{
 		try {
 			robotiumTask.getViewFromRobotium(cmd);
-			
+
 		} catch (PhoneException e1) {
 			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper. exception while executing command***/ : "+cmd);
 			String msg = "exception while executing command : " +cmd +" exception "+ e1.getMessage();
 			throw new UiAutomatorException(msg, e1);
 		}
-		
+
 	}
 }

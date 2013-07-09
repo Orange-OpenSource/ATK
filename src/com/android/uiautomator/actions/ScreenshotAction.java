@@ -159,8 +159,8 @@ public class ScreenshotAction {
 						UiAutomatorResult result = null;
 						try {
 							if(command.equals("views")){
-							result =UiAutomatorHelper.takeSnapshot(adevice, mViewer,command); 
-							mViewer.setModel(result.model, result.uiHierarchy, result.screenshot);
+								result =UiAutomatorHelper.takeSnapshot(adevice, mViewer,command); 
+								mViewer.setModel(result.model, result.uiHierarchy, result.screenshot);
 							} else {
 								UiAutomatorHelper.executeRobotiumCommand(command);
 							}

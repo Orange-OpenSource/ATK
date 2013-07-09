@@ -79,13 +79,13 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 	 * 
 	 */
 	private static final long serialVersionUID = -6201081729876731517L;
-	
+
 	public static String PackageName="";
 	public static String MainActivityName="";
 	public static String PackageSourceDir="";
 	public static int Versioncode=-1;
 	public InfiniteProgressPanel glassPane= new InfiniteProgressPanel();
-	
+
 	public static ImageIcon icon = null;
 	private static final String icondescr = "ATK";
 	private JMenuItem jmiRecord;
@@ -118,13 +118,13 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 	private JMenuItem jmiTakeSS;
 	private static final String VERSION= "Script Recorder v1.0";
 	private String inputdir;
-	
+
 	private JButton jbtGetViewsFromRobotium;
 
 	public RecorderFrame(ScriptController sc) throws HeadlessException {
 		super(VERSION);
 		this.controller=sc;
-		
+
 		URL iconURL = CoreGUIPlugin.getMainIcon();
 		icon = new ImageIcon(iconURL, icondescr);
 		setIconImage(icon.getImage());
@@ -144,16 +144,16 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 		jmiNew.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				newFile();
-				}
-			});
-		
+			}
+		});
+
 		JMenuItem jmiRobotiumTest= new JMenuItem("Robotium Test");
 		jmiRobotiumTest.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				newRobotiumTest();
-				}
-			});
-		
+			}
+		});
+
 
 		JMenu jmNewFile= new JMenu("New");
 		jmNewFile.add(jmiNew);
@@ -333,15 +333,15 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 
 			}
 		});
-		
-		
+
+
 		jbtGetViewsFromRobotium = new JButton(new ImageIcon(this.getClass().getResource("screenshot.png")));
 		jbtGetViewsFromRobotium.setToolTipText("Displays current views");
 		jbtGetViewsFromRobotium.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				startUiAtomatorViewer();
-				}
-			});
+			}
+		});
 
 
 
@@ -381,7 +381,7 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 		jtb.add(jbtscreenshot);
 
 		jtb.add(jbtGetViewsFromRobotium);
-		
+
 		this.add(jtb, BorderLayout.NORTH);
 		jbtStop.setEnabled(false);
 		//	jcbPhone.setEnabled(true);
@@ -542,7 +542,7 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 	}
 
 	protected void runScript() {
-		
+
 		String sp =controller.getScriptPath();
 		if(sp==null)
 			save();
@@ -678,7 +678,7 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 			jmiStop.setEnabled(false);
 		}
 	}
-	
+
 	protected void save() {
 		//		Logger.getLogger(this.getClass() ).debug("/****RecorderFrame.save****/");
 		String scriptPath = controller.getScriptPath();
@@ -735,7 +735,7 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 	}
 
 
-	
+
 	private String getDefaultPath(){
 		try {
 			String path = Configuration.getProperty(Configuration.INPUTDIRECTORY);
@@ -809,20 +809,20 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 		statusLabel.setText("status bar");
 		statusLabel.setForeground(Color.BLACK);
 	}
-	
+
 	protected void  startUiAtomatorViewer(){
 		new AndroidPlugin().getAdb();
 		DebugBridge.setInitialised(new AndroidPlugin().getAdb());
 		UiAutomatorViewer window = new UiAutomatorViewer();
 		window.setRecorderFrame(this);
 		window.setVisible(true);
-		
-		}
-	
+
+	}
+
 	protected ArrayList<String> getForegroundApp() {
 		return controller.getForegroundApp();
-		}
-	
+	}
+
 	public void selectAPK() {
 		ArrayList <String> allApk = controller.getAllInstalledAPK();
 		ArrayList <String> apk = controller.getForegroundApp();
@@ -847,7 +847,7 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 			JOptionPane.showMessageDialog(this, "Empty List of installed apks","Warning",JOptionPane.WARNING_MESSAGE);
 		}
 	}
-	
+
 	protected void newRobotiumTest() {
 		if (isModified) {
 			int r=JOptionPane.showConfirmDialog(this, "The script has been modified. Do you want to save this modifications?");
@@ -864,7 +864,7 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 				glassPane.start();
 				selectAPK();
 				if(!RecorderFrame.PackageName.equalsIgnoreCase("")&& !RecorderFrame.MainActivityName.equalsIgnoreCase("")&&
-				   !RecorderFrame.PackageSourceDir.equalsIgnoreCase("")) {
+						!RecorderFrame.PackageSourceDir.equalsIgnoreCase("")) {
 					controller.setTestAPKWithRobotiumParam(RecorderFrame.PackageName,RecorderFrame.MainActivityName,RecorderFrame.PackageSourceDir,RecorderFrame.Versioncode);
 					controller.newFileForRobotium();
 					jbtStop.setEnabled(false);

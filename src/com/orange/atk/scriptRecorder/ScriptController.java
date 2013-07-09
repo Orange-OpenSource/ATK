@@ -844,11 +844,11 @@ public class ScriptController {
 	}
 
 	public void setTestAPKWithRobotiumParam(String packName, String activityName, String packsourceDir,int versioncode) {
-		
-			PackageName=packName;
-			MainActivityName=activityName;
-			PackageSourceDir=packsourceDir;
-			Versioncode= versioncode;
+
+		PackageName=packName;
+		MainActivityName=activityName;
+		PackageSourceDir=packsourceDir;
+		Versioncode= versioncode;
 	}
 
 	public ArrayList<String> getAllInstalledAPK() {

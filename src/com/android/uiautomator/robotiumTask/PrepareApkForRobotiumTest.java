@@ -100,9 +100,9 @@ public class PrepareApkForRobotiumTest {
 			Logger.getLogger(PrepareApkForRobotiumTest.class ).debug("/****error : " + e.getMessage());
 			throw new PhoneException(e.getMessage());
 		}
-		
+
 		createInitFile(TempInitFile,activityName,packName);
-		
+
 		String buildAndSignTestApk []={createAndbuildTestApkFile,TempTestApkDir,TestDir+Platform.FILE_SEPARATOR+"TempAPK"+Platform.FILE_SEPARATOR+TestAPK, packName };  
 		try{
 			Process p =  r.exec(buildAndSignTestApk, null, new File(AndroidToolsDir));
@@ -116,14 +116,14 @@ public class PrepareApkForRobotiumTest {
 			Logger.getLogger(PrepareApkForRobotiumTest.class ).debug("/****error : " + e1.getMessage());
 			throw new PhoneException(e1.getMessage());
 		}
-		
+
 		try {
 			copyFolder(new File(testApkSrcDir),new File(TempTestApkDir));
 		} catch (IOException e) {
 			Logger.getLogger(PrepareApkForRobotiumTest.class ).debug("/****error : " + e.getMessage());
 			throw new PhoneException(e.getMessage());
 		}
-		
+
 		if(!packageExistInCache) { 
 
 			String appapk = packsourceDir.substring(packsourceDir.lastIndexOf("/")+1);
