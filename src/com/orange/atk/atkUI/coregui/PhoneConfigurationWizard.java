@@ -127,12 +127,13 @@ public class PhoneConfigurationWizard extends JFrame {
 		AROpane.setBorder(BorderFactory.createTitledBorder("Application Resource Optimizer"));
 		aroCheckbox = new JCheckBox("enable ARO data collector");
 		AROpane.add(aroCheckbox);
-		c.gridwidth = 2;
 		add(AROpane, c);
+
 		c.gridy = 1;
 		c.gridx = 0;
 		add(buildGlobalGraphPanel(), c);
 
+		c.gridy = 1;
 		c.gridx = 1;
 		add(buildGlobalEventPanel(), c);
 
