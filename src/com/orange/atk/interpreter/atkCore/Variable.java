@@ -51,10 +51,11 @@ public class Variable {
 	 * @param value
 	 *            value of the variable
 	 * @return a new variable with type String and value value
-	 * @throws NullPointerException if value is null
+	 * @throws NullPointerException
+	 *             if value is null
 	 */
 	public static Variable createString(String value) throws NullPointerException {
-		if(value == null ){
+		if (value == null) {
 			throw new NullPointerException();
 		}
 		return new Variable(STRING_TYPE, value);
@@ -66,10 +67,11 @@ public class Variable {
 	 * @param value
 	 *            value of the variable
 	 * @return a new variable with type Integer and value value
-	 * @throws NullPointerException if value is null
+	 * @throws NullPointerException
+	 *             if value is null
 	 */
 	public static Variable createInteger(Integer value) throws NullPointerException {
-		if(value == null ){
+		if (value == null) {
 			throw new NullPointerException();
 		}
 		return new Variable(INT_TYPE, value);
@@ -81,10 +83,11 @@ public class Variable {
 	 * @param value
 	 *            value of the variable
 	 * @return a new variable with type Float and value value
-	 * @throws NullPointerException if value is null
+	 * @throws NullPointerException
+	 *             if value is null
 	 */
 	public static Variable createFloat(Float value) throws NullPointerException {
-		if(value == null ){
+		if (value == null) {
 			throw new NullPointerException();
 		}
 		return new Variable(FLOAT_TYPE, value);
@@ -95,10 +98,11 @@ public class Variable {
 	 * @param value
 	 *            value of the variable
 	 * @return a new variable with type Boolean and value value
-	 * @throws NullPointerException if value is null
+	 * @throws NullPointerException
+	 *             if value is null
 	 */
 	public static Variable createBoolean(Boolean value) throws NullPointerException {
-		if(value == null ){
+		if (value == null) {
 			throw new NullPointerException();
 		}
 		return new Variable(BOOLEAN_TYPE, value);
@@ -109,10 +113,11 @@ public class Variable {
 	 * @param value
 	 *            value of the variable (a List of variable
 	 * @return a new variable with type Integer and value value
-	 * @throws NullPointerException if value is null
+	 * @throws NullPointerException
+	 *             if value is null
 	 */
 	public static Variable createTable(List<Variable> value) throws NullPointerException {
-		if(value == null ){
+		if (value == null) {
 			throw new NullPointerException();
 		}
 		return new Variable(TABLE_TYPE, value);
@@ -172,8 +177,8 @@ public class Variable {
 	 */
 	public String getString() throws ClassCastException {
 		if (isString()) {
-			String returned_value =(String) _value;
-			returned_value=returned_value.replaceAll("'", "");
+			String returned_value = (String) _value;
+			returned_value = returned_value.replaceAll("'", "");
 			return (String) returned_value;
 		} else {
 			throw new ClassCastException();
@@ -225,7 +230,7 @@ public class Variable {
 	 */
 	public float getFloat() throws ClassCastException {
 		if (isFloat()) {
-			Float returned_value =(float) _value;
+			float returned_value = (Float) _value;
 			return (float) returned_value;
 		} else {
 			throw new ClassCastException();
@@ -244,7 +249,7 @@ public class Variable {
 
 	public boolean getBoolean() throws ClassCastException {
 		if (isBoolean()) {
-			Boolean returned_value =(Boolean) _value;
+			Boolean returned_value = (Boolean) _value;
 			return (Boolean) returned_value;
 		} else {
 			throw new ClassCastException();
@@ -254,22 +259,27 @@ public class Variable {
 
 	public String get_type() {
 
-		switch(_type){
-			case 0 : return "string";
-			case 1 : return "int";
-			case 3 : return "float";
-			case 4 : return "boolean";
-			default: break;
+		switch (_type) {
+			case 0 :
+				return "string";
+			case 1 :
+				return "int";
+			case 3 :
+				return "float";
+			case 4 :
+				return "boolean";
+			default :
+				break;
 		}
-		return null;		
+		return null;
 	}
 	public String get_value() {
 		if (isString()) {
-			String returned_value =(String) _value;
-			returned_value=returned_value.replaceAll("'", "");
+			String returned_value = (String) _value;
+			returned_value = returned_value.replaceAll("'", "");
 			return (String) returned_value;
-		} 
-		return String.valueOf(_value);		
+		}
+		return String.valueOf(_value);
 	}
 
 }

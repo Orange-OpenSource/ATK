@@ -96,6 +96,10 @@ public enum MatosAction {
 			CoreGUIPlugin.getIconURL("tango/view-rep.png")),
 			"View latest report of the selected element.")),
 
+	VIEWANALYZER("viewAnalyzer", new ViewAnalyzerAction("viewAnalyzer", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/graph.png")),
+			"View latest analyze of the selected element.")),
+
 	CONFIRMVERDICT("confirmVerdict", new ConfirmVerdictAction("confirmVerdict", null,
 			"Confirm the given verdict of the selected step")),
 

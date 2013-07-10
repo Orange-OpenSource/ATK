@@ -23,14 +23,13 @@
  */
 package com.orange.atk.platform;
 
-import java.util.Hashtable;
 
 /**
  * Class which stores all platform dependant values.
  */
 
 public abstract class Platform {
-	
+
 	private static Platform instance;
 
 	/**
@@ -49,11 +48,13 @@ public abstract class Platform {
 	 * Equal to the OS name
 	 */
 	public static final String OS_NAME = System.getProperty("os.name");
-	
-	public static Platform getInstance(){
-		if(instance ==null) {
+
+	public static Platform getInstance() {
+		if (instance == null) {
 			if (Platform.OS_NAME.toLowerCase().contains("windows")) {
 				instance = new WindowsPlatform();
+			} else if (Platform.OS_NAME.contains("OS X")) {
+				instance = new OSXPlatform();
 			} else {
 				instance = new LinuxPlatform();
 			}
@@ -61,8 +62,7 @@ public abstract class Platform {
 		return instance;
 	}
 
-
 	public abstract String getJATKPath();
 	public abstract String getDefaultADBLocation();
- 
+
 }
