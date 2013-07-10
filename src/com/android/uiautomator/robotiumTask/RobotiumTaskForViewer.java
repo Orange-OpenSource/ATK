@@ -145,11 +145,17 @@ public class RobotiumTaskForViewer {
 				socketg = new Socket("127.0.0.1", PORT_ATK_SOLO_GET_VIEWS);
 				out = new PrintWriter(socketg.getOutputStream(), true);
 				br = new BufferedReader(new InputStreamReader(socketg.getInputStream()));
+				if(UiAutomatorHelper.supportsUiAutomator(adevice)){
+					if(cmd.equalsIgnoreCase("views")){
+						XmlViews=null;
+						return XmlViews;
+					}
+				}
 				out.println(cmd);
 				out.flush();
 				XmlViews = br.readLine();
-				Logger.getLogger(UiAutomatorHelper.class).debug(
-						"/****UiAutomatorHelper.getUiHierarchyFile***/ path " + XmlViews);
+				Logger.getLogger(this.getClass()).debug(
+						"/**** views ***/  " + XmlViews);
 
 			} catch (UnknownHostException e) {
 				Logger.getLogger(this.getClass()).debug("/****error : " + e.getMessage());
@@ -161,13 +167,19 @@ public class RobotiumTaskForViewer {
 			UiAutomatorViewer.dumpXMLFirstTime = false;
 			return XmlViews;
 		} else {
+			if(UiAutomatorHelper.supportsUiAutomator(adevice)){
+				if(cmd.equalsIgnoreCase("views")){
+					XmlViews= null;
+					return XmlViews;
+				}
+			}
 			try {
 				if (cmd.equalsIgnoreCase("exit")) {
 					out.println(cmd);
 					out.flush();
 					XmlViews = br.readLine();
 					Logger.getLogger(this.getClass()).debug(
-							"/****UiAutomatorHelper.getUiHierarchyFile***/" + XmlViews);
+							"/****views***/ " + XmlViews);
 					out.close();
 					br.close();
 					socketg.close();
@@ -177,8 +189,7 @@ public class RobotiumTaskForViewer {
 					out.println(cmd);
 					out.flush();
 					XmlViews = br.readLine();
-					Logger.getLogger(this.getClass()).debug(
-							"/****UiAutomatorHelper.getUiHierarchyFile***/" + XmlViews);
+					Logger.getLogger(this.getClass()).debug("/****result ***/" + XmlViews);
 				}
 
 			} catch (IOException e) {
@@ -248,7 +259,8 @@ public class RobotiumTaskForViewer {
 			pushSendEventService();
 		}
 		ArrayList<String> Apk;
-		String Scommand = "am startservice -n com.orange.atk.serviceSendEventToSolo/.ServiceGetForegroundApp";
+		//String Scommand = "am startservice -n com.orange.atk.serviceSendEventToSolo/.ServiceGetForegroundApp";
+		String Scommand = "am broadcast -a com.orange.atk.serviceSendEventToSolo.FOREGROUNDAPP -n com.orange.atk.serviceSendEventToSolo/.BReceiverForGetForeGroundApp";
 		float version = Float.valueOf(adevice.getProperty("ro.build.version.release").substring(0,
 				3));
 		if (version >= 3.1)
@@ -303,7 +315,6 @@ public class RobotiumTaskForViewer {
 			}
 			if(PackageSourceDir.toLowerCase().startsWith("/system/")) {
 				Logger.getLogger(this.getClass() ).debug("/**** Can not perform robotium test on system app :***/ ");
-				JOptionPane.showMessageDialog(UiAutomatorHelper.mViewer, "Can not  perform robotium test on system app","Warning",JOptionPane.WARNING_MESSAGE);
 				throw new PhoneException("Can perform robotium test on system app");
 			}
 		} catch (UnknownHostException e) {

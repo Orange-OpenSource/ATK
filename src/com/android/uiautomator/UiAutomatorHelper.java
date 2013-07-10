@@ -17,8 +17,13 @@
 package com.android.uiautomator;
 
 
+import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.RawImage;
+import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.SyncService;
+import com.android.ddmlib.TimeoutException;
 import com.android.uiautomator.robotiumTask.RobotiumTaskForViewer;
 import com.android.uiautomator.tree.BasicTreeNode;
 import com.android.uiautomator.tree.RootWindowNode;
@@ -32,6 +37,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 
@@ -41,6 +48,16 @@ public class UiAutomatorHelper {
 	private static RobotiumTaskForViewer robotiumTask=null;
 	public static UiAutomatorViewer mViewer=null;
 
+	public static boolean supportsUiAutomator(IDevice device) {
+		String apiLevelString = device.getProperty("ro.build.version.sdk");
+		int apiLevel;
+		try {
+			apiLevel = Integer.parseInt(apiLevelString);
+		} catch (NumberFormatException e) {
+			apiLevel = 16;
+		}
+		return apiLevel >= 16;
+	}
 
 
 	private static void getUiHierarchyFile(IDevice device, File dst, String cmd ) throws UiAutomatorException {
@@ -52,7 +69,12 @@ public class UiAutomatorHelper {
 		}
 		try {
 			robotiumTask.getViewFromRobotium(cmd);
-			if(!RobotiumTaskForViewer.XmlViews.equalsIgnoreCase("KO")){
+			if(RobotiumTaskForViewer.XmlViews==null){
+				getUiHierarchyFile(device,dst);
+				UiAutomatorViewer.dumpXMLFirstTime = false;
+				return;
+			}
+			if(!RobotiumTaskForViewer.XmlViews.equalsIgnoreCase("KO")) {
 				try {
 					PrintWriter pw = new PrintWriter(new FileWriter(dst.getAbsolutePath(),true));
 					pw.print(RobotiumTaskForViewer.XmlViews);
@@ -102,7 +124,7 @@ public class UiAutomatorHelper {
 		//get xml dump file
 		try {
 			UiAutomatorHelper.getUiHierarchyFile(device, xmlDumpFile,cmd);
-		} catch (Exception e) {
+		} catch (UiAutomatorException e) {
 			String msg = "Error while obtaining UI hierarchy XML file: " + e.getMessage();
 			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper.Error while obtaining UI hierarchy XML file:***/"+ e.getMessage());
 			throw new UiAutomatorException(msg, e);
@@ -160,6 +182,46 @@ public class UiAutomatorHelper {
 		}
 
 		return new UiAutomatorResult(xmlDumpFile, model, screenshot);
+	}
+	/**
+	 * call when device api level >= 16 
+	 * @throws PhoneException 
+	 */
+	private static void getUiHierarchyFile(IDevice device, File dst) throws UiAutomatorException {
+		Logger.getLogger(UiAutomatorHelper.class).debug( "/****views from uiautomator***/ ");
+		String command = "rm /data/local/tmp/uidump.xml";
+		try {
+			CountDownLatch commandCompleteLatch = new CountDownLatch(1);
+			device.executeShellCommand(command, new CollectingOutputReceiver(commandCompleteLatch));
+			commandCompleteLatch.await(5L, TimeUnit.SECONDS);
+		} catch (TimeoutException e) {
+			Logger.getLogger(UiAutomatorHelper.class).debug("/****error :  "+ e.getMessage());
+			throw new UiAutomatorException(e.getMessage(),e);
+		} catch (AdbCommandRejectedException e) {
+			Logger.getLogger(UiAutomatorHelper.class).debug("/****error : "+  e.getMessage());
+			throw new UiAutomatorException(e.getMessage(),e);
+		} catch (ShellCommandUnresponsiveException e) {
+			Logger.getLogger(UiAutomatorHelper.class).debug("/****error : "+  e.getMessage());
+			throw new UiAutomatorException(e.getMessage(),e);
+		} catch (IOException e) {
+			Logger.getLogger(UiAutomatorHelper.class).debug("/****error : "+ e.getMessage());
+			throw new UiAutomatorException(e.getMessage(),e);
+		} catch (InterruptedException e) {
+			Logger.getLogger(UiAutomatorHelper.class).debug("/****error : "+ e.getMessage());
+			throw new UiAutomatorException(e.getMessage(),e);
+		}
+		command = String.format("%s %s %s", new Object[] { "/system/bin/uiautomator", "dump", "/data/local/tmp/uidump.xml" });
+
+		CountDownLatch commandCompleteLatch = new CountDownLatch(1);
+		try {
+			device.executeShellCommand(command, new CollectingOutputReceiver(commandCompleteLatch), 40000);
+
+			commandCompleteLatch.await(40L, TimeUnit.SECONDS);
+
+			device.getSyncService().pullFile("/data/local/tmp/uidump.xml", dst.getAbsolutePath(), SyncService.getNullProgressMonitor());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@SuppressWarnings("serial")
