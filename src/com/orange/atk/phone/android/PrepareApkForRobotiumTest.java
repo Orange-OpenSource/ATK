@@ -39,26 +39,22 @@ import org.apache.log4j.Logger;
 
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.InstallException;
-import com.orange.atk.atkUI.corecli.Configuration;
 import com.orange.atk.phone.PhoneException;
 import com.orange.atk.platform.Platform;
 
 public class PrepareApkForRobotiumTest {
 
-	public static boolean prepareAPKForRobotiumGetViews(IDevice adevice ,String packName, String activityName, String packsourceDir, String TestAPK,int versionCode) throws PhoneException {
-		Logger.getLogger(PrepareApkForRobotiumTest.class).debug("/****prepareAPKForRobotiumGetViews ***/ ");
+	public static void prepareAPKForRobotiumGetViews(IDevice adevice ,String packName, String activityName, String packsourceDir, String TestAPK,int versionCode) throws PhoneException {
+		Logger.getLogger(PrepareApkForRobotiumTest.class).debug("/****prepare APK For Robotium test ***/ ");
 		String adbLocation = Platform.getInstance().getDefaultADBLocation();
 		String AndroidToolsDir=Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"AndroidTools";
-
 		String createAndbuildTestApkFile =AndroidToolsDir+ Platform.FILE_SEPARATOR+"BuildAndSignApk"+Platform.FILE_SEPARATOR+"build-tools"+
 				Platform.FILE_SEPARATOR+"CreateDexFileAndBuildApk.bat";
 		String resignApkUnderTest = AndroidToolsDir+Platform.FILE_SEPARATOR+"BuildAndSignApk"+Platform.FILE_SEPARATOR+"Sign-tools"+
 				Platform.FILE_SEPARATOR+"ATKSignAPK.bat";
-
 		String TestDir =AndroidToolsDir+Platform.FILE_SEPARATOR+"UiautomatorViewerTask";
 		String testApkSrcDir=AndroidToolsDir+Platform.FILE_SEPARATOR+TestAPK.substring(0, TestAPK.indexOf(".apk"));
 		String TempTestApkDir=TestDir+Platform.FILE_SEPARATOR+TestAPK.substring(0, TestAPK.indexOf(".apk"));
-
 		String TempInitFile=TempTestApkDir+Platform.FILE_SEPARATOR+"bin"+Platform.FILE_SEPARATOR+"com"+Platform.FILE_SEPARATOR+
 				"orange"+Platform.FILE_SEPARATOR+"atk"+Platform.FILE_SEPARATOR+"soloTest"+Platform.FILE_SEPARATOR+
 				"init.prop";
@@ -68,7 +64,13 @@ public class PrepareApkForRobotiumTest {
 
 		BufferedReader errorStream=null;
 		BufferedReader inputStream=null;
-
+		if(!(new File(TestDir).exists())){
+			(new File(TestDir)).mkdir();
+		}
+		if(!(new File(TestDir+Platform.FILE_SEPARATOR+"TempAPK").exists())){
+			(new File(TestDir+Platform.FILE_SEPARATOR+"TempAPK")).mkdir();
+		}
+		
 		String [] pullapk = {adbLocation,"-s",adevice.getSerialNumber(), "pull" ,packsourceDir,TestDir};
 		if(!packageExistInCache) {
 			try {
@@ -154,7 +156,6 @@ public class PrepareApkForRobotiumTest {
 		}
 
 		removeDirectory( new File(TempTestApkDir));
-		return true;	
 
 	}
 

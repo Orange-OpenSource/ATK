@@ -22,6 +22,7 @@ import com.android.uiautomator.actions.ScreenshotAction;
 import com.android.uiautomator.tree.AttributePair;
 import com.android.uiautomator.tree.BasicTreeNode;
 import com.android.uiautomator.tree.UiNode;
+import com.orange.atk.atkUI.coregui.CoreGUIPlugin;
 import com.orange.atk.interpreter.ast.ASTFUNCTION;
 import com.orange.atk.interpreter.ast.ASTNUMBER;
 import com.orange.atk.interpreter.ast.ASTSTRING;
@@ -48,6 +49,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
@@ -79,10 +81,6 @@ import org.apache.log4j.Logger;
 
 
 public class UiAutomatorViewer extends JFrame {
-	/**
-	 * 
-	 */
-
 	private static final long serialVersionUID = 1L;
 	private JButton jbtOpenFolder;
 	private JButton jbtScreenshot;
@@ -105,11 +103,17 @@ public class UiAutomatorViewer extends JFrame {
 	public static boolean dumpXMLFirstTime =true;
 	private ScreenshotAction screenshotAction=null;
 	private OpenFilesAction openFilesAction=null;
+	private static final String icondescr = "ATK";
+	public static ImageIcon icon = null;
 
 	public UiAutomatorViewer() {
 
 		super("UI Automator Viewer");
 		this.setSize(800, 600);
+		URL iconURL = CoreGUIPlugin.getMainIcon();
+		icon = new ImageIcon(iconURL, icondescr);
+		setIconImage(icon.getImage());
+
 
 		screenshotAction = new  ScreenshotAction(UiAutomatorViewer.this);
 		openFilesAction = new OpenFilesAction(UiAutomatorViewer.this);
@@ -128,7 +132,7 @@ public class UiAutomatorViewer extends JFrame {
 				openFilesAction.openFilesAction();
 			}
 		});
-		
+
 		jbtScreenshot=new JButton(new ImageIcon(this.getClass().getResource("screenshot.png")));
 		jbtScreenshot.setToolTipText("Device Screenshot");
 		jbtScreenshot.addActionListener(new ActionListener(){
@@ -144,7 +148,7 @@ public class UiAutomatorViewer extends JFrame {
 				new ExpandAllAction().expandTree(mTreeViewer) ;
 			}
 		});
-		
+
 		jbtStop= new JButton(new ImageIcon(this.getClass().getResource("stop.png")));
 		jbtStop.setToolTipText("stop instrumentation");
 		jbtStop.addActionListener(new ActionListener(){
@@ -152,7 +156,7 @@ public class UiAutomatorViewer extends JFrame {
 				screenshotAction.screenshotAction("exit","Stop instrumentation");
 				glassPane.stop();
 				jbtStop.setEnabled(false);
-				
+
 			}
 		});
 
@@ -180,23 +184,23 @@ public class UiAutomatorViewer extends JFrame {
 			}
 		});
 		screenshotPanel.addMouseListener(new MouseListener() {
-			
+
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 			}
-			
+
 			@Override
 			public void mousePressed(MouseEvent arg0) {
 			}
-			
+
 			@Override
 			public void mouseExited(MouseEvent arg0) {
 			}
-			
+
 			@Override
 			public void mouseEntered(MouseEvent arg0) {
 			}
-			
+
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				if (arg0.getButton()==MouseEvent.BUTTON3){
@@ -204,7 +208,7 @@ public class UiAutomatorViewer extends JFrame {
 					String className=null;
 					String texte=null;
 					BasicTreeNode node = mModel.getSelectedNode();
-					
+
 					if(node!=null) {
 						Object [] attibutes=  node.getAttributesArray();
 						for(int i=0; i<attibutes.length; i++) {
@@ -267,7 +271,7 @@ public class UiAutomatorViewer extends JFrame {
 				}
 			}
 		});
-		
+
 		mTreeViewer.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -312,7 +316,7 @@ public class UiAutomatorViewer extends JFrame {
 								}
 							}
 						}
-						
+
 					} 
 
 				}
@@ -360,7 +364,7 @@ public class UiAutomatorViewer extends JFrame {
 		this.add(jtbuttonbar, BorderLayout.NORTH);
 		this.add(splitPane, BorderLayout.CENTER);
 		this.setGlassPane(glassPane);
-		
+
 		this.addWindowListener(new WindowListener() {
 			@Override
 			public void windowOpened(WindowEvent arg0) {
@@ -376,9 +380,9 @@ public class UiAutomatorViewer extends JFrame {
 			}
 			@Override
 			public void windowClosing(WindowEvent arg0) {
-				  if(!dumpXMLFirstTime){
-					  screenshotAction.screenshotAction("exit","Stopping instrumentation");
-				  }
+				if(!dumpXMLFirstTime){
+					screenshotAction.screenshotAction("exit","Stopping instrumentation");
+				}
 			}
 			@Override
 			public void windowClosed(WindowEvent arg0) {
@@ -406,7 +410,7 @@ public class UiAutomatorViewer extends JFrame {
 		glassPane.stop();
 		if(!dumpXMLFirstTime) {
 			jbtStop.setEnabled(true);
-			}
+		}
 	}
 
 
@@ -547,7 +551,7 @@ public class UiAutomatorViewer extends JFrame {
 		String command=action;
 		stringArray[0] = Character.toUpperCase(stringArray[0]);
 		action = new String(stringArray);
-		
+
 		ASTFUNCTION function = new ASTFUNCTION(ATKScriptParserTreeConstants.JJTFUNCTION);
 		function.setValue(action);
 		if(text!=null && text.length()>0){
@@ -595,7 +599,7 @@ public class UiAutomatorViewer extends JFrame {
 			}
 		}
 	}
-	
+
 	protected void getListOfViews(String classe,BasicTreeNode rootNode){
 		BasicTreeNode[] listenodes = rootNode.getChildren();
 		for(int i=0; i<listenodes.length; i++) {
@@ -650,7 +654,7 @@ public class UiAutomatorViewer extends JFrame {
 		}
 		return rightPopup;
 	}
-	
+
 	protected ArrayList <String> getMethodsList (BasicTreeNode node,String texte,String className){
 		Class<?> c = null;
 		ListMethodSolo list = new ListMethodSolo();
