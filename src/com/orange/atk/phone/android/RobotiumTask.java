@@ -78,104 +78,92 @@ public class RobotiumTask {
 	 * @throws PhoneException
 	 */
 	public void sendCommandToExecuteToSolo(Object [] commands) throws PhoneException {
-
+		if(!isTestParamSet){
+			Logger.getLogger(this.getClass()).debug("can't send command to solo you must specify apk to test ! the first command " +
+					"must be StartRobotiumTestOn to init robotium test");
+			return;
+		}
 		if(!Start_Solo) {
-			if(isTestParamSet) {
-				if(checkRobotium("com.orange.atk.serviceSendEventToSolo")!=0){
-					pushSendEventService();
-				} 
-				try{
-					PrepareApkForRobotiumTest.prepareAPKForRobotiumGetViews(adevice,PackageName,MainActivityName,PackageSourceDir, "ATKTestingAPKWithRobotium.apk",VersionCode);
-				}catch (PhoneException e) {
-					Logger.getLogger(this.getClass() ).debug("/****error : " + e.getMessage());
-					throw new PhoneException(e.getMessage());
-				}
-				pushATKSoloTest();
+			if(checkRobotium("com.orange.atk.serviceSendEventToSolo")!=0){
+				pushSendEventService();
+			} 
+			PrepareApkForRobotiumTest.prepareAPKForRobotiumGetViews(adevice,PackageName,MainActivityName,PackageSourceDir, "ATKTestingAPKWithRobotium.apk",VersionCode);
 
-				String Scommand="am instrument com.orange.atk.soloTest/android.test.InstrumentationTestRunner";
-				float version = Float.valueOf(adevice.getProperty("ro.build.version.release").substring(0,3));
-				if (version >= 3.1) {
-					Scommand += " -f 32";
-				}
-				androidPhone.executeShellCommand(Scommand);
-				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e2) {
-					Logger.getLogger(this.getClass()).debug(e2.getMessage());
-				}
-				try {
-					adevice.createForward(PORT_ATK_SOLO_TESTING,PORT_ATK_SOLO_TESTING);
-				}catch (TimeoutException e) {
-					Logger.getLogger(this.getClass() ).error("Timeout while setting port forwarding");
-					throw new PhoneException("Can not communicate with soloTest ");
-				}catch (AdbCommandRejectedException e) {
-					Logger.getLogger(this.getClass() ).error(e.getMessage()+" while setting port forwarding");
-					throw new PhoneException("Can not communicate with soloTest");
-				}catch (IOException e) {
-					Logger.getLogger(this.getClass() ).error(e.getMessage()+" while setting port forwarding");
-					throw new PhoneException("Can not communicate with soloTest");
-				}
-				Logger.getLogger(this.getClass()).debug("soloTest  is launched on the device ..."); 
-				Start_Solo=true;
+			pushATKSoloTest();
 
-				try {
-					socketg = new Socket("127.0.0.1", PORT_ATK_SOLO_TESTING);
-					out = new ObjectOutputStream(socketg.getOutputStream());
-					in = new  ObjectInputStream(socketg.getInputStream());
-					Logger.getLogger(this.getClass()).debug("<start sendind commands >");
-					if(!((String) commands[0]).toLowerCase().contains("ExitSolo".toLowerCase())) {
-						out.writeObject(commands);
-						out.flush();
-						Logger.getLogger(this.getClass()).debug(" "+in.readObject());
-					} else {
-						out.writeObject(commands);
-						out.flush();
-						Logger.getLogger(this.getClass()).debug(" "+in.readObject());
-						out.close();
-						in.close();
-						Logger.getLogger(this.getClass()).debug("  < finish sending commands >");
-						Start_Solo=false;
-						isTestParamSet=false;
-					}
-				} catch (SocketException e) {
-					throw new PhoneException(e.getMessage());
-				} catch (IOException e) {
-					throw new PhoneException(e.getMessage());
-				}   catch (ClassNotFoundException e) {
-					throw new PhoneException(e.getMessage());
-				}
-
-			}else {
-				Logger.getLogger(this.getClass()).debug("can't send command to solo you must specify apk to test : "+commands[0]);
+			String Scommand="am instrument -w com.orange.atk.soloTest/android.test.InstrumentationTestRunner";
+			float version = Float.valueOf(adevice.getProperty("ro.build.version.release").substring(0,3));
+			if (version >= 3.1) {
+				Scommand += " -f 32";
 			}
-		}else {
-			if(isTestParamSet) {
-				try {
-					if(!((String) commands[0]).toLowerCase().contains("ExitSolo".toLowerCase()))  {
-						out.writeObject(commands);
-						out.flush();
-						Logger.getLogger(this.getClass()).debug(" "+in.readObject());
-					} else {
-						out.writeObject(commands);
-						out.flush();
-						Logger.getLogger(this.getClass()).debug(" "+in.readObject());
-						out.close();
-						in.close();
-						Logger.getLogger(this.getClass()).debug("  < finish sending commands >");
-						Start_Solo=false;
-						isTestParamSet=false;
-					} 
-				} catch (IOException e) {
-					throw new PhoneException(e.getMessage());
-				} catch (ClassNotFoundException e) {
-					throw new PhoneException(e.getMessage());
+			androidPhone.executeShellCommand(Scommand);
+			
+			try {
+				adevice.createForward(PORT_ATK_SOLO_TESTING,PORT_ATK_SOLO_TESTING);
+			}catch (TimeoutException e) {
+				Logger.getLogger(this.getClass() ).error("Timeout while setting port forwarding");
+				throw new PhoneException("Can not communicate with soloTest ");
+			}catch (AdbCommandRejectedException e) {
+				Logger.getLogger(this.getClass() ).error(e.getMessage()+" while setting port forwarding");
+				throw new PhoneException("Can not communicate with soloTest");
+			}catch (IOException e) {
+				Logger.getLogger(this.getClass() ).error(e.getMessage()+" while setting port forwarding");
+				throw new PhoneException("Can not communicate with soloTest");
+			}
+			Logger.getLogger(this.getClass()).debug("soloTest  is launched on the device ..."); 
+			Start_Solo=true;
+
+			try {
+				socketg = new Socket("127.0.0.1", PORT_ATK_SOLO_TESTING);
+				out = new ObjectOutputStream(socketg.getOutputStream());
+				in = new  ObjectInputStream(socketg.getInputStream());
+				Logger.getLogger(this.getClass()).debug("<start sendind commands >");
+				if(!((String) commands[0]).toLowerCase().contains("ExitSolo".toLowerCase())) {
+					out.writeObject(commands);
+					out.flush();
+					Logger.getLogger(this.getClass()).debug(" "+in.readObject());
+				} else {
+					out.writeObject(commands);
+					out.flush();
+					Logger.getLogger(this.getClass()).debug(" "+in.readObject());
+					out.close();
+					in.close();
+					Logger.getLogger(this.getClass()).debug("  < finish sending commands >");
+					Start_Solo=false;
+					isTestParamSet=false;
 				}
-			}else {
-				Logger.getLogger(this.getClass()).debug("can't send command to solo you must specify apk to test : "+commands[0]);
+			} catch (SocketException e) {
+				throw new PhoneException(e.getMessage());
+			} catch (IOException e) {
+				throw new PhoneException(e.getMessage());
+			}   catch (ClassNotFoundException e) {
+				throw new PhoneException(e.getMessage());
+			}
+
+		}else {
+			try {
+				if(!((String) commands[0]).toLowerCase().contains("ExitSolo".toLowerCase()))  {
+					out.writeObject(commands);
+					out.flush();
+					Logger.getLogger(this.getClass()).debug(" "+in.readObject());
+				} else {
+					out.writeObject(commands);
+					out.flush();
+					Logger.getLogger(this.getClass()).debug(" "+in.readObject());
+					out.close();
+					in.close();
+					Logger.getLogger(this.getClass()).debug("  < finish sending commands >");
+					Start_Solo=false;
+					isTestParamSet=false;
+				} 
+			} catch (IOException e) {
+				throw new PhoneException(e.getMessage());
+			} catch (ClassNotFoundException e) {
+				throw new PhoneException(e.getMessage());
 			}
 		}
 	}
-	
+
 	public ArrayList<String> getAllInstalledAPK() throws PhoneException {
 
 		if(checkRobotium("com.orange.atk.serviceSendEventToSolo")!=0) {
@@ -291,7 +279,7 @@ public class RobotiumTask {
 		}
 	}
 
-	
+
 	public ArrayList<String> getForegroundApp() throws PhoneException {
 		if(checkRobotium("com.orange.atk.serviceSendEventToSolo")!=0) {
 			pushSendEventService();

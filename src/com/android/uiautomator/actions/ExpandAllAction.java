@@ -28,7 +28,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 public class ExpandAllAction {
-	
+
 	public void expandTree(JTree tree) {
 		TreeNode root = (TreeNode) tree.getModel().getRoot();
 		expandAll(tree, new TreePath(root));

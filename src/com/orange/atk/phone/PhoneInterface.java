@@ -671,15 +671,13 @@ public interface PhoneInterface {
 	public String getConfigFile();
 
 	public boolean isDisabledPhone();
-	
+
 	//add robotium task
-	public String  getViewFromRobotium(String packName, String activityName, String packsourceDir, int versionCode)throws PhoneException;
-	
 	public void sendCommandToExecuteToSolo(Object[] commands)throws PhoneException;
-	
+
 	public void setApkToTestWithRobotiumParam(String packName, String activityName, String packsourceDir, int versionCode)throws PhoneException;
 
-    public ArrayList<String> getAllInstalledAPK() throws PhoneException;
-    
-    public ArrayList<String> getForegroundApp() throws PhoneException;
+	public ArrayList<String> getAllInstalledAPK() throws PhoneException;
+
+	public ArrayList<String> getForegroundApp() throws PhoneException;
 }
