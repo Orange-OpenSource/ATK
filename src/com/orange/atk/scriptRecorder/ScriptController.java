@@ -842,28 +842,13 @@ public class ScriptController {
 				ast.jjtRemoveChild(ast.jjtGetNumChildren() -1);
 		} 
 	}
-	public String getViewFromRobotium(String packName, String activityName, String packsourceDir,int versioncode) {
-		String views=null;
-		initPhone();
-		try {
-			views= phone.getViewFromRobotium(packName,activityName, packsourceDir, versioncode);
-		} catch (PhoneException e) {
-			Logger.getLogger(this.getClass() ).error(e.getMessage()+" in function getViewFromRobotium");
-		}
-		return views;
-	}
 
 	public void setTestAPKWithRobotiumParam(String packName, String activityName, String packsourceDir,int versioncode) {
-		//initPhone();
-		//try {
-			PackageName=packName;
-			MainActivityName=activityName;
-			PackageSourceDir=packsourceDir;
-			Versioncode= versioncode;
-			/*phone.setApkToTestWithRobotiumParam(packName,activityName,packsourceDir,versioncode);
-		} catch (PhoneException e) {
-			Logger.getLogger(this.getClass() ).error(e.getMessage()+" in function setTestAPKWithRobotiumParam ");
-		}*/
+
+		PackageName=packName;
+		MainActivityName=activityName;
+		PackageSourceDir=packsourceDir;
+		Versioncode= versioncode;
 	}
 
 	public ArrayList<String> getAllInstalledAPK() {

@@ -439,24 +439,17 @@ public class DefaultPhone implements PhoneInterface {
 	}
 
 	@Override
-	public String getViewFromRobotium(String packName, String activityName,
-			String packsourceDir, int versionCode) throws PhoneException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void sendCommandToExecuteToSolo(Object[] commands) throws PhoneException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setApkToTestWithRobotiumParam(String packName,
 			String activityName, String packsourceDir, int versionCode)
-			throws PhoneException {
+					throws PhoneException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
