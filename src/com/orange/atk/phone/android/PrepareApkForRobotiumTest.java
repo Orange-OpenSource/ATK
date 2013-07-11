@@ -41,22 +41,26 @@ import com.android.ddmlib.IDevice;
 import com.android.ddmlib.InstallException;
 import com.orange.atk.phone.PhoneException;
 import com.orange.atk.platform.Platform;
+import com.orange.atk.sign.apk.SignAPK;
 
 public class PrepareApkForRobotiumTest {
 
 	public static void prepareAPKForRobotiumGetViews(IDevice adevice ,String packName, String activityName, String packsourceDir, String TestAPK,int versionCode) throws PhoneException {
 		Logger.getLogger(PrepareApkForRobotiumTest.class).debug("/****prepare APK For Robotium test ***/ ");
 		String adbLocation = Platform.getInstance().getDefaultADBLocation();
-		String AndroidToolsDir=Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"AndroidTools";
-		String createAndbuildTestApkFile =AndroidToolsDir+ Platform.FILE_SEPARATOR+"BuildAndSignApk"+Platform.FILE_SEPARATOR+"build-tools"+
-				Platform.FILE_SEPARATOR+"CreateDexFileAndBuildApk.bat";
-		String resignApkUnderTest = AndroidToolsDir+Platform.FILE_SEPARATOR+"BuildAndSignApk"+Platform.FILE_SEPARATOR+"Sign-tools"+
-				Platform.FILE_SEPARATOR+"ATKSignAPK.bat";
-		String TestDir =AndroidToolsDir+Platform.FILE_SEPARATOR+"UiautomatorViewerTask";
-		String testApkSrcDir=AndroidToolsDir+Platform.FILE_SEPARATOR+TestAPK.substring(0, TestAPK.indexOf(".apk"));
-		String TempTestApkDir=TestDir+Platform.FILE_SEPARATOR+TestAPK.substring(0, TestAPK.indexOf(".apk"));
-		String TempInitFile=TempTestApkDir+Platform.FILE_SEPARATOR+"bin"+Platform.FILE_SEPARATOR+"com"+Platform.FILE_SEPARATOR+
-				"orange"+Platform.FILE_SEPARATOR+"atk"+Platform.FILE_SEPARATOR+"soloTest"+Platform.FILE_SEPARATOR+
+		String AndroidToolsDir = Platform.getInstance().getJATKPath() + Platform.FILE_SEPARATOR
+				+ "AndroidTools";
+		String buildTestApkFile = Platform.getInstance().getBuildApk();
+		String removeSignBat = Platform.getInstance().getRemoveSignature();
+		String TestDir = AndroidToolsDir + Platform.FILE_SEPARATOR + "UiautomatorViewerTask";
+		String testApkSrcDir = AndroidToolsDir + Platform.FILE_SEPARATOR
+				+ TestAPK.substring(0, TestAPK.indexOf(".apk"));
+		String TempTestApkDir = TestDir + Platform.FILE_SEPARATOR
+				+ TestAPK.substring(0, TestAPK.indexOf(".apk"));
+		String TempInitFile=TempTestApkDir+Platform.FILE_SEPARATOR+"bin"
+				+Platform.FILE_SEPARATOR+"com"+Platform.FILE_SEPARATOR+
+				"orange"+Platform.FILE_SEPARATOR+"atk"+Platform.FILE_SEPARATOR
+				+"soloTest"+Platform.FILE_SEPARATOR+
 				"init.prop";
 
 		boolean packageExistInCache=cacheForRobotiumTest(packName,versionCode);
@@ -75,8 +79,10 @@ public class PrepareApkForRobotiumTest {
 		if(!packageExistInCache) {
 			try {
 				Process processPullApK = r.exec(pullapk);
-				inputStream = new BufferedReader(new InputStreamReader(processPullApK.getInputStream()));
-				errorStream = new BufferedReader(new InputStreamReader(processPullApK.getErrorStream()));
+				inputStream = new BufferedReader(new InputStreamReader(
+						processPullApK.getInputStream()));
+				errorStream = new BufferedReader(new InputStreamReader(
+						processPullApK.getErrorStream()));
 				String line ="";
 				while ((line =errorStream.readLine()) != null){
 
@@ -87,13 +93,16 @@ public class PrepareApkForRobotiumTest {
 				}
 				inputStream.close();
 			} catch (IOException e) {
-				Logger.getLogger(PrepareApkForRobotiumTest.class ).debug("/****error : " + e.getMessage());
+				Logger.getLogger(PrepareApkForRobotiumTest.class ).debug(
+						"/****error : " + e.getMessage());
 				throw new PhoneException(e.getMessage());
 			}
 
 		}
 
-		removeDirectory( new File(TestDir+Platform.FILE_SEPARATOR+"TempAPK"+Platform.FILE_SEPARATOR+TestAPK));
+		removeDirectory( new File(TestDir+Platform.FILE_SEPARATOR+"TempAPK"
+				+Platform.FILE_SEPARATOR+TestAPK));
+		removeDirectory(new File(TempTestApkDir));
 		try {
 			copyFolder(new File(testApkSrcDir),new File(TempTestApkDir));
 		} catch (IOException e) {
@@ -101,37 +110,60 @@ public class PrepareApkForRobotiumTest {
 			throw new PhoneException(e.getMessage());
 		}
 		createInitFile(TempInitFile,activityName,packName);
-		String buildAndSignTestApk []={createAndbuildTestApkFile,TempTestApkDir,TestDir+Platform.FILE_SEPARATOR+"TempAPK"+Platform.FILE_SEPARATOR+TestAPK, packName };  
-		try{
-			Process p =  r.exec(buildAndSignTestApk, null, new File(AndroidToolsDir));
+		String buildApk[] = {buildTestApkFile, TempTestApkDir,packName};
+		try {
+			Process p = r.exec(buildApk, null, new File(AndroidToolsDir));
 			inputStream = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			String line ="";
-			while ((line =inputStream.readLine()) != null) {
-				Logger.getLogger(PrepareApkForRobotiumTest.class ).debug("building test apk : " + line);
+			String line = "";
+			while ((line = inputStream.readLine()) != null) {
+				Logger.getLogger(PrepareApkForRobotiumTest.class).debug(
+						"building test apk : " + line);
 			}
 			inputStream.close();
-		}  catch (IOException e1){
-			Logger.getLogger(PrepareApkForRobotiumTest.class ).debug("/****error : " + e1.getMessage());
+		} catch (IOException e1) {
+			Logger.getLogger(PrepareApkForRobotiumTest.class).debug(
+					"/****error : " + e1.getMessage());
 			throw new PhoneException(e1.getMessage());
 		}
+		
+		SignAPK.signApk(
+				TempTestApkDir+ Platform.FILE_SEPARATOR+"bin"+Platform.FILE_SEPARATOR+"AtkTestRobotium.apk",
+				TempTestApkDir + Platform.FILE_SEPARATOR + "bin" + Platform.FILE_SEPARATOR
+				+ "NonAlignAtkTestRobotium.apk");
+		SignAPK.zipAlignApk(
+				TempTestApkDir + Platform.FILE_SEPARATOR + "bin" + Platform.FILE_SEPARATOR
+				+ "NonAlignAtkTestRobotium.apk",
+				TestDir + Platform.FILE_SEPARATOR + "TempAPK" + Platform.FILE_SEPARATOR
+				+ TestAPK);
 		if(!packageExistInCache) { 
-
-			String appapk = packsourceDir.substring(packsourceDir.lastIndexOf("/")+1);
-			String reSignAPP []={resignApkUnderTest, TestDir+Platform.FILE_SEPARATOR+appapk,TestDir+Platform.FILE_SEPARATOR+"TempAPK"+Platform.FILE_SEPARATOR+appapk };  
+			String appapk = packsourceDir.substring(packsourceDir.lastIndexOf("/") + 1);
+			String removeSign[] = {
+					removeSignBat,
+					TestDir + Platform.FILE_SEPARATOR + appapk};
 			try {
-				Process p =  r.exec(reSignAPP, null, new File(TestDir));
+				Process p = r.exec(removeSign, null, new File(TestDir));
 				inputStream = new BufferedReader(new InputStreamReader(p.getInputStream()));
 				errorStream = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-				String line ="";
-				while ((line =inputStream.readLine()) != null) {
-					Logger.getLogger(PrepareApkForRobotiumTest.class ).debug("resigning apk under test : " + line);
+				String line = "";
+				while ((line = inputStream.readLine()) != null) {
+					Logger.getLogger(PrepareApkForRobotiumTest.class).debug(
+							"remove signature from Apk : " + line);
 				}
 				inputStream.close();
-			} catch (IOException e1){
-				Logger.getLogger(PrepareApkForRobotiumTest.class ).debug("/****error : " + e1.getMessage());
+			} catch (IOException e1) {
+				Logger.getLogger(PrepareApkForRobotiumTest.class).debug(
+						"/****error : " + e1.getMessage());
 				throw new PhoneException(e1.getMessage());
-
 			}
+			SignAPK.signApk(
+					TestDir + Platform.FILE_SEPARATOR + appapk,
+					TempTestApkDir + Platform.FILE_SEPARATOR + "bin" + Platform.FILE_SEPARATOR
+					+ "NonAlign"+appapk);
+			SignAPK.zipAlignApk(
+					TempTestApkDir + Platform.FILE_SEPARATOR + "bin" + Platform.FILE_SEPARATOR
+					+ "NonAlign"+appapk,
+					TestDir + Platform.FILE_SEPARATOR + "TempAPK" + Platform.FILE_SEPARATOR
+					+ appapk);
 
 			pushPackage(adevice,packName,TestDir+Platform.FILE_SEPARATOR+"TempAPK"+Platform.FILE_SEPARATOR+appapk) ;
 			File cacheDir = new  File(TestDir+Platform.FILE_SEPARATOR+"Cache"+Platform.FILE_SEPARATOR+packName+"_"+versionCode );
@@ -141,7 +173,16 @@ public class PrepareApkForRobotiumTest {
 			File f1= new File(TestDir+Platform.FILE_SEPARATOR+"TempAPK"+Platform.FILE_SEPARATOR+appapk);
 			File f2= new File(cacheDir+Platform.FILE_SEPARATOR+appapk);
 			if(f1.renameTo(f2)) {
-
+				try {
+					PrintWriter pw = new PrintWriter(new FileWriter(TestDir + Platform.FILE_SEPARATOR + "Cache"
+							+ Platform.FILE_SEPARATOR + "cache.txt", true));
+					pw.println(packName + "_" + versionCode);
+					pw.close();
+				} catch (IOException e) {
+					Logger.getLogger(PrepareApkForRobotiumTest.class).debug(
+							"/****error : " + e.getMessage());
+					throw new PhoneException(e.getMessage());
+				}
 			} else {
 			}
 
@@ -220,7 +261,7 @@ public class PrepareApkForRobotiumTest {
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			String strLine;
 			while ((strLine = br.readLine()) != null){
-				if(strLine.contains(packgName+" "+versionCode)) {
+				if(strLine.contains(packgName+"_"+versionCode)) {
 					br.close();
 					return true;
 				}
@@ -234,14 +275,6 @@ public class PrepareApkForRobotiumTest {
 			Logger.getLogger(PrepareApkForRobotiumTest.class ).debug("/****error : " + e.getMessage());
 			throw new PhoneException(e.getMessage());
 
-		}
-		try {
-			PrintWriter pw = new PrintWriter(new FileWriter(cachePath+Platform.FILE_SEPARATOR+"Cache"+Platform.FILE_SEPARATOR+"cache.txt",true));
-			pw.println(packgName+" "+versionCode);
-			pw.close();
-		} catch(IOException e){
-			Logger.getLogger(PrepareApkForRobotiumTest.class ).debug("/****error : " + e.getMessage());
-			throw new PhoneException(e.getMessage());
 		}
 		return false;
 	}

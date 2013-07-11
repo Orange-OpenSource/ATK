@@ -170,7 +170,9 @@ public class RobotiumTask {
 			pushSendEventService();
 		}
 		ArrayList<String> Apks=new ArrayList<String>();
-		String Scommand="am startservice -n com.orange.atk.serviceSendEventToSolo/.ServiceGetAllAPK";
+		//String Scommand="am startservice -n com.orange.atk.serviceSendEventToSolo/.ServiceGetAllAPK";
+		String Scommand = "am broadcast -a com.orange.atk.serviceSendEventToSolo.ALLAPK -n " +
+				"com.orange.atk.serviceSendEventToSolo/.BReceiverForGetAllAPK";
 		float version = Float.valueOf(adevice.getProperty("ro.build.version.release").substring(0,3));
 		if (version >= 3.1) Scommand += " -f 32";
 		androidPhone.executeShellCommand(Scommand); 
@@ -285,7 +287,8 @@ public class RobotiumTask {
 			pushSendEventService();
 		}
 		ArrayList<String> Apk=null;
-		String Scommand="am startservice -n com.orange.atk.serviceSendEventToSolo/.ServiceGetForegroundApp";
+		//String Scommand="am startservice -n com.orange.atk.serviceSendEventToSolo/.ServiceGetForegroundApp";
+		String Scommand = "am broadcast -a com.orange.atk.serviceSendEventToSolo.FOREGROUNDAPP -n com.orange.atk.serviceSendEventToSolo/.BReceiverForGetForeGroundApp";
 		float version = Float.valueOf(adevice.getProperty("ro.build.version.release").substring(0,3));
 		if (version >= 3.1) Scommand += " -f 32";
 		androidPhone.executeShellCommand(Scommand);

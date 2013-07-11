@@ -72,4 +72,58 @@ public class WindowsPlatform extends Platform {
 		Logger.getLogger(WindowsPlatform.class).debug("No adb path found");
 		return null;
 	}
+
+	@Override
+	public String getBuildApk() {
+		String JATKpath=Platform.getInstance().getJATKPath();
+		String path=JATKpath+Platform.FILE_SEPARATOR + "AndroidTools" + Platform.FILE_SEPARATOR+ 
+				Platform.FILE_SEPARATOR + "BuildAndSignApk" + Platform.FILE_SEPARATOR + "buildTools" 
+				+Platform.FILE_SEPARATOR + "buildApk.bat"; 
+		File f = new File(path);
+		if (f.exists()) {
+			return path;
+		}
+		Logger.getLogger(WindowsPlatform.class).debug("buildApk.bat not found");
+		return null;
+	}
+
+	@Override
+	public String getRemoveSignature() {
+		String JATKpath=Platform.getInstance().getJATKPath();
+		String path=JATKpath+Platform.FILE_SEPARATOR + "AndroidTools" + Platform.FILE_SEPARATOR+
+				"BuildAndSignApk"+ Platform.FILE_SEPARATOR + "SignTools" +
+				Platform.FILE_SEPARATOR + "removeSignature.bat";
+		File f = new File(path);
+		if (f.exists()) {
+			return path;
+		}
+		Logger.getLogger(WindowsPlatform.class).debug("removeSignature.bat not found");
+		return null;
+	}
+
+	@Override
+	public String getZipalignLocation() {
+		String JATKpath=Platform.getInstance().getJATKPath();
+		String path=JATKpath + Platform.FILE_SEPARATOR + "AndroidTools" + Platform.FILE_SEPARATOR
+				+"zipalign.exe";
+		File f = new File(path);
+		if (f.exists()) {
+			return path;
+		}
+		Logger.getLogger(WindowsPlatform.class).debug("zipalign.exe not found");
+		return null;
+	}
+
+	@Override
+	public String getAtkKeyLocation() {
+		String JATKpath=Platform.getInstance().getJATKPath();
+		String path=JATKpath + Platform.FILE_SEPARATOR + "AndroidTools" + Platform.FILE_SEPARATOR
+				+"ATKKey.keystore";
+		File f = new File(path);
+		if (f.exists()) {
+			return path;
+		}
+		Logger.getLogger(WindowsPlatform.class).debug("ATKKey.keystore not found");
+		return null;
+	}
 }
