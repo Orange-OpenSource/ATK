@@ -1,4 +1,4 @@
-@ECHO OFF
+@echo off
 REM don't modify the caller's environment
 setlocal
 
@@ -12,10 +12,5 @@ REM Change current directory to where dx is, to avoid issues with directories
 REM containing whitespaces.
 cd /d %~dp0
 
-call removeSignature.bat %1
-
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ATKKey.keystore -storepass ATKKEY %1 ATKKEY
-
-call zipalign.exe 4 %1 %2
-
-
+REM create .apk unsigned and unaligned
+call aapt package -v -f -M %1\AndroidManifest.xml -S %1\res -I lib\android.jar --rename-instrumentation-target-package %2 -F %1\bin\AtkTestRobotium.apk %1\bin
