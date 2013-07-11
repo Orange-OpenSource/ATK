@@ -64,5 +64,9 @@ public abstract class Platform {
 
 	public abstract String getJATKPath();
 	public abstract String getDefaultADBLocation();
+	public abstract String getBuildApk();
+	public abstract String getRemoveSignature();
+	public abstract String getZipalignLocation();
+	public abstract String getAtkKeyLocation();
 
 }

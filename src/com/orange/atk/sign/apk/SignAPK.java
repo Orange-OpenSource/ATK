@@ -24,8 +24,7 @@ public class SignAPK {
 
 	@SuppressWarnings("deprecation")
 	public static void signApk(String input, String output) throws PhoneException{
-		String keystoreFilename = Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"AndroidTools"+
-				Platform.FILE_SEPARATOR+"ATKKey.keystore";
+		String keystoreFilename = Platform.getInstance().getAtkKeyLocation();
 		char[] password = "ATKKEY".toCharArray();
 		String alias = "ATKKEY";
 		SignedJarBuilder mBuilder = null;
@@ -71,8 +70,7 @@ public class SignAPK {
 	}
 	public static void  zipAlignApk(String input, String output) throws PhoneException {
 		Runtime r = Runtime.getRuntime();
-		String zipalignLocation=Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"AndroidTools"+
-				Platform.FILE_SEPARATOR+"zipalign.exe";
+		String zipalignLocation=Platform.getInstance().getZipalignLocation();
 		String zipalign[] = {zipalignLocation, "4",input, output};
 		try {
 			Process p = r.exec(zipalign, null, new File(
