@@ -197,6 +197,7 @@ public class JatkCheckListTable extends CheckListTable {
 
 		popup.add(JatkGUIAction.ANALYSESELECTEDTASKS.getAsMenuItem("Launch selection"));
 		popup.add(MatosAction.VIEWANALYZER.getAsMenuItem("Analyzer"));
+		popup.add(MatosAction.VIEWAROREPORT.getAsMenuItem("ARO report"));
 		popup.add(MatosAction.VIEWREPORT.getAsMenuItem("Open latest report"));
 		popup.add(JatkGUIAction.SETSCREENSHOTREFERENCEDIR
 				.getAsMenuItem("Set Reference Screenshots"));

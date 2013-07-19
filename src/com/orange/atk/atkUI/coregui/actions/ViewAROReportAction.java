@@ -10,14 +10,11 @@ import org.apache.log4j.Logger;
 
 import com.orange.atk.atkUI.corecli.Configuration;
 
-public class RunARODataAnalyser extends MatosAbstractAction {
-
+public class ViewAROReportAction extends MatosAbstractAction {
 	private static final String AROPATH = Configuration.getProperty(Configuration.AROPATH);
-	// private static final String LAUNCHARO =
-	// "cmd /c start aro.bat -d \"C:\\Temp\\ARO\\2013-06-06-OCC\"";
-	private static final String LAUNCHARO = "cmd /c start aro.bat";
+	private static final String LAUNCHARO = "cmd /c start aro.bat -d \"C:\\Temp\\ARO\\2013-06-06-OCC\"";
 
-	public RunARODataAnalyser(String name, Icon icon, String shortDescription) {
+	public ViewAROReportAction(String name, Icon icon, String shortDescription) {
 		super(name, icon, shortDescription);
 	}
 
@@ -30,5 +27,4 @@ public class RunARODataAnalyser extends MatosAbstractAction {
 			Logger.getLogger(this.getClass()).error("Unable to start ARODataAnalyzer", e);
 		}
 	}
-
 }

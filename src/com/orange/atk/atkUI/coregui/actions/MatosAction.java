@@ -155,7 +155,11 @@ public enum MatosAction {
 			CoreGUIPlugin.getIconURL("tango/noatunstop.png")), "Stop the current task.")),
 
 	ARODATANALYSER("AroDataAnalyser", new RunARODataAnalyser("AroDataAnalyser", new ImageIcon(
-			CoreGUIPlugin.getIconURL("aro_22.png")), "Run ARO Data Analyser"));
+			CoreGUIPlugin.getIconURL("aro_22.png")), "Run ARO Data Analyser")),
+
+	VIEWAROREPORT("viewReport", new ViewAROReportAction("viewAROReport", new ImageIcon(
+			CoreGUIPlugin.getIconURL("aro_22.png")),
+			"View ARO report for this test"));
 
 	// ------------------------------------------------------------------------------
 
