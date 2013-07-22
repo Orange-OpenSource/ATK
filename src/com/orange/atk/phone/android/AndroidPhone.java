@@ -78,8 +78,8 @@ import com.orange.atk.util.Position;
  * 
  */
 public class AndroidPhone implements PhoneInterface {
-	
-	private RobotiumTask robotiumTask=null;
+
+	private RobotiumTask robotiumTask = null;
 
 	private static final String ARO_APK_PATH = "ARO\\ARODataCollector_OpenSource_v2.2.1.1.apk";
 	private final static EventListenerList listeners = new EventListenerList();
@@ -335,7 +335,7 @@ public class AndroidPhone implements PhoneInterface {
 
 		// bring the Device found by the fabric
 		adevice = device;
-		robotiumTask= new RobotiumTask(this);
+		robotiumTask = new RobotiumTask(this);
 	}
 
 	public boolean isDisabledPhone() {
@@ -918,7 +918,7 @@ public class AndroidPhone implements PhoneInterface {
 		try {
 			String[] result = executeShellCommand(startCmd, true);
 			for (String res : result) {
-				Logger.getLogger(this.getClass()).debug(res);
+				// Logger.getLogger(this.getClass()).debug(res);
 				if (res.contains(packagename)) {
 					return 0;
 				}
@@ -1643,30 +1643,34 @@ public class AndroidPhone implements PhoneInterface {
 		return "android.xml";
 	}
 
-	//add Robotium task
-	protected String  [] executeShellCommand(String cmd) throws PhoneException{
+	// add Robotium task
+	protected String[] executeShellCommand(String cmd) throws PhoneException {
 		IShellOutputReceiver receiver;
-		list =new ArrayList<String>();
+		list = new ArrayList<String>();
 		receiver = shellOutputReceiver;
 
 		try {
 			adevice.executeShellCommand(cmd, receiver);
 		} catch (TimeoutException e) {
-			Logger.getLogger(this.getClass() ).debug("/****error while executing  : "+cmd + " :"+ e.getMessage());
+			Logger.getLogger(this.getClass()).debug(
+					"/****error while executing  : " + cmd + " :" + e.getMessage());
 			throw new PhoneException(e.getMessage());
 		} catch (AdbCommandRejectedException e) {
-			Logger.getLogger(this.getClass() ).debug("/****error  while executing  : "+cmd  +" :"+  e.getMessage());
+			Logger.getLogger(this.getClass()).debug(
+					"/****error  while executing  : " + cmd + " :" + e.getMessage());
 			throw new PhoneException(e.getMessage());
 		} catch (ShellCommandUnresponsiveException e) {
-			Logger.getLogger(this.getClass() ).debug("/****error while executing  : "+cmd + " :"+  e.getMessage());
-			if(!cmd.contains("am instrument")) {
+			Logger.getLogger(this.getClass()).debug(
+					"/****error while executing  : " + cmd + " :" + e.getMessage());
+			if (!cmd.contains("am instrument")) {
 				throw new PhoneException(e.getMessage());
 			}
 		} catch (IOException e) {
-			Logger.getLogger(this.getClass() ).debug("/****error  while executing  : "+cmd + " :"+ e.getMessage());
+			Logger.getLogger(this.getClass()).debug(
+					"/****error  while executing  : " + cmd + " :" + e.getMessage());
 			throw new PhoneException(e.getMessage());
 		}
-			return null;
+		return null;
 	}
 
 	@Override
@@ -1678,7 +1682,8 @@ public class AndroidPhone implements PhoneInterface {
 	public void setApkToTestWithRobotiumParam(String packName,
 			String activityName, String packsourceDir, int versionCode)
 			throws PhoneException {
-		robotiumTask.setApkToTestWithRobotiumParam(packName, activityName, packsourceDir, versionCode);
+		robotiumTask.setApkToTestWithRobotiumParam(packName, activityName, packsourceDir,
+				versionCode);
 	}
 
 	@Override
