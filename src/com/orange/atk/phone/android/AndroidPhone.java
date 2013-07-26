@@ -1691,4 +1691,9 @@ public class AndroidPhone implements PhoneInterface {
 		return robotiumTask.getForegroundApp();
 	}
 
+	@Override
+	public String getSerialNumber() {
+		return adevice.getSerialNumber();
+	}
+
 }
