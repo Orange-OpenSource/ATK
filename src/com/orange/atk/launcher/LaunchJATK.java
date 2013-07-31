@@ -470,7 +470,8 @@ public class LaunchJATK implements ErrorListener {
 		// TODO : -pm should be specifiable
 		String usage = "Usage : \n" + "test <test_options> WHERE test_options are :\n"
 				+ "\t -tf <test_file.tst> -c <monitoring_config.xml>\n"
-				+ "\t -td <test_dir> -c <monitoring_config.xml>\n" + "\t -rd <result_dir>\n";
+				+ "\t -td <test_dir> -c <monitoring_config.xml>\n" + "\t -rd <result_dir>\n"
+				+ "\t -device [optional device_serial_number]";
 
 		if (args.length == 0 || (args.length == 1 && args[0].equals("-h"))) {
 			System.out.println(usage);
@@ -504,6 +505,7 @@ public class LaunchJATK implements ErrorListener {
 	private String parseArguments(String[] args) {
 		if (!args[0].equals("test"))
 			return ("FAILED: test command is missing.");
+		String device_serial=null;
 		String result_dir = null;
 		Vector<String> test_files = new Vector<String>();
 		Vector<String> config_files = new Vector<String>();
@@ -583,6 +585,17 @@ public class LaunchJATK implements ErrorListener {
 									}
 								}
 
+							}
+						}
+					} else if (args[i].equals("-device")) {
+						i++;
+						if (i < args.length) {
+							device_serial=args[i];
+							List<PhoneInterface> devices = AutomaticPhoneDetection.getInstance().getDevices();
+							for(int j=0; j< devices.size();j++){
+								if(devices.get(j).getSerialNumber().equalsIgnoreCase(device_serial)){
+									AutomaticPhoneDetection.getInstance().setSelectedDevice(devices.get(j));
+								}
 							}
 						}
 					}
