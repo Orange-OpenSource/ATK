@@ -58,15 +58,19 @@ import com.android.ddmlib.MultiLineReceiver;
 import com.android.ddmlib.RawImage;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
+import com.att.aro.main.DatacollectorBridge;
 import com.orange.atk.atkUI.anaHopper.HopperStep;
 import com.orange.atk.atkUI.corecli.Configuration;
+import com.orange.atk.atkUI.coregui.CoreGUIPlugin;
 import com.orange.atk.error.ErrorManager;
 import com.orange.atk.internationalization.ResourceManager;
 import com.orange.atk.manageListener.IMeasureListener;
 import com.orange.atk.manageListener.IPhoneKeyListener;
+import com.orange.atk.monitoring.MonitoringConfig;
 import com.orange.atk.phone.PhoneException;
 import com.orange.atk.phone.PhoneInterface;
 import com.orange.atk.phone.TcpdumpLineListener;
+import com.orange.atk.phone.detection.AutomaticPhoneDetection;
 import com.orange.atk.platform.Platform;
 import com.orange.atk.results.logger.log.ResultLogger;
 import com.orange.atk.util.Position;
@@ -1052,6 +1056,35 @@ public class AndroidPhone implements PhoneInterface {
 		return;
 	}
 
+	@Override
+	public void startTestingMode(String resultDirectory, String confFilename) throws PhoneException {
+		MonitoringConfig config;
+		try {
+			config = MonitoringConfig.fromFile(confFilename);
+			if (config.getAroSettings() != null && config.getAroSettings().isEnabled()) {
+				if (((AndroidPhone) AutomaticPhoneDetection.getInstance().getDevice())
+						.checkARODataCollector() == -1) {
+					try {
+						((AndroidPhone) AutomaticPhoneDetection.getInstance().getDevice())
+								.installARODataCollector();
+						Logger.getLogger(this.getClass()).info("initializing ARO");
+
+					} catch (PhoneException e) {
+						Logger.getLogger(this.getClass()).error(e);
+					}
+				}
+				aroDataCollectorBridge = new DatacollectorBridge(
+						CoreGUIPlugin.mainFrame);
+				Logger.getLogger(this.getClass()).info("starting ARO");
+				aroDataCollectorBridge.startARODataCollector(resultDirectory, false);
+			}
+
+		} catch (IOException e) {
+			Logger.getLogger(this.getClass()).error(e);
+		}
+		startTestingMode();
+	}
+
 	public boolean isDeviceRooted() {
 		boolean isRooted = false;
 		String commandToTest = "su -c 'pwd'";
@@ -1111,6 +1144,8 @@ public class AndroidPhone implements PhoneInterface {
 	 * Set to true if you dont need tcpdump before using startTestingMode
 	 */
 	private boolean noTcpDumpLaunch = false;
+
+	private DatacollectorBridge aroDataCollectorBridge = null;
 
 	/**
 	 * Launch tcpdump on the device
@@ -1253,6 +1288,13 @@ public class AndroidPhone implements PhoneInterface {
 		}
 		Logger.getLogger(this.getClass()).debug("End of Testing Mode");
 		// AutomaticPhoneDetection.getInstance().resumeDetection();
+		if (aroDataCollectorBridge != null) {
+			try {
+				aroDataCollectorBridge.stopARODataCollector();
+			} catch (IllegalStateException e) {
+				Logger.getLogger(this.getClass()).error("unable to stop ARO data collector", e);
+			}
+		}
 
 	}
 
@@ -1695,5 +1737,4 @@ public class AndroidPhone implements PhoneInterface {
 	public ArrayList<String> getForegroundApp() throws PhoneException {
 		return robotiumTask.getForegroundApp();
 	}
-
 }

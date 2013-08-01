@@ -159,7 +159,6 @@ public class LaunchJATK implements ErrorListener {
 			currentPhone.stopTestingMode();
 			throw new PhoneException(e.getMessage());
 		}
-
 	}
 
 	private void createPDFFile() {
@@ -268,7 +267,16 @@ public class LaunchJATK implements ErrorListener {
 		// TODO handle exception
 		FileUtil.createOrDeleteDir(logDir);
 		// TODO LG est-ce bien utile ?
-		createPhone();
+		// createPhone();
+		currentPhone = AutomaticPhoneDetection.getInstance().getDevice();
+		try {
+			currentPhone.setvariable(realTestFile, logDir);
+			currentPhone.addTcpdumpLineListener(tcpdumpLineListener);
+			currentPhone.startTestingMode(logDir, xmlconfilepath);
+		} catch (PhoneException e) {
+			currentPhone.stopTestingMode();
+			throw new PhoneException(e.getMessage());
+		}
 
 		{
 			createPDFFile();
@@ -519,73 +527,71 @@ public class LaunchJATK implements ErrorListener {
 					else
 						result_dir = args[i];
 				}
-			} else
-				if (args[i].equals("-tf")) {
-					i++;
-					if (i == args.length)
-						return ("FAILED: [-tf option] missing test file path.");
+			} else if (args[i].equals("-tf")) {
+				i++;
+				if (i == args.length)
+					return ("FAILED: [-tf option] missing test file path.");
+				else {
+					File file = new File(args[i]);
+					if (!file.exists())
+						return ("FAILED: [-tf option] test file " + args[i] + " not found.");
 					else {
-						File file = new File(args[i]);
-						if (!file.exists())
-							return ("FAILED: [-tf option] test file " + args[i] + " not found.");
+						test_files.add(args[i]);
+						i++;
+						if (i == args.length || !args[i].equals("-c"))
+							return ("FAILED: -c <config_file_path> option missing.");
 						else {
-							test_files.add(args[i]);
 							i++;
-							if (i == args.length || !args[i].equals("-c"))
-								return ("FAILED: -c <config_file_path> option missing.");
+							if (i == args.length)
+								return ("FAILED: [-c option] missing config file path.");
 							else {
-								i++;
-								if (i == args.length)
-									return ("FAILED: [-c option] missing config file path.");
+								file = new File(args[i]);
+								if (!file.exists())
+									return ("FAILED: [-c option] config file " + args[i] + " not found.");
 								else {
-									file = new File(args[i]);
-									if (!file.exists())
-										return ("FAILED: [-c option] config file " + args[i] + " not found.");
-									else {
+									config_files.add(args[i]);
+								}
+							}
+						}
+					}
+				}
+			} else if (args[i].equals("-td")) {
+				i++;
+				if (i == args.length)
+					return ("FAILED: [-td option] missing test directory path.");
+				else {
+					File file = new File(args[i]);
+					if (!file.exists())
+						return ("FAILED: [-td option] test directory does not exist.");
+					else {
+						String[] tfiles = file.list(new SuffixFilter("tst"));
+						if (tfiles.length == 0)
+							return ("FAILED: [-td option] test directory does not contain any .tst file.");
+						for (int j = 0; j < tfiles.length; j++) {
+							test_files.add(args[i] + Platform.FILE_SEPARATOR + tfiles[j]);
+						}
+						i++;
+						if (i == args.length || !args[i].equals("-c"))
+							return ("FAILED: -c <config_file_path> option missing.");
+						else {
+							i++;
+							if (i == args.length)
+								return ("FAILED: [-c option] missing config file path.");
+							else {
+								file = new File(args[i]);
+								if (!file.exists())
+									return ("FAILED: [-c option] config file " + args[i] + " not found.");
+								else {
+									for (int j = 0; j < tfiles.length; j++) {
 										config_files.add(args[i]);
 									}
 								}
 							}
 						}
-					}
-				} else
-					if (args[i].equals("-td")) {
-						i++;
-						if (i == args.length)
-							return ("FAILED: [-td option] missing test directory path.");
-						else {
-							File file = new File(args[i]);
-							if (!file.exists())
-								return ("FAILED: [-td option] test directory does not exist.");
-							else {
-								String[] tfiles = file.list(new SuffixFilter("tst"));
-								if (tfiles.length == 0)
-									return ("FAILED: [-td option] test directory does not contain any .tst file.");
-								for (int j = 0; j < tfiles.length; j++) {
-									test_files.add(args[i] + Platform.FILE_SEPARATOR + tfiles[j]);
-								}
-								i++;
-								if (i == args.length || !args[i].equals("-c"))
-									return ("FAILED: -c <config_file_path> option missing.");
-								else {
-									i++;
-									if (i == args.length)
-										return ("FAILED: [-c option] missing config file path.");
-									else {
-										file = new File(args[i]);
-										if (!file.exists())
-											return ("FAILED: [-c option] config file " + args[i] + " not found.");
-										else {
-											for (int j = 0; j < tfiles.length; j++) {
-												config_files.add(args[i]);
-											}
-										}
-									}
-								}
 
-							}
-						}
 					}
+				}
+			}
 		}
 		if (result_dir == null)
 			return ("FAILED: -rd <result_directory> option must be specified.");

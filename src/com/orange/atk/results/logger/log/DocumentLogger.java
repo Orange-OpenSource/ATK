@@ -38,9 +38,6 @@ import org.apache.log4j.Logger;
 import com.orange.atk.graphAnalyser.PerformanceGraph;
 import com.orange.atk.monitoring.Graph;
 import com.orange.atk.monitoring.MonitoringConfig;
-import com.orange.atk.phone.PhoneException;
-import com.orange.atk.phone.android.AndroidPhone;
-import com.orange.atk.phone.detection.AutomaticPhoneDetection;
 import com.orange.atk.platform.Platform;
 import com.orange.atk.results.measurement.PlotList;
 
@@ -302,30 +299,6 @@ public class DocumentLogger {
 						g.getColor(),
 						g.getUnit(), type);
 				mapint.put(g.getName(), pl);
-			}
-		}
-		// Don't display events
-		if (config.getAroSettings() != null && config.getAroSettings().isEnabled()) {
-			if (AutomaticPhoneDetection.getInstance().getDevice() instanceof AndroidPhone) {
-				if (((AndroidPhone) AutomaticPhoneDetection.getInstance().getDevice())
-						.checkARODataCollector() == -1) {
-					try {
-						((AndroidPhone) AutomaticPhoneDetection.getInstance().getDevice())
-								.installARODataCollector();
-
-					} catch (PhoneException e) {
-						Logger.getLogger(this.getClass()).error(e);
-					}
-				}
-				try {
-					AutomaticPhoneDetection
-							.getInstance()
-							.getDevice()
-							.runMidlet(
-									"com.att.android.arodatacollector/.activities.AROCollectorHomeActivity");
-				} catch (PhoneException e) {
-					Logger.getLogger(this.getClass()).error(e);
-				}
 			}
 		}
 	}

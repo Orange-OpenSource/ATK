@@ -34,12 +34,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -53,6 +53,9 @@ import javax.swing.event.ChangeListener;
 
 import org.apache.log4j.Logger;
 
+import com.att.aro.main.AROEnabledFrame;
+import com.att.aro.main.DatacollectorBridge.Status;
+import com.att.aro.model.TraceData;
 import com.orange.atk.atkUI.corecli.Alert;
 import com.orange.atk.atkUI.corecli.Campaign;
 import com.orange.atk.atkUI.corecli.Configuration;
@@ -66,7 +69,7 @@ import com.orange.atk.phone.detection.AutomaticPhoneDetection;
  * @author Aurore PENAULT
  * @since JDK5.0
  */
-public class MatosGUI extends JFrame {
+public class MatosGUI extends AROEnabledFrame {
 
 	/**
 	 * 
@@ -679,6 +682,30 @@ public class MatosGUI extends JFrame {
 			selectedCampaign.addAll(guiCommon.getCheckListTable().getSelectedCampaign());
 		}
 		return selectedCampaign;
+	}
+
+	@Override
+	public void clearTrace() throws IOException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void dataCollectorStatusCallBack(Status arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public TraceData getTraceData() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void openTrace(File arg0) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

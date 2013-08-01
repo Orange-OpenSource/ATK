@@ -88,8 +88,8 @@ public class MonitorAction extends MatosAbstractAction {
 	private Map<String, PerformanceGraph> mapPerfGraph;
 	private Map<String, GraphMarker> mapAction = null;
 	private JFrame frame;
-	private JButton buttonStart,buttonStop,buttonCancel,buttonReport,buttonGraph ;
-	
+	private JButton buttonStart, buttonStop, buttonCancel, buttonReport, buttonGraph;
+
 	public MonitorAction(String name, Icon icon, String shortDescription) {
 		super(name, icon, shortDescription);
 		running = false;
@@ -103,38 +103,40 @@ public class MonitorAction extends MatosAbstractAction {
 
 	public void actionPerformed(ActionEvent e) {
 
-		LaunchJATK exec  = new LaunchJATK();
-		if(exec.getCurrentPhone() instanceof DefaultPhone)
-		{	
+		LaunchJATK exec = new LaunchJATK();
+		if (exec.getCurrentPhone() instanceof DefaultPhone)
+		{
 			JOptionPane.showMessageDialog(null, "Can't detect device.");
 			return;
 		}
 
 		currentPhone = AutomaticPhoneDetection.getInstance().getDevice();
-		if(currentPhone.getType() == PhoneInterface.TYPE_S60)
+		if (currentPhone.getType() == PhoneInterface.TYPE_S60)
 		{
 			JOptionPane.showMessageDialog(null, "Not supported for S60.");
 			return;
 		}
 
-
-		//Create the combobox and initialize the values
+		// Create the combobox and initialize the values
 		Vector<String> readListPhoneConfig = CheckListTable.readListPhoneConfig();
-		final JComboBox comboBoxPhoneConfig = (readListPhoneConfig == null) ? new JComboBox() : new JComboBox(readListPhoneConfig);
+		final JComboBox comboBoxPhoneConfig = (readListPhoneConfig == null)
+				? new JComboBox()
+				: new JComboBox(readListPhoneConfig);
 		comboBoxPhoneConfig.addItem(CheckListTable.ADD_NEW_CONFIG_FILE);
 		comboBoxPhoneConfig.addItem(CheckListTable.NOT_SELECTED);
-		
-		String defaultConfigFileName = Configuration.getInstance().getDefaultConfig().get(currentPhone.getClass().getName());
+
+		String defaultConfigFileName = Configuration.getInstance().getDefaultConfig()
+				.get(currentPhone.getClass().getName());
 		comboBoxPhoneConfig.setSelectedItem(CheckListTable.NOT_SELECTED);
-		for(String name : readListPhoneConfig){
-			if(name.equals(defaultConfigFileName)){
+		for (String name : readListPhoneConfig) {
+			if (name.equals(defaultConfigFileName)) {
 				comboBoxPhoneConfig.setSelectedItem(defaultConfigFileName);
-				xmlfilepath = Configuration.defaultPhoneConfigPath+defaultConfigFileName;
+				xmlfilepath = Configuration.defaultPhoneConfigPath + defaultConfigFileName;
 				break;
 			}
 		}
 
-		JATKcomboBoxListener comboBoxListener = new JATKcomboBoxListener(comboBoxPhoneConfig,this);
+		JATKcomboBoxListener comboBoxListener = new JATKcomboBoxListener(comboBoxPhoneConfig, this);
 		comboBoxPhoneConfig.addActionListener(comboBoxListener);
 		comboBoxPhoneConfig.addMouseListener(comboBoxListener);
 
@@ -145,19 +147,18 @@ public class MonitorAction extends MatosAbstractAction {
 		panel.add(new JLabel("<html><i>You can doubleclick to see and edit the file.</i></html>"));
 
 		JPanel panelBox = new JPanel();
-		//panelBox.setLayout(new BoxLayout(panelBox, BoxLayout.X_AXIS));
-		panelBox.setLayout(new GridLayout(1,3,5,0));
-		//panelBox.add(new JLabel(""));//Just to center the buttons
+		// panelBox.setLayout(new BoxLayout(panelBox, BoxLayout.X_AXIS));
+		panelBox.setLayout(new GridLayout(1, 3, 5, 0));
+		// panelBox.add(new JLabel(""));//Just to center the buttons
 		buttonStart = new JButton("Start");
-		buttonStart.addActionListener(new ActionListener(){
-
+		buttonStart.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
-				if(xmlfilepath==null){
+				if (xmlfilepath == null) {
 					JOptionPane.showMessageDialog(null, "You must select a configuration file.");
 					return;
 				}
-				if(running){
+				if (running) {
 					JOptionPane.showMessageDialog(null, "Already running...");
 					return;
 				}
@@ -173,7 +174,7 @@ public class MonitorAction extends MatosAbstractAction {
 		panelBox.add(buttonStart);
 
 		buttonStop = new JButton("Stop");
-		buttonStop.addActionListener(new ActionListener(){
+		buttonStop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				stopMonitoring();
 			}
@@ -183,7 +184,7 @@ public class MonitorAction extends MatosAbstractAction {
 
 		buttonCancel = new JButton("Cancel");
 		panelBox.add(buttonCancel);
-		buttonCancel.addActionListener(new ActionListener(){
+		buttonCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				frame.setVisible(false);
 				stopMonitoring();
@@ -192,34 +193,36 @@ public class MonitorAction extends MatosAbstractAction {
 		});
 
 		buttonReport = new JButton("View Report");
-		buttonReport.addActionListener(new ActionListener(){
+		buttonReport.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if ((logDir!=null)&&(!logDir.trim().equals(""))) {
-					new FileViewDialog(CoreGUIPlugin.mainFrame, logDir+File.separatorChar+"report.html", FileViewDialog.REPORT, 
-									   "", "", "");
+				if ((logDir != null) && (!logDir.trim().equals(""))) {
+					new FileViewDialog(CoreGUIPlugin.mainFrame, logDir + File.separatorChar
+							+ "report.html", FileViewDialog.REPORT,
+							"", "", "");
 				} else {
-					JOptionPane.showMessageDialog(CoreGUIPlugin.mainFrame, "No report available", "View report", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(CoreGUIPlugin.mainFrame, "No report available",
+							"View report", JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
 		});
 		buttonReport.setEnabled(false);
-		
+
 		buttonGraph = new JButton("Graph Analyzer");
 		buttonGraph.addActionListener(new ActionListener() {
-			
+
 			public void actionPerformed(ActionEvent e) {
-				LectureJATKResult analyser =new LectureJATKResult();
-				analyser.setParameters(logDir);	
+				LectureJATKResult analyser = new LectureJATKResult();
+				analyser.setParameters(logDir);
 				analyser.setVisible(true);
 			}
 		});
 		buttonGraph.setEnabled(false);
-		
+
 		panel.add(panelBox);
-		
+
 		panel.add(buttonReport);
 		panel.add(buttonGraph);
-		
+
 		frame = new JFrame();
 		frame.setTitle("Select a configuration file...");
 		frame.setSize(300, 200);
@@ -232,19 +235,18 @@ public class MonitorAction extends MatosAbstractAction {
 		WindowListener windowListener = new WindowAdapter()
 		{
 			// anonymous WindowAdapter class
-			public void windowClosing ( WindowEvent w )
+			public void windowClosing(WindowEvent w)
 			{
 				frame.setVisible(false);
 				stopMonitoring();
 				frame.dispose();
 			}
 		};
-		frame.addWindowListener( windowListener );
+		frame.addWindowListener(windowListener);
 	}
 
-	
 	private TcpdumpLineListener tcpdumpLineListener = new TcpdumpLineListener() {
-		
+
 		public void newTcpDumpLine(String line) {
 			Date theDate = NetworkAnalysisUtils.extractTcpdumpLineDate(line);
 			String url = NetworkAnalysisUtils.extractTcpdumpLineUrl(line);
@@ -253,19 +255,19 @@ public class MonitorAction extends MatosAbstractAction {
 			}
 		}
 	};
-	
-	private void startMonitoring(){
+
+	private void startMonitoring() {
 		running = true;
 		buttonStart.setEnabled(false);
 		buttonReport.setEnabled(false);
 		buttonGraph.setEnabled(false);
 		buttonReport.setToolTipText("");
 		SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
-		logDir = MatosGUI.outputDir + Platform.FILE_SEPARATOR + "Manual_"+spf.format(new Date());
-		File outputdirF =new File(logDir);
-		if(!outputdirF.exists())
-			if(!outputdirF.mkdir())
-				Logger.getLogger(this.getClass() ).debug("Can't Create dir "+outputdirF.getPath());
+		logDir = MatosGUI.outputDir + Platform.FILE_SEPARATOR + "Manual_" + spf.format(new Date());
+		File outputdirF = new File(logDir);
+		if (!outputdirF.exists())
+			if (!outputdirF.mkdir())
+				Logger.getLogger(this.getClass()).debug("Can't Create dir " + outputdirF.getPath());
 
 		JaTKCharts = new CreateGraph();
 		boolean empty = JaTKCharts.createPerfGraphsAndMarkers(xmlfilepath);
@@ -274,26 +276,30 @@ public class MonitorAction extends MatosAbstractAction {
 		mapPerfGraph = JaTKCharts.getMapPerfGraph();
 		mapAction = JaTKCharts.getMapAction();
 
-		//no real time graph on NokiaS60
-		if(!empty)
+		// no real time graph on NokiaS60
+		if (!empty)
 			displayRealTimeGraph();
 
 		try {
-			if (currentPhone.isDeviceRooted() == false && Boolean.valueOf(Configuration.getProperty(Configuration.NETWORKMONITOR, "false"))){
-				JOptionPane.showMessageDialog(null, "This device is not rooted, Network Data Analysis will not be available","Warning",JOptionPane.WARNING_MESSAGE);
-			}else {
+			if (currentPhone.isDeviceRooted() == false
+					&& Boolean.valueOf(Configuration.getProperty(Configuration.NETWORKMONITOR,
+							"false"))) {
+				JOptionPane.showMessageDialog(null,
+						"This device is not rooted, Network Data Analysis will not be available",
+						"Warning", JOptionPane.WARNING_MESSAGE);
+			} else {
 				SwingUtilities.invokeLater(new Runnable() {
-					
+
 					public void run() {
 						realtime.addUrlMarkerCheckBox();
 					}
 				});
 			}
 			currentPhone.addTcpdumpLineListener(tcpdumpLineListener);
-			currentPhone.startTestingMode();
+			currentPhone.startTestingMode(logDir, xmlfilepath);
 		} catch (PhoneException e) {
-			Logger.getLogger(this.getClass() ).error(""+e);
-			JOptionPane.showMessageDialog(null, e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+			Logger.getLogger(this.getClass()).error("" + e);
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
 		createPDFFile();
 		logger = new ResultLogger(logDir, documentGenerator, xmlfilepath);
@@ -304,8 +310,8 @@ public class MonitorAction extends MatosAbstractAction {
 		logger.start(1000);
 		buttonStop.setEnabled(true);
 	}
-	private void stopMonitoring(){
-		if(running){
+	private void stopMonitoring() {
+		if (running) {
 			buttonStop.setEnabled(false);
 			currentPhone.stopTestingMode();
 			stopRealTimeGraph();
@@ -325,10 +331,10 @@ public class MonitorAction extends MatosAbstractAction {
 	private void createPDFFile()
 	{
 		try {
-			//Create Document generator object
+			// Create Document generator object
 			documentGenerator = new PDFGenerator(new FileOutputStream(
-					new File(logDir + Platform.FILE_SEPARATOR + "report.pdf")), 
-					logDir , "", "Orange FR.", "ManualMonitoring",
+					new File(logDir + Platform.FILE_SEPARATOR + "report.pdf")),
+					logDir, "", "Orange FR.", "ManualMonitoring",
 					false);
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
@@ -338,24 +344,25 @@ public class MonitorAction extends MatosAbstractAction {
 	}
 
 	private void displayRealTimeGraph() {
-		boolean isrealtime =Boolean.valueOf(Configuration.getProperty(Configuration.REALTIMEGRAPH, "true"));
+		boolean isrealtime = Boolean.valueOf(Configuration.getProperty(Configuration.REALTIMEGRAPH,
+				"true"));
 
-		if(!(AutomaticPhoneDetection.getInstance().isNokia()) &&isrealtime)
+		if (!(AutomaticPhoneDetection.getInstance().isNokia()) && isrealtime)
 		{
 			java.awt.EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					currentPhone.addTcpdumpLineListener(JaTKCharts);
-					realtime = new RealtimeGraph(JaTKCharts );
+					realtime = new RealtimeGraph(JaTKCharts);
 					realtime.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 					WindowListener windowListener = new WindowAdapter()
 					{
 						// anonymous WindowAdapter class
-						public void windowClosing ( WindowEvent w )
+						public void windowClosing(WindowEvent w)
 						{
 							stopMonitoring();
 						}
 					};
-					realtime.addWindowListener( windowListener );
+					realtime.addWindowListener(windowListener);
 					realtime.setVisible(true);
 				}
 			});
@@ -365,12 +372,13 @@ public class MonitorAction extends MatosAbstractAction {
 	}
 
 	private void stopRealTimeGraph() {
-		boolean isrealtime =Boolean.valueOf(Configuration.getProperty(Configuration.REALTIMEGRAPH, "true"));
-		if (realtime!=null && !AutomaticPhoneDetection.getInstance().isNokia()&&isrealtime)
+		boolean isrealtime = Boolean.valueOf(Configuration.getProperty(Configuration.REALTIMEGRAPH,
+				"true"));
+		if (realtime != null && !AutomaticPhoneDetection.getInstance().isNokia() && isrealtime)
 		{
 			realtime.close();
 		}
-		realtime=null;
+		realtime = null;
 	}
 
 	private void writeLogAndExitPhoneHandling() {
@@ -381,13 +389,13 @@ public class MonitorAction extends MatosAbstractAction {
 			}
 		}
 		if (logger != null) {
-			//write file action.log
+			// write file action.log
 			logger.writeActionLogFile(xmlfilepath);
 			logger.generateGraphFile();
 			logger.generatepltFile();
 
-			//write Error File pdf or Txt 
-			if (documentGenerator!=null) 
+			// write Error File pdf or Txt
+			if (documentGenerator != null)
 				documentGenerator.dumpInStream(false, documentLogger);
 
 			logger = null;
@@ -396,6 +404,6 @@ public class MonitorAction extends MatosAbstractAction {
 	}
 
 	public void setXmlfilepath(String xmlfilepath) {
-		this.xmlfilepath  = xmlfilepath;
+		this.xmlfilepath = xmlfilepath;
 	}
 }

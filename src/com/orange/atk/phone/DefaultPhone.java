@@ -447,7 +447,7 @@ public class DefaultPhone implements PhoneInterface {
 	@Override
 	public void setApkToTestWithRobotiumParam(String packName,
 			String activityName, String packsourceDir, int versionCode)
-					throws PhoneException {
+			throws PhoneException {
 		// TODO Auto-generated method stub
 
 	}
@@ -464,5 +464,10 @@ public class DefaultPhone implements PhoneInterface {
 		return null;
 	}
 
+	@Override
+	public void startTestingMode(String resultDir, String configFile) throws PhoneException {
+		// TODO Auto-generated method stub
+
+	}
 
 }

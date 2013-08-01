@@ -364,6 +364,18 @@ public interface PhoneInterface {
 	public void startTestingMode() throws PhoneException;
 
 	/**
+	 * Used to start the connection between the phone and the program. (create
+	 * connection, ...);
+	 * 
+	 * @return TODO
+	 * 
+	 * @return true if the connection has been done and if we can start to talk
+	 *         with the phone, false otherwise.
+	 * @throws PhoneException
+	 */
+	public void startTestingMode(String directory, String configFile) throws PhoneException;
+
+	/**
 	 * boolean indicate if Phone is started
 	 * 
 	 * @return true if phone correctly set
@@ -672,10 +684,11 @@ public interface PhoneInterface {
 
 	public boolean isDisabledPhone();
 
-	//add robotium task
-	public void sendCommandToExecuteToSolo(Object[] commands)throws PhoneException;
+	// add robotium task
+	public void sendCommandToExecuteToSolo(Object[] commands) throws PhoneException;
 
-	public void setApkToTestWithRobotiumParam(String packName, String activityName, String packsourceDir, int versionCode)throws PhoneException;
+	public void setApkToTestWithRobotiumParam(String packName, String activityName,
+			String packsourceDir, int versionCode) throws PhoneException;
 
 	public ArrayList<String> getAllInstalledAPK() throws PhoneException;
 

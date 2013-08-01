@@ -469,11 +469,10 @@ public class PhoneRecorder implements PhoneInterface {
 		return false;
 	}
 
-	
 	@Override
 	public void sendCommandToExecuteToSolo(Object[] commands) throws PhoneException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -481,7 +480,7 @@ public class PhoneRecorder implements PhoneInterface {
 			String activityName, String packsourceDir, int versionCode)
 			throws PhoneException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -496,5 +495,10 @@ public class PhoneRecorder implements PhoneInterface {
 		return null;
 	}
 
+	@Override
+	public void startTestingMode(String resultDirectory, String configFile) throws PhoneException {
+		// TODO Auto-generated method stub
+
+	}
 
 }
