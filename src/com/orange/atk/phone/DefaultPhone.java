@@ -470,4 +470,10 @@ public class DefaultPhone implements PhoneInterface {
 
 	}
 
+	@Override
+	public String getSerialNumber() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -922,7 +922,7 @@ public class AndroidPhone implements PhoneInterface {
 		try {
 			String[] result = executeShellCommand(startCmd, true);
 			for (String res : result) {
-				// Logger.getLogger(this.getClass()).debug(res);
+				Logger.getLogger(this.getClass()).debug(res);
 				if (res.contains(packagename)) {
 					return 0;
 				}
@@ -1145,8 +1145,6 @@ public class AndroidPhone implements PhoneInterface {
 	 */
 	private boolean noTcpDumpLaunch = false;
 
-	private DatacollectorBridge aroDataCollectorBridge = null;
-
 	/**
 	 * Launch tcpdump on the device
 	 */
@@ -1288,13 +1286,6 @@ public class AndroidPhone implements PhoneInterface {
 		}
 		Logger.getLogger(this.getClass()).debug("End of Testing Mode");
 		// AutomaticPhoneDetection.getInstance().resumeDetection();
-		if (aroDataCollectorBridge != null) {
-			try {
-				aroDataCollectorBridge.stopARODataCollector();
-			} catch (IllegalStateException e) {
-				Logger.getLogger(this.getClass()).error("unable to stop ARO data collector", e);
-			}
-		}
 
 	}
 
@@ -1737,4 +1728,10 @@ public class AndroidPhone implements PhoneInterface {
 	public ArrayList<String> getForegroundApp() throws PhoneException {
 		return robotiumTask.getForegroundApp();
 	}
+
+	@Override
+	public String getSerialNumber() {
+		return adevice.getSerialNumber();
+	}
+
 }

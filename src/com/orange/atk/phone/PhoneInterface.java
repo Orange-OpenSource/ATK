@@ -693,4 +693,7 @@ public interface PhoneInterface {
 	public ArrayList<String> getAllInstalledAPK() throws PhoneException;
 
 	public ArrayList<String> getForegroundApp() throws PhoneException;
+
+	// for jenkins plugin
+	public String getSerialNumber();
 }
