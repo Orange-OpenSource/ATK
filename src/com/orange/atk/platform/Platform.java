@@ -64,5 +64,8 @@ public abstract class Platform {
 
 	public abstract String getJATKPath();
 	public abstract String getDefaultADBLocation();
+
+
+	public abstract String getUserConfigDirPath();
  
 }

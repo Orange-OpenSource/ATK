@@ -299,4 +299,13 @@ public class WindowsPlatform extends Platform {
 
 		return null;
 	}
+
+	@Override
+	public String getUserConfigDirPath() {
+			String homePath = System.getenv("USERPROFILE");
+			String userConfigDirPath = homePath+ Platform.FILE_SEPARATOR + ".atk"+ Platform.FILE_SEPARATOR;
+			return userConfigDirPath;
+		}
+
+	
 }
