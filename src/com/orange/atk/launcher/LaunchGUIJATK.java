@@ -25,6 +25,7 @@ package com.orange.atk.launcher;
 
 import java.io.File;
 
+import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import com.orange.atk.atkUI.corecli.Configuration;
@@ -39,19 +40,21 @@ public class LaunchGUIJATK {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		//init log4j
+		DOMConfigurator.configure("log4j.xml");
 		//verify win32com.dll
 		File win32 =new File(System.getenv("java.home")+Platform.FILE_SEPARATOR+"win32com.dll");
 		
 		if(!win32.exists()&&System.getenv("java.home")!=null)		
 			FileUtil.copyfile(win32, new File("win32com.dll"));
-		
-		//init configuration (jatk and log4j)
+		Logger.getLogger(LaunchGUIJATK.class).info("PROUT");
+		//init configuration atk
 		if(!Configuration.loadConfigurationFile("config.properties"))
 			return;
-		DOMConfigurator.configure("log4j.xml");
+	
 		
 		WebServer.run();
-		//laucnh JATK
+		//launch ATK
 		try {
 			new CoreGUIPlugin().doStart();
 		} catch (Exception e) {
