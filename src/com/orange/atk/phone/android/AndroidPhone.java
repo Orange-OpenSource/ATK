@@ -134,6 +134,8 @@ public class AndroidPhone implements PhoneInterface {
 
 	};
 
+	private DatacollectorBridge aroDataCollectorBridge;
+
 	// duplet for Key Value
 	class KeyValue {
 		public String iconpath;
