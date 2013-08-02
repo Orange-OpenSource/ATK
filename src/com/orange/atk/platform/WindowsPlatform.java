@@ -50,11 +50,9 @@ public class WindowsPlatform extends Platform {
 					break;
 			}
 		}
-<<<<<<< HEAD
+
 		return JATKPath != null ? JATKPath:(new File(".").getAbsolutePath());
-=======
-		return JATKPath != null ? JATKPath : "C:\\Program Files\\ATK";
->>>>>>> upstream/experimental
+
 	}
 
 	/**
@@ -70,11 +68,9 @@ public class WindowsPlatform extends Platform {
 		String adb = path + "adb.exe";
 		File f = new File(adb);
 		if (f.exists()) {
-<<<<<<< HEAD
+
 			Logger.getLogger(WindowsPlatform.class).debug("adb = "+adb);			
-=======
-			// Logger.getLogger(WindowsPlatform).debug("adb = "+adb);
->>>>>>> upstream/experimental
+
 			return adb;
 		}
 		Logger.getLogger(WindowsPlatform.class).debug("No adb path found");
