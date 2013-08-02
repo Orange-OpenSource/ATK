@@ -150,10 +150,10 @@ public class ATKScriptParser/*@bgen(jjtree)*/implements ATKScriptParserTreeConst
     try {
       value = jj_consume_token(STRING);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 14:
-        jj_consume_token(14);
+      case 16:
+        jj_consume_token(16);
         listeArgs();
-        jj_consume_token(15);
+        jj_consume_token(17);
         break;
       default:
         jj_la1[5] = jj_gen;
@@ -191,10 +191,10 @@ public class ATKScriptParser/*@bgen(jjtree)*/implements ATKScriptParserTreeConst
     try {
       value = jj_consume_token(INCLUDE);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 14:
-        jj_consume_token(14);
+      case 16:
+        jj_consume_token(16);
         string();
-        jj_consume_token(15);
+        jj_consume_token(17);
         break;
       default:
         jj_la1[6] = jj_gen;
@@ -227,21 +227,23 @@ public class ATKScriptParser/*@bgen(jjtree)*/implements ATKScriptParserTreeConst
   final public void listeArgs() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case NUMBER:
+    case FLOAT:
+    case BOOLEAN:
     case VARNAME:
     case STRING:
-    case 17:
+    case 19:
       litteral();
       label_2:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 16:
+        case 18:
           ;
           break;
         default:
           jj_la1[7] = jj_gen;
           break label_2;
         }
-        jj_consume_token(16);
+        jj_consume_token(18);
         litteral();
       }
       break;
@@ -258,11 +260,11 @@ public class ATKScriptParser/*@bgen(jjtree)*/implements ATKScriptParserTreeConst
   jjtree.openNodeScope(jjtn000);
     try {
       jj_consume_token(SETVAR);
-      jj_consume_token(14);
-      string();
       jj_consume_token(16);
+      string();
+      jj_consume_token(18);
       value();
-      jj_consume_token(15);
+      jj_consume_token(17);
     } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -291,9 +293,9 @@ public class ATKScriptParser/*@bgen(jjtree)*/implements ATKScriptParserTreeConst
   jjtree.openNodeScope(jjtn000);
     try {
       jj_consume_token(LOOP);
-      jj_consume_token(14);
+      jj_consume_token(16);
       litteral();
-      jj_consume_token(15);
+      jj_consume_token(17);
       parseFile();
       jj_consume_token(ENDL);
     } catch (Throwable jjte000) {
@@ -319,10 +321,12 @@ public class ATKScriptParser/*@bgen(jjtree)*/implements ATKScriptParserTreeConst
 
   final public void litteral() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 17:
+    case 19:
       table();
       break;
     case NUMBER:
+    case FLOAT:
+    case BOOLEAN:
     case STRING:
       value();
       break;
@@ -344,6 +348,12 @@ public class ATKScriptParser/*@bgen(jjtree)*/implements ATKScriptParserTreeConst
     case NUMBER:
       number();
       break;
+    case FLOAT:
+      floatNumber();
+      break;
+    case BOOLEAN:
+      booleanNumber();
+      break;
     default:
       jj_la1[10] = jj_gen;
       jj_consume_token(-1);
@@ -357,11 +367,13 @@ public class ATKScriptParser/*@bgen(jjtree)*/implements ATKScriptParserTreeConst
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      jj_consume_token(17);
+      jj_consume_token(19);
       label_3:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case NUMBER:
+        case FLOAT:
+        case BOOLEAN:
         case STRING:
           ;
           break;
@@ -371,7 +383,7 @@ public class ATKScriptParser/*@bgen(jjtree)*/implements ATKScriptParserTreeConst
         }
         value();
       }
-      jj_consume_token(18);
+      jj_consume_token(20);
     } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);
@@ -427,6 +439,40 @@ public class ATKScriptParser/*@bgen(jjtree)*/implements ATKScriptParserTreeConst
     }
   }
 
+  final public void booleanNumber() throws ParseException {
+                                 /*@bgen(jjtree) BOOLEAN */
+                                 ASTBOOLEAN jjtn000 = new ASTBOOLEAN(JJTBOOLEAN);
+                                 boolean jjtc000 = true;
+                                 jjtree.openNodeScope(jjtn000);Token value;
+    try {
+      value = jj_consume_token(BOOLEAN);
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+                jjtn000.setValue( value.image );
+    } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+          }
+    }
+  }
+
+  final public void floatNumber() throws ParseException {
+                             /*@bgen(jjtree) FLOAT */
+                             ASTFLOAT jjtn000 = new ASTFLOAT(JJTFLOAT);
+                             boolean jjtc000 = true;
+                             jjtree.openNodeScope(jjtn000);Token value;
+    try {
+      value = jj_consume_token(FLOAT);
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+                jjtn000.setValue( value.image );
+    } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+          }
+    }
+  }
+
   final public void variable() throws ParseException {
                              /*@bgen(jjtree) VARIABLE */
                              ASTVARIABLE jjtn000 = new ASTVARIABLE(JJTVARIABLE);
@@ -459,7 +505,7 @@ public class ATKScriptParser/*@bgen(jjtree)*/implements ATKScriptParserTreeConst
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x2a69,0x868,0x2000,0x201,0x868,0x4000,0x4000,0x10000,0x20c80,0x20c80,0x880,0x880,};
+      jj_la1_0 = new int[] {0xa869,0x2068,0x8000,0x801,0x2068,0x10000,0x10000,0x40000,0x83580,0x83580,0x2580,0x2580,};
    }
 
   /** Constructor with InputStream. */
@@ -579,7 +625,7 @@ public class ATKScriptParser/*@bgen(jjtree)*/implements ATKScriptParserTreeConst
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[19];
+    boolean[] la1tokens = new boolean[21];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -593,7 +639,7 @@ public class ATKScriptParser/*@bgen(jjtree)*/implements ATKScriptParserTreeConst
         }
       }
     }
-    for (int i = 0; i < 19; i++) {
+    for (int i = 0; i < 21; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

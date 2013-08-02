@@ -23,7 +23,6 @@
  */
 package com.orange.atk.launcher;
 
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -38,7 +37,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import com.android.ddmlib.AndroidDebugBridge;
-import com.orange.atk.atkUI.corecli.Configuration;
 import com.orange.atk.atkUI.coregui.CoreGUIPlugin;
 import com.orange.atk.error.ErrorListener;
 import com.orange.atk.error.ErrorManager;
@@ -63,22 +61,20 @@ import com.orange.atk.results.logger.log.ResultLogger;
 import com.orange.atk.util.FileUtil;
 import com.orange.atk.util.NetworkAnalysisUtils;
 
-
 /**
  * Entry point of JATK interpreter.
  * 
- * @author  France Telecom R&D
- *(C) France Telecom, 2008. 
+ * @author France Telecom R&D (C) France Telecom, 2008.
  */
 
-public class LaunchJATK  implements ErrorListener  {
+public class LaunchJATK implements ErrorListener {
 	// Default name for the report
 	private static final String REPORT_FILENAME = "report.";
 
 	// possible types for report
 	public static final String PDF_TYPE = "pdf";
 	public static final String TXT_TYPE = "txt";
-	private static  String JATKdir = Platform.getInstance().getJATKPath();
+	private static String JATKdir = Platform.getInstance().getJATKPath();
 
 	// true if the parser must generate an conf file
 
@@ -86,10 +82,8 @@ public class LaunchJATK  implements ErrorListener  {
 	private String includeDir = "";
 	private String testFile = "";
 	private String realTestFile = "";
-	//private static String JATKdir="C:\\Program Files\\JATK\\";
-	private static String xmlconfilepath=null;
-
-
+	// private static String JATKdir="C:\\Program Files\\JATK\\";
+	private static String xmlconfilepath = null;
 
 	private static boolean hasParseException = false;
 	// private static boolean isHardStopNotDisable = true;
@@ -109,10 +103,10 @@ public class LaunchJATK  implements ErrorListener  {
 	public String[] listHopper;
 
 	// store the type of log (txt/pdf)
-	private  String logType = TXT_TYPE;
+	private String logType = TXT_TYPE;
 
 	// Directory where results would be saved
-	private  String logDir;
+	private String logDir;
 
 	public LaunchJATK() {
 		super();
@@ -121,12 +115,11 @@ public class LaunchJATK  implements ErrorListener  {
 		this.includeDir = JATKdir;
 		setCurrentPhone();
 		this.init();
-		Logger.getLogger(this.getClass() ).debug("LaunchJATK()");
+		Logger.getLogger(this.getClass()).debug("LaunchJATK()");
 	}
 
-	public LaunchJATK(String logDir, String includeDir, String testFile, String realTestFile, 			
-			String logType) 
-	{
+	public LaunchJATK(String logDir, String includeDir, String testFile, String realTestFile,
+			String logType) {
 		this();
 		this.logDir = logDir;
 		this.includeDir = includeDir;
@@ -136,15 +129,15 @@ public class LaunchJATK  implements ErrorListener  {
 	}
 
 	private String init() {
-		//check in java path win32com.dll
-		File win32 =new File(System.getenv("java.home")+Platform.FILE_SEPARATOR+"win32com.dll");
-		
-		if(!win32.exists()&&System.getenv("java.home")!=null)		
-			FileUtil.copyfile(win32, new File(JATKdir+Platform.FILE_SEPARATOR+"win32com.dll"));
+		// check in java path win32com.dll
+		File win32 = new File(System.getenv("java.home") + Platform.FILE_SEPARATOR + "win32com.dll");
 
-		return PhoneInterface.STATUS_PASSED;	
+		if (!win32.exists() && System.getenv("java.home") != null)
+			FileUtil.copyfile(win32, new File(JATKdir + Platform.FILE_SEPARATOR + "win32com.dll"));
+
+		return PhoneInterface.STATUS_PASSED;
 	}
-	
+
 	private TcpdumpLineListener tcpdumpLineListener = new TcpdumpLineListener() {
 		public void newTcpDumpLine(String line) {
 			Date theDate = NetworkAnalysisUtils.extractTcpdumpLineDate(line);
@@ -155,8 +148,8 @@ public class LaunchJATK  implements ErrorListener  {
 		}
 	};
 
-	private  void createPhone() throws PhoneException {
-		//add config
+	private void createPhone() throws PhoneException {
+		// add config
 		currentPhone = AutomaticPhoneDetection.getInstance().getDevice();
 		try {
 			currentPhone.setvariable(realTestFile, logDir);
@@ -165,29 +158,21 @@ public class LaunchJATK  implements ErrorListener  {
 		} catch (PhoneException e) {
 			currentPhone.stopTestingMode();
 			throw new PhoneException(e.getMessage());
-		}	
+		}
 
 	}
-	
-	
-	
 
-	private void createPDFFile()
-	{
+	private void createPDFFile() {
 		try {
-			//Create Document generator object
+			// Create Document generator object
 			if (PDF_TYPE.equals(logType)) {
-				documentGenerator = new PDFGenerator(new FileOutputStream(
-						new File(logDir + Platform.FILE_SEPARATOR
-								+ REPORT_FILENAME + "pdf")), logDir , "", "Orange FR.", testFile,
-								false);
-
-
+				documentGenerator = new PDFGenerator(new FileOutputStream(new File(logDir
+						+ Platform.FILE_SEPARATOR + REPORT_FILENAME + "pdf")), logDir, "",
+						"Orange FR.", testFile, false);
 
 			} else {
-				documentGenerator = new TextGenerator(new FileOutputStream(
-						new File(logDir + Platform.FILE_SEPARATOR
-								+ REPORT_FILENAME + TXT_TYPE)));
+				documentGenerator = new TextGenerator(new FileOutputStream(new File(logDir
+						+ Platform.FILE_SEPARATOR + REPORT_FILENAME + TXT_TYPE)));
 			}
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
@@ -196,9 +181,7 @@ public class LaunchJATK  implements ErrorListener  {
 
 	}
 
-
-	private  void setTimeOut()
-	{
+	private void setTimeOut() {
 		if (timeout > 0) {
 			Runnable r = new Runnable() {
 				public void run() {
@@ -211,7 +194,7 @@ public class LaunchJATK  implements ErrorListener  {
 						return;
 					}
 					// End of sleep, timeout reach
-					Logger.getLogger(this.getClass() ).debug("Timeout...");
+					Logger.getLogger(this.getClass()).debug("Timeout...");
 					stopInfoLog();
 					writeLogAndExitPhoneHandling();
 					throw new RuntimeException("Timeout...");
@@ -221,11 +204,9 @@ public class LaunchJATK  implements ErrorListener  {
 		}
 	}
 
-
-	private  int interpretTestFile () throws FileNotFoundException
-	{
-		int result=0;
-		//start Parsing .tst file
+	private int interpretTestFile() throws FileNotFoundException {
+		int result = 0;
+		// start Parsing .tst file
 		try {
 			ATKScriptParser parser = new ATKScriptParser(new java.io.FileReader(realTestFile));
 			ASTStart expr = parser.start();
@@ -234,30 +215,31 @@ public class LaunchJATK  implements ErrorListener  {
 			if (expr.jjtGetNumChildren() == 0) {
 				logger.addInfoToDocumentLogger("Empty file...", 0, realTestFile);
 			} else {
-				
+
 				ValidateSyntax vs = new ValidateSyntax(realTestFile, false);
 				String output = (String) expr.jjtAccept(vs, "");
 
-				if (output.length() >=1) {
+				if (output.length() >= 1) {
 					logger.addErrorToDocumentLogger(output, 0, null);
 					result = 3;
-					Logger.getLogger(this.getClass() ).warn("Script not valid, please check the report file");
+					Logger.getLogger(this.getClass()).warn(
+							"Script not valid, please check the report file");
 				} else {
-					JATKInterpreter interpreter = new JATKInterpreter(currentPhone,
-							logger, realTestFile, logDir, includeDir);
-	
+					JATKInterpreter interpreter = new JATKInterpreter(currentPhone, logger,
+							realTestFile, logDir, includeDir);
+
 					// Start of interpreter
 					Boolean res = (Boolean) expr.jjtAccept(interpreter, null);
 					// End of interpreter
-	
+
 					if (res.booleanValue()) {
 						logger.addInfoToDocumentLogger("Test passed", -1, "");
 						result = 0;
 					} else {
 						logger.addErrorToDocumentLogger("Test failed", 0, null);
 						result = 1;
-						Logger.getLogger(this.getClass()).
-						warn("Test failed, please check the report file");
+						Logger.getLogger(this.getClass()).warn(
+								"Test failed, please check the report file");
 					}
 					stopInfoLog();
 				}
@@ -267,68 +249,69 @@ public class LaunchJATK  implements ErrorListener  {
 			logger.addErrorToDocumentLogger("Test failed", 0, null);
 			result = 3;
 			hasParseException = true;
-			Logger.getLogger(this.getClass() ).warn("Parse error, please check the report file");
+			Logger.getLogger(this.getClass()).warn("Parse error, please check the report file");
 		} catch (TokenMgrError e) {
 			logger.addErrorToDocumentLogger(e.getMessage(), 0, null);
 			logger.addErrorToDocumentLogger("Test failed", 0, null);
 			result = 3;
 			hasParseException = true;
-			Logger.getLogger(this.getClass() ).warn("Lexical error, please check the report file");
+			Logger.getLogger(this.getClass()).warn("Lexical error, please check the report file");
 		}
 
 		return result;
 	}
 
-	public String  launchNewTest(String xmlconfilepath, boolean noGUI) throws FileNotFoundException, PhoneException
-	{
+	public String launchNewTest(String xmlconfilepath, boolean noGUI) throws FileNotFoundException,
+			PhoneException {
 		String result = PhoneInterface.STATUS_PASSED;
 		System.setSecurityManager(null);
-		// TODO  handle exception
+		// TODO handle exception
 		FileUtil.createOrDeleteDir(logDir);
-		//TODO LG est-ce bien utile ?
-		createPhone();	
+		// TODO LG est-ce bien utile ?
+		createPhone();
 
-		
-		{	
+		{
 			createPDFFile();
 
-			logger = new ResultLogger(logDir, documentGenerator,xmlconfilepath);	
+			logger = new ResultLogger(logDir, documentGenerator, xmlconfilepath);
 			if (noGUI || !CoreGUIPlugin.mainFrame.statusBar.isStop()) {
-				//passage de la hashmap graph dans documentlogger
+				// passage de la hashmap graph dans documentlogger
 				DocumentLogger dl = logger.getDocumentLogger();
-				
+
 				dl.setMapPerfGraph(mapPerfGraph);
 				setTimeOut();
-	
-				if (!noGUI) logger.getDocumentLogger().addPlotlistObject();
-	
-				int res = interpretTestFile ();		
-				if (res!=0) result = PhoneInterface.STATUS_FAILED;
-				
+
+				if (!noGUI)
+					logger.getDocumentLogger().addPlotlistObject();
+
+				int res = interpretTestFile();
+				if (res != 0)
+					result = PhoneInterface.STATUS_FAILED;
+
 				stopExecution();
 				writeLogAndExitPhoneHandling();
-			} else result = PhoneInterface.STATUS_FAILED;
+			} else
+				result = PhoneInterface.STATUS_FAILED;
 			stopExecution();
-			
 
 		}
 		return result;
 	}
 
-	public String  launchRandomTest(String xmlconfilepath, Hashtable randomTestParam) throws FileNotFoundException, PhoneException
-	{
+	public String launchRandomTest(String xmlconfilepath, Map randomTestParam)
+			throws FileNotFoundException, PhoneException {
 		boolean result = false;
 		System.setSecurityManager(null);
 		FileUtil.createOrDeleteDir(logDir);
-		createPhone();	
-		
-		{	
+		createPhone();
+
+		{
 			// Document logger
 			createPDFFile();
 
-			logger = new ResultLogger(logDir, documentGenerator,xmlconfilepath);
-			
-			//passage de la hashmap graph dans documentlogger
+			logger = new ResultLogger(logDir, documentGenerator, xmlconfilepath);
+
+			// passage de la hashmap graph dans documentlogger
 			DocumentLogger dl = logger.getDocumentLogger();
 			dl.setMapPerfGraph(mapPerfGraph);
 			setTimeOut();
@@ -337,40 +320,42 @@ public class LaunchJATK  implements ErrorListener  {
 			logger.setPhoneInterface(currentPhone);
 			logger.start(1000);
 			logger.getActionsLogger().createHopperTstfile();
-			result = currentPhone.startRandomTest(realTestFile,logDir,logger, randomTestParam);
-			
+			result = currentPhone.startRandomTest(realTestFile, logDir, logger, randomTestParam);
+
 			logger.interrupt();
 			logger.join();
 			stopExecution();
 			writeLogAndExitPhoneHandling();
 		}
-		if(result)
+		if (result)
 			return PhoneInterface.STATUS_PASSED;
 		else
 			return PhoneInterface.STATUS_FAILED;
-			
+
 	}
-	
+
 	public void cancelExecution() {
-		if (currentPhone!=null)  currentPhone.stopTestingMode();
+		if (currentPhone != null)
+			currentPhone.stopTestingMode();
 		if (logger != null) {
 			logger.setStopATK(true);
-			if (logger.isAlive()){
+			if (logger.isAlive()) {
 				logger.interrupt();
 				logger.join();
 			}
 		}
 	}
-	
+
 	public void stopExecution() {
-		if (currentPhone!=null)  {
-			if (currentPhone.isInTestingMode()) currentPhone.stopTestingMode();
+		if (currentPhone != null) {
+			if (currentPhone.isInTestingMode())
+				currentPhone.stopTestingMode();
 			currentPhone = null;
 		}
-		documentGenerator=null;
-		currentPhone=null;
-		mapPerfGraph=null;
-		mapAction=null;
+		documentGenerator = null;
+		currentPhone = null;
+		mapPerfGraph = null;
+		mapAction = null;
 	}
 
 	/**
@@ -388,13 +373,13 @@ public class LaunchJATK  implements ErrorListener  {
 	 * Stop the main log system
 	 */
 	private static void stopInfoLog() {
-		//Logger.getLogger(this.getClass() ).debug("Stop the logger");
+		// Logger.getLogger(this.getClass() ).debug("Stop the logger");
 		if (logger != null) {
 			if (logger.isAlive()) {
 				logger.interrupt();
-				//Logger.getLogger(this.getClass() ).debug("Waiting for loop");
+				// Logger.getLogger(this.getClass() ).debug("Waiting for loop");
 				logger.join();
-				//Logger.getLogger(this.getClass() ).debug("End of loop");
+				// Logger.getLogger(this.getClass() ).debug("End of loop");
 			}
 		}
 	}
@@ -405,66 +390,51 @@ public class LaunchJATK  implements ErrorListener  {
 	public void writeLogAndExitPhoneHandling() {
 		stopInfoLog();
 		if (logger != null) {
-			//write file action.log
+			// write file action.log
 			logger.writeActionLogFile();
 			logger.generateGraphFile();
 			logger.generatepltFile();
-			//write Error File pdf or Txt 
+			// write Error File pdf or Txt
 			logger.dumpInStream(hasParseException);
 			logger = null;
 
 		}
 	}
 
+	public void setIncludeDir(String dir) {
 
-	public  void setIncludeDir(String dir) {
-
-		JATKdir=dir;
-		includeDir = dir+currentPhone.getIncludeDir();		
+		JATKdir = dir;
+		includeDir = dir + currentPhone.getIncludeDir();
 	}
 
-
-	private  String getLogDir() {
+	private String getLogDir() {
 		return logDir;
 	}
-
 
 	public void setLogDir(String logDir) {
 		this.logDir = logDir;
 	}
 
-
-	public  String getLogType() {
+	public String getLogType() {
 		return logType;
 	}
 
-
-	public  PhoneInterface getCurrentPhone() {
+	public PhoneInterface getCurrentPhone() {
 		return currentPhone;
 	}
 
-
-	private  void setCurrentPhone() {
+	private void setCurrentPhone() {
 		// TODO null if no phone connected ?
 		LaunchJATK.currentPhone = AutomaticPhoneDetection.getInstance().getDevice();
 	}
-
-
-
 
 	private static int getTimeout() {
 		return timeout;
 	}
 
-
-
-
-
-
 	public void setMapPerfGraph(Map<String, PerformanceGraph> mapPerfGraph) {
 		this.mapPerfGraph = mapPerfGraph;
 	}
-
 
 	public void setMapAction(Map<String, GraphMarker> mapAction) {
 		this.mapAction = mapAction;
@@ -473,161 +443,195 @@ public class LaunchJATK  implements ErrorListener  {
 	public void errorOccured() {
 		this.cancelExecution();
 		CoreGUIPlugin.mainFrame.statusBar.setStop();
-		//Launch Autodetect after a Cancel
+		// Launch Autodetect after a Cancel
 		AutomaticPhoneDetection.getInstance().resumeDetection();
 		CoreGUIPlugin.mainFrame.statusBar.displayErrorMessage();
 	}
-	
+
 	public void warningOccured() {
 		CoreGUIPlugin.mainFrame.statusBar.displayErrorMessage();
 	}
-	
-	
+
 	/******************************** METHOD TO LAUNCH ATK FROM LINE COMMAND **********************************/
 	public static void main(String[] args) {
 		checkargs(args);
 	}
-	
+
 	/**
 	 * This method check arguments and parse arguments
-	 * @param args arguments list */
+	 * 
+	 * @param args
+	 *            arguments list
+	 */
 
-	private static void checkargs(String[] args)
-	{
-		// TODO : -c should be optional, in that case default phone config file should be used
+	private static void checkargs(String[] args) {
+		// TODO : -c should be optional, in that case default phone config file
+		// should be used
 		// TODO : -pm should be specifiable
-		String usage = "Usage : \n"
-			+"test <test_options> WHERE test_options are :\n"
-			+"\t -tf <test_file.tst> -c <monitoring_config.xml>\n"
-			+"\t -td <test_dir> -c <monitoring_config.xml>\n"
-			+"\t -rd <result_dir>\n";
-		
-		if (args.length == 0 || (args.length==1 && args[0].equals("-h"))) {
+		String usage = "Usage : \n" + "test <test_options> WHERE test_options are :\n"
+				+ "\t -tf <test_file.tst> -c <monitoring_config.xml>\n"
+				+ "\t -td <test_dir> -c <monitoring_config.xml>\n" + "\t -rd <result_dir>\n"
+				+ "\t -device [optional device_serial_number]";
+
+		if (args.length == 0 || (args.length == 1 && args[0].equals("-h"))) {
 			System.out.println(usage);
 			result = 3;
 			return;
-		}	
+		}
 		// Default ATK logs are stored in file <ATK_install>/log/logJATK.log
-		// For command line debugging, just replace <ATK_install>/log4j.xml, by the Eclipse_projet_ATK/log4j.xml
-		DOMConfigurator.configure(Platform.getInstance().getJATKPath()+"\\log4j.xml");
+		// For command line debugging, just replace <ATK_install>/log4j.xml, by
+		// the Eclipse_projet_ATK/log4j.xml
+		DOMConfigurator.configure(Platform.getInstance().getJATKPath() + "\\log4j.xml");
 
 		AutomaticPhoneDetection.getInstance(false).checkDevices();
-		
+
 		List<PhoneInterface> devices = AutomaticPhoneDetection.getInstance().getDevices();
-		if (devices.size()==0) {
+		if (devices.size() == 0) {
 			System.out.println("FAILED: no device detected.");
 		} else {
 			AutomaticPhoneDetection.getInstance().setSelectedDevice(devices.get(0));
 			LaunchJATK launcher = new LaunchJATK();
 			String result = launcher.parseArguments(args);
-			if (result!=null) {
+			if (result != null) {
 				Logger.getLogger(LaunchJATK.class).debug(result);
 				System.out.println(result);
 			}
-			
+
 		}
 		AndroidDebugBridge.disconnectBridge();
 		AndroidDebugBridge.terminate();
 	}
 
 	private String parseArguments(String[] args) {
-		if (!args[0].equals("test")) return ("FAILED: test command is missing.");
+		if (!args[0].equals("test"))
+			return ("FAILED: test command is missing.");
+		String device_serial=null;
 		String result_dir = null;
 		Vector<String> test_files = new Vector<String>();
 		Vector<String> config_files = new Vector<String>();
-		for (int i=1; i< args.length; i++) {
+		for (int i = 1; i < args.length; i++) {
 			if (args[i].equals("-rd")) {
 				i++;
-				if (i == args.length) return ("FAILED: [-rd option] missing result directory path.");
+				if (i == args.length)
+					return ("FAILED: [-rd option] missing result directory path.");
 				else {
 					File dir = new File(args[i]);
-					if (!dir.exists()) return ("FAILED: [-rd option] result directory does not exist.");
-					else result_dir = args[i];
+					if (!dir.exists())
+						return ("FAILED: [-rd option] result directory does not exist.");
+					else
+						result_dir = args[i];
 				}
-			} else if (args[i].equals("-tf")) {
-				i++;
-				if (i == args.length) return ("FAILED: [-tf option] missing test file path.");
-				else {
-					File file = new File(args[i]);
-					if (!file.exists()) return ("FAILED: [-tf option] test file "+args[i]+" not found.");
+			} else
+				if (args[i].equals("-tf")) {
+					i++;
+					if (i == args.length)
+						return ("FAILED: [-tf option] missing test file path.");
 					else {
-						test_files.add(args[i]);
-						i++;
-						if (i == args.length || !args[i].equals("-c")) return ("FAILED: -c <config_file_path> option missing.");
+						File file = new File(args[i]);
+						if (!file.exists())
+							return ("FAILED: [-tf option] test file " + args[i] + " not found.");
 						else {
+							test_files.add(args[i]);
 							i++;
-							if (i == args.length) return ("FAILED: [-c option] missing config file path.");
+							if (i == args.length || !args[i].equals("-c"))
+								return ("FAILED: -c <config_file_path> option missing.");
 							else {
-								file = new File(args[i]);
-								if (!file.exists()) return ("FAILED: [-c option] config file "+args[i]+" not found.");
+								i++;
+								if (i == args.length)
+									return ("FAILED: [-c option] missing config file path.");
 								else {
-									config_files.add(args[i]);
-								}
-							}
-						}
-					}
-				} 
-			} else if (args[i].equals("-td")) {
-				i++;
-				if (i == args.length) return ("FAILED: [-td option] missing test directory path.");
-				else {
-					File file = new File(args[i]);
-					if (!file.exists()) return ("FAILED: [-td option] test directory does not exist.");
-					else {
-						String[] tfiles = file.list(new SuffixFilter("tst"));
-						if (tfiles.length == 0) return ("FAILED: [-td option] test directory does not contain any .tst file.");
-						for (int j=0; j<tfiles.length; j++) {
-							test_files.add(args[i]+Platform.FILE_SEPARATOR+tfiles[j]);	
-						}
-						i++;
-						if (i == args.length || !args[i].equals("-c")) return ("FAILED: -c <config_file_path> option missing.");
-						else {
-							i++;
-							if (i == args.length) return ("FAILED: [-c option] missing config file path.");
-							else {
-								file = new File(args[i]);
-								if (!file.exists()) return ("FAILED: [-c option] config file "+args[i]+" not found.");
-								else {
-									for (int j=0; j<tfiles.length; j++) {
+									file = new File(args[i]);
+									if (!file.exists())
+										return ("FAILED: [-c option] config file " + args[i] + " not found.");
+									else {
 										config_files.add(args[i]);
 									}
 								}
 							}
 						}
-
 					}
-				} 
-			}
+				} else
+					if (args[i].equals("-td")) {
+						i++;
+						if (i == args.length)
+							return ("FAILED: [-td option] missing test directory path.");
+						else {
+							File file = new File(args[i]);
+							if (!file.exists())
+								return ("FAILED: [-td option] test directory does not exist.");
+							else {
+								String[] tfiles = file.list(new SuffixFilter("tst"));
+								if (tfiles.length == 0)
+									return ("FAILED: [-td option] test directory does not contain any .tst file.");
+								for (int j = 0; j < tfiles.length; j++) {
+									test_files.add(args[i] + Platform.FILE_SEPARATOR + tfiles[j]);
+								}
+								i++;
+								if (i == args.length || !args[i].equals("-c"))
+									return ("FAILED: -c <config_file_path> option missing.");
+								else {
+									i++;
+									if (i == args.length)
+										return ("FAILED: [-c option] missing config file path.");
+									else {
+										file = new File(args[i]);
+										if (!file.exists())
+											return ("FAILED: [-c option] config file " + args[i] + " not found.");
+										else {
+											for (int j = 0; j < tfiles.length; j++) {
+												config_files.add(args[i]);
+											}
+										}
+									}
+								}
+
+							}
+						}
+					} else if (args[i].equals("-device")) {
+						i++;
+						if (i < args.length) {
+							device_serial=args[i];
+							List<PhoneInterface> devices = AutomaticPhoneDetection.getInstance().getDevices();
+							for(int j=0; j< devices.size();j++){
+								if(devices.get(j).getSerialNumber().equalsIgnoreCase(device_serial)){
+									AutomaticPhoneDetection.getInstance().setSelectedDevice(devices.get(j));
+								}
+							}
+						}
+					}
 		}
-		if (result_dir == null) return ("FAILED: -rd <result_directory> option must be specified.");
-		if (test_files.size() == 0) return ("FAILED: at least one test file must be specified, using -tf and/or -td options.");
-		
-		for (int i=0; i< test_files.size(); i++) {
+		if (result_dir == null)
+			return ("FAILED: -rd <result_directory> option must be specified.");
+		if (test_files.size() == 0)
+			return ("FAILED: at least one test file must be specified, using -tf and/or -td options.");
+
+		for (int i = 0; i < test_files.size(); i++) {
 			this.testFile = test_files.get(i);
 			this.realTestFile = testFile;
 			String testFileName = (new File(testFile)).getName();
-			this.logDir = result_dir+Platform.FILE_SEPARATOR+testFileName.substring(0,testFileName.lastIndexOf("."));
+			this.logDir = result_dir + Platform.FILE_SEPARATOR
+					+ testFileName.substring(0, testFileName.lastIndexOf("."));
 			try {
 				String result = launchNewTest(config_files.get(i), true);
-				System.out.println(result+": test "+testFile);
+				System.out.println(result + ": test " + testFile);
 			} catch (FileNotFoundException e) {
-				return("FAILED: test "+testFile);
-				//e.printStackTrace();
+				return ("FAILED: test " + testFile);
+				// e.printStackTrace();
 			} catch (PhoneException e) {
-				return("FAILED: test "+testFile );
-				//e.printStackTrace();
-			}		
+				return ("FAILED: test " + testFile);
+				// e.printStackTrace();
+			}
 		}
 		return null;
 	}
 
 	public class SuffixFilter implements FilenameFilter {
-	    private String suffix;
-	    public SuffixFilter(String suffix) {
-	        this.suffix = "." + suffix;
-	    }
-	    public boolean accept(File dir, String name) {
-	        return name.endsWith(suffix);
-	    }
+		private String suffix;
+		public SuffixFilter(String suffix) {
+			this.suffix = "." + suffix;
+		}
+		public boolean accept(File dir, String name) {
+			return name.endsWith(suffix);
+		}
 	}
 }

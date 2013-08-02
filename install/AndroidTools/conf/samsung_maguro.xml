@@ -23,16 +23,13 @@
     <!--!!! SEE ATK User Guide - Configuration section - and UPDATE following values !!!-->
     <Pattern name="X" value="3 53 "/>
     <Pattern name="Y" value="3 54 "/>
-    <Pattern name="ratioX" value="1.0"/>
-    <Pattern name="ratioY" value="1.0"/>
-    <!--Pattern name="flush" value="3 57 4294967295"/-->
-	<Pattern name="flush" value="0 0 0"/>
-	<Pattern name="down" value="3 57 0"/>
-	<Pattern name="downmax" value="3 57 65535"/>
-	<Pattern name="up" value="3 57 -1"/>
+    <Pattern name="flush" value="0 0 0"/>
+    <Pattern name="down" value="3 57 0"/>
+    <Pattern name="downmax" value="3 57 65535"/>
+    <Pattern name="up" value="3 57 -1"/>
     <Threshold name="move" value="15"/>
     <!--Option name="useSmartTouchDetection" value="true"/-->
     <Option name="useMonkeyForPress" value="true"/>
-	<Option name="dontUseMonkey" value="true" />
+    <Option name="dontUseMonkey" value="true" />
   </Touchscreen>
 </Android-config>

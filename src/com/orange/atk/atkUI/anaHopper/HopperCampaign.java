@@ -39,7 +39,7 @@ public class HopperCampaign extends Campaign {
 	public Campaign readCampaign(XMLParser parser) {
 		Campaign camp = new HopperCampaign();
 		Element root = parser.getRoot();
-		Element[] flashStepList = parser.getElements(root, HopperStep.type);
+		Element[] flashStepList = parser.getElements(root, HopperStep.TYPE);
 		for (int i=0; i<flashStepList.length; i++) {
 			String flashFilePath = flashStepList[i].attributeValue("file");
 			HopperStep step = new HopperStep(flashFilePath);
@@ -48,12 +48,15 @@ public class HopperCampaign extends Campaign {
 			step.readfromelement(flashStepList[i],step,flashFilePath);
 
 			
-			if (flashStepList[i].attributeValue(HopperStep.PARAM_TIME)!=null)
+			if (flashStepList[i].attributeValue(HopperStep.PARAM_TIME)!=null){
 				step.getParam().put(HopperStep.PARAM_TIME, flashStepList[i].attributeValue(HopperStep.PARAM_TIME));
-			if (flashStepList[i].attributeValue(HopperStep.PARAM_NBEVENTS)!=null)
+			}
+			if (flashStepList[i].attributeValue(HopperStep.PARAM_NBEVENTS)!=null){
 				step.getParam().put(HopperStep.PARAM_NBEVENTS, flashStepList[i].attributeValue(HopperStep.PARAM_NBEVENTS));
-			if (flashStepList[i].attributeValue(HopperStep.PARAM_THROTTLE)!=null)
+			}
+			if (flashStepList[i].attributeValue(HopperStep.PARAM_THROTTLE)!=null){
 				step.getParam().put(HopperStep.PARAM_THROTTLE, flashStepList[i].attributeValue(HopperStep.PARAM_THROTTLE));
+			}
 
 			// Output file : re-uses the 'name' attribute, after
 			// testing its validity

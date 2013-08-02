@@ -23,7 +23,6 @@
  */
 package com.orange.atk.results.logger.log;
 
-
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
@@ -59,7 +59,7 @@ import com.orange.atk.util.FileUtil;
 // TODO : separate the thread and the render system
 public class ResultLogger {
 
-	private final static EventListenerList listeners = new EventListenerList();
+	private final static EventListenerList LISETENERS = new EventListenerList();
 
 	// type of saved pictures
 	private static final String EXT_PICTURE = "png";
@@ -76,8 +76,7 @@ public class ResultLogger {
 	private boolean isResourceslogged = true;
 	private String confilepath;
 
-
-	private boolean stopATK =false;
+	private boolean stopATK = false;
 
 	/**
 	 * Constructor
@@ -94,12 +93,12 @@ public class ResultLogger {
 	 *             and write right)
 	 */
 	public ResultLogger(String folderWhereResultsAreSaved,
-			DocumentGenerator documentGenerator,String confilepath, boolean isResourceslogged) {
+			DocumentGenerator documentGenerator, String confilepath, boolean isResourceslogged) {
 		this.isResourceslogged = isResourceslogged;
 		this.confilepath = confilepath;
 		if (folderWhereResultsAreSaved == null) {
 			throw new NullPointerException(
-			"folderWhereResultsAreSaved is null in Logger.<init>");
+					"folderWhereResultsAreSaved is null in Logger.<init>");
 		}
 		File folder = new File(folderWhereResultsAreSaved);
 		if (!(folder.exists() && folder.canWrite())) {
@@ -115,8 +114,8 @@ public class ResultLogger {
 		}
 	}
 	public ResultLogger(String folderWhereResultsAreSaved,
-			DocumentGenerator documentGenerator,String confilepath) {
-		this(folderWhereResultsAreSaved,documentGenerator,confilepath, true);
+			DocumentGenerator documentGenerator, String confilepath) {
+		this(folderWhereResultsAreSaved, documentGenerator, confilepath, true);
 	}
 	/**
 	 * generateGraphFile
@@ -124,16 +123,16 @@ public class ResultLogger {
 	public void generateGraphFile() {
 		// log the min/max/avg values from measurements
 		if (isResourceslogged) {
-			HashMap<String, PlotList> mapgraph =documentLogger.getMapint();
-	
+			Map<String, PlotList> mapgraph = documentLogger.getMapint();
+
 			Set<String> cles = mapgraph.keySet();
 			Iterator<String> it = cles.iterator();
 			while (it.hasNext()) {
 				String cle = (String) it.next();
-				PlotList plotlist=documentLogger.getPlotList((cle));
+				PlotList plotlist = documentLogger.getPlotList((cle));
 				GraphGenerator.generateGraphWithJFreeChart(
 						plotlist,
-						cle,plotlist.getFolder(),
+						cle, plotlist.getFolder(),
 						plotlist.getYComment(),
 						plotlist.getPngpath(),
 						plotlist.getScale());
@@ -141,28 +140,28 @@ public class ResultLogger {
 		}
 	}
 
-
-
 	/**
 	 * generate Plt File
 	 */
 	public void generatepltFile() {
 		// log the min/max/avg values from measurements
 		if (isResourceslogged) {
-			HashMap<String, PlotList> mapgraph =documentLogger.getMapint();
-	
+			Map<String, PlotList> mapgraph = documentLogger.getMapint();
+
 			Set<String> cles = mapgraph.keySet();
 			Iterator<String> it = cles.iterator();
 			while (it.hasNext()) {
 				String cle = (String) it.next();
-				PlotList plotlist=documentLogger.getPlotList((cle));
-	
+				PlotList plotlist = documentLogger.getPlotList((cle));
+
 				// Save measurements in a file
 				try {
-					Logger.getLogger(this.getClass() ).
-					debug("Logger: "+folderWhereResultsAreSaved +Platform.FILE_SEPARATOR+ cle
-							+ ".csv");
-					GraphGenerator.dumpInFile(plotlist, folderWhereResultsAreSaved +Platform.FILE_SEPARATOR+ cle
+					Logger.getLogger(this.getClass()).
+							debug("Logger: " + folderWhereResultsAreSaved + Platform.FILE_SEPARATOR
+									+ cle
+									+ ".csv");
+					GraphGenerator.dumpInFile(plotlist, folderWhereResultsAreSaved
+							+ Platform.FILE_SEPARATOR + cle
 							+ ".csv");
 					plotlist.closefile();
 				} catch (ArrayIndexOutOfBoundsException e1) {
@@ -184,28 +183,23 @@ public class ResultLogger {
 	 * @param endTime
 	 *            time when the action has finished
 	 */
-	public void addInfotoActionLogger(String MsgType, String actionName, Date startTime, Date endTime) {
+	public void addInfotoActionLogger(String MsgType, String actionName, Date startTime,
+			Date endTime) {
 
-		actionsLogger.addAction(MsgType, actionName,  startTime,  endTime);
-		//insert event on the graph
-		
+		actionsLogger.addAction(MsgType, actionName, startTime, endTime);
+		// insert event on the graph
 
-		if(actionsLogger.isStopJATK())
+		if (actionsLogger.isStopJATK())
 			phoneInterface.stopTestingMode();
 
-
-
-
-
 	}
-
 
 	/**
 	 * Save actions made by the interpreter in the file actions.log uder the log
 	 * folderwq
 	 */
 	public void writeActionLogFile() {
-		//close temp file action logger
+		// close temp file action logger
 		this.actionsLogger.closetempfiles();
 		File fichier = new File(folderWhereResultsAreSaved
 				+ Platform.FILE_SEPARATOR + "actions.xml");
@@ -218,18 +212,18 @@ public class ResultLogger {
 			e.printStackTrace();
 		}
 
-//Copy confile to allow the analyser to read csv files
-        FileUtil.copyfile(fichierconf,new File(confilepath));                    
+		// Copy confile to allow the analyser to read csv files
+		FileUtil.copyfile(fichierconf, new File(confilepath));
 
 	}
-	
+
 	/**
 	 * Save actions made by the interpreter in the file actions.log uder the log
 	 * folderwq
 	 */
 	public void writeActionLogFile(String xmlfilepath) {
 
-		//close temp file action logger
+		// close temp file action logger
 		this.actionsLogger.closetempfiles();
 
 		File fichier = new File(folderWhereResultsAreSaved
@@ -242,8 +236,8 @@ public class ResultLogger {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-//Copy confile to allow the analyser to read csv files
-        FileUtil.copyfile(fichierconf,new File(xmlfilepath));                    
+		// Copy confile to allow the analyser to read csv files
+		FileUtil.copyfile(fichierconf, new File(xmlfilepath));
 
 	}
 
@@ -258,7 +252,8 @@ public class ResultLogger {
 	 *            script where this message is generated
 	 */
 	public void addInfoToDocumentLogger(String s, int line, String currentScript) {
-		if (isResourceslogged) documentLogger.addInfoToLog(s, line, currentScript);
+		if (isResourceslogged)
+			documentLogger.addInfoToLog(s, line, currentScript);
 	}
 
 	/**
@@ -273,8 +268,9 @@ public class ResultLogger {
 	 *            script where this message is generated
 	 */
 	public void addWarningToDocumentLogger(String s, int line, String currentScript) {
-		if (isResourceslogged) documentLogger.addWarningToLog(s, line, currentScript);
-		Logger.getLogger(this.getClass() ).warn(currentScript + " ("+line+") : "+s);
+		if (isResourceslogged)
+			documentLogger.addWarningToLog(s, line, currentScript);
+		Logger.getLogger(this.getClass()).warn(currentScript + " (" + line + ") : " + s);
 	}
 
 	/**
@@ -289,11 +285,10 @@ public class ResultLogger {
 	 *            script where this message is generated
 	 */
 	public void addErrorToDocumentLogger(String s, int line, String currentScript) {
-		if (isResourceslogged) documentLogger.addErrorToLog(s, line, currentScript);
-		Logger.getLogger(this.getClass() ).warn(currentScript + " ("+line+") : "+s);
+		if (isResourceslogged)
+			documentLogger.addErrorToLog(s, line, currentScript);
+		Logger.getLogger(this.getClass()).warn(currentScript + " (" + line + ") : " + s);
 	}
-
-
 
 	/**
 	 * Save cpu
@@ -302,8 +297,8 @@ public class ResultLogger {
 	 *             if setInterpreter function has not been correctly called
 	 *             before
 	 */
-	public void addToDocumentLogger(float value,String doctype) {
-		if (getPhoneInterface() == null||actionsLogger.isStopJATK()) {
+	public void addToDocumentLogger(float value, String doctype) {
+		if (getPhoneInterface() == null || actionsLogger.isStopJATK()) {
 			setStopATK(true);
 			this.interrupt();
 		}
@@ -315,14 +310,15 @@ public class ResultLogger {
 
 	/**
 	 * Save memory, cpu, battery and storage used
-	 * @throws PhoneException 
+	 * 
+	 * @throws PhoneException
 	 * 
 	 * @throws NullPointerException
 	 *             if setInterpreter function has not been correctly called
 	 *             before
 	 */
 	public void addResourcesInfoToDocumentLogger() throws PhoneException {
-		if (getPhoneInterface() == null||actionsLogger.isStopJATK()) {
+		if (getPhoneInterface() == null || actionsLogger.isStopJATK()) {
 			setStopATK(true);
 			this.interrupt();
 			// TODO return ?
@@ -330,100 +326,78 @@ public class ResultLogger {
 		if (isResourceslogged) {
 			Date d = new Date();
 			// TODO modifier pour rendre generic ??
-			HashMap<String, PlotList> mapint =documentLogger.getMapint();		
+			Map<String, PlotList> mapint = documentLogger.getMapint();
 			Set<String> cles = mapint.keySet();
 			Iterator<String> it = cles.iterator();
-			List <String> sampledKeys = new ArrayList<String>();
+			List<String> sampledKeys = new ArrayList<String>();
 			while (it.hasNext()) {
 				String cle = (String) it.next();
-				PlotList plotlist= mapint.get(cle);
-				if (plotlist.isSampled()) sampledKeys.add(cle); 			
+				PlotList plotlist = mapint.get(cle);
+				if (plotlist.isSampled())
+					sampledKeys.add(cle);
 			}
-	
-			if(getPhoneInterface()!=null&&logThread!=null && logThread.isRunning()) {
-				try{
-					HashMap <String,Long> values = getPhoneInterface().getResources(sampledKeys);
+
+			if (getPhoneInterface() != null && logThread != null && logThread.isRunning()) {
+				try {
+					HashMap<String, Long> values = getPhoneInterface().getResources(sampledKeys);
 					cles = values.keySet();
 					it = cles.iterator();
 					while (it.hasNext()) {
 						String cle = (String) it.next();
 						float v = values.get(cle).floatValue();
-						documentLogger.addDataToList(cle, d.getTime(),v);
-						//fireResourceChanged(String.valueOf(v));
+						documentLogger.addDataToList(cle, d.getTime(), v);
+						// fireResourceChanged(String.valueOf(v));
 					}
-				}catch(PhoneException e){
-					addInfotoActionLogger("Error JATK", "Monitor connection lost", new Date(), new Date());
+				} catch (PhoneException e) {
+					addInfotoActionLogger("Error JATK", "Monitor connection lost", new Date(),
+							new Date());
 					getPhoneInterface().stopTestingMode();
 					getPhoneInterface().startTestingMode();
 				}
-
 
 			}
 		}
 	}
 
-
-
-
-
-
-
 	protected void fireResourceChanged(String newMemValue) {
-		for(IMeasureListener listener : getPerfListeners()) {
-			//   listener.memoryChangee( newMemValue+ Platform.LINE_SEP);
+		for (IMeasureListener listener : getPerfListeners()) {
+			// listener.memoryChangee( newMemValue+ Platform.LINE_SEP);
 
 		}
 	}
-
-
 
 	protected void fireStorageChanged(String newMemValue) {
-		for(IMeasureListener listener : getPerfListeners()) {
-			//   listener.storageChangee( newMemValue+ Platform.LINE_SEP);
-
+		for (IMeasureListener listener : getPerfListeners()) {
+			// listener.storageChangee( newMemValue+ Platform.LINE_SEP);
 
 		}
 	}
 
-
-
-
-
-
-
 	protected void fireActionChanged(String newMemValue) {
-		for(IMeasureListener listener : getPerfListeners()) {
-			listener.addactionChangee( newMemValue);
-
+		for (IMeasureListener listener : getPerfListeners()) {
+			listener.addactionChangee(newMemValue);
 
 		}
-	}	 
-
+	}
 
 	protected void fireoutputChanged(String newMemValue) {
-		for(IMeasureListener listener : getPerfListeners()) {
-			listener.addOutputChangee( newMemValue);
-
+		for (IMeasureListener listener : getPerfListeners()) {
+			listener.addOutputChangee(newMemValue);
 
 		}
-	}	  
-
+	}
 
 	public void addPerfListener(IMeasureListener listener) {
-		listeners.add(IMeasureListener.class, listener);
+		LISETENERS.add(IMeasureListener.class, listener);
 	}
 
 	public void removePerfListener(IMeasureListener listener) {
-		listeners.remove(IMeasureListener.class, listener);
+		LISETENERS.remove(IMeasureListener.class, listener);
 	}
-
-
 
 	public IMeasureListener[] getPerfListeners() {
-		return listeners.getListeners(IMeasureListener.class);
+		return LISETENERS.getListeners(IMeasureListener.class);
 	}
-
-
 
 	/**
 	 * Save the image image under the log folder with the name fileName
@@ -443,12 +417,14 @@ public class ResultLogger {
 		if (image == null) {
 			throw new NullPointerException("image is null");
 		}
-		File fichier = new File(folderWhereResultsAreSaved + Platform.FILE_SEPARATOR+"screenshots"+Platform.FILE_SEPARATOR+fileName + "."
+		File fichier = new File(folderWhereResultsAreSaved + Platform.FILE_SEPARATOR
+				+ "screenshots" + Platform.FILE_SEPARATOR + fileName + "."
 				+ EXT_PICTURE);
-		File directory =new File (folderWhereResultsAreSaved + Platform.FILE_SEPARATOR+"screenshots");
-		if (!directory.exists()){
-			if(!directory.mkdirs())
-				Logger.getLogger(this.getClass() ).warn("Can't make dir "+directory.getPath());
+		File directory = new File(folderWhereResultsAreSaved + Platform.FILE_SEPARATOR
+				+ "screenshots");
+		if (!directory.exists()) {
+			if (!directory.mkdirs())
+				Logger.getLogger(this.getClass()).warn("Can't make dir " + directory.getPath());
 
 		}
 		try {
@@ -473,15 +449,15 @@ public class ResultLogger {
 	public void setPhoneInterface(PhoneInterface phoneInterface) {
 		if (phoneInterface == null) {
 			throw new NullPointerException(
-			"A valid PhoneInterface should be provided");
+					"A valid PhoneInterface should be provided");
 		}
 		this.phoneInterface = phoneInterface;
 	}
 
 	/**
 	 * Set the currently {@link JATKInterpreter} used. This function must be
-	 * called before calling the {@link ResultLogger}.start(int iInterval) function.
-	 * This function also defines the good PhoneInterface.
+	 * called before calling the {@link ResultLogger}.start(int iInterval)
+	 * function. This function also defines the good PhoneInterface.
 	 * 
 	 * @param interpreter
 	 *            interpreter
@@ -491,7 +467,7 @@ public class ResultLogger {
 	public void setInterpreter(JATKInterpreter interpreter) {
 		if (interpreter == null) {
 			throw new NullPointerException(
-			"A valid Interpreter should be provided");
+					"A valid Interpreter should be provided");
 		}
 		setPhoneInterface(interpreter.getPhoneInterface());
 	}
@@ -511,15 +487,15 @@ public class ResultLogger {
 	public void start(int iInterval) {
 		if (getPhoneInterface() == null) {
 			throw new NullPointerException(
-			"A valid PhoneInterface should be provided before calling Logger.start");
+					"A valid PhoneInterface should be provided before calling Logger.start");
 		}
 		if (logThread != null) {
 			if (logThread.isAlive()) {
 				throw new IllegalStateException(
-				"The thread is always alive, called interrupt first");
+						"The thread is always alive, called interrupt first");
 			}
 		}
-		//lance le thread de mesure
+		// lance le thread de mesure
 		logThread = new MeasurementThread(this);
 		logThread.start(iInterval);
 	}
@@ -535,8 +511,9 @@ public class ResultLogger {
 			try {
 				logThread.interrupt();
 			} catch (SecurityException ex) {
-				Logger.getLogger(this.getClass()).
-				warn("Internal error : Current Thread is not allow to interrupt the logThread in Logger.interrupt()");
+				Logger.getLogger(this.getClass())
+						.
+						warn("Internal error : Current Thread is not allow to interrupt the logThread in Logger.interrupt()");
 			}
 		}
 	}
@@ -573,7 +550,8 @@ public class ResultLogger {
 	 *            graphs
 	 */
 	public void dumpInStream(boolean isParseErrorHappened) {
-		if (isResourceslogged && documentGenerator!=null) documentGenerator.dumpInStream(isParseErrorHappened, documentLogger);
+		if (isResourceslogged && documentGenerator != null)
+			documentGenerator.dumpInStream(isParseErrorHappened, documentLogger);
 	}
 
 	public PhoneInterface getPhoneInterface() {
@@ -596,11 +574,8 @@ public class ResultLogger {
 		this.documentLogger = documentLogger;
 	}
 
-
-
 	public ActionsLogger getActionsLogger() {
 		return actionsLogger;
 	}
-
 
 }

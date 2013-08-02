@@ -35,57 +35,46 @@ import org.dom4j.io.XMLWriter;
 import com.orange.atk.atkUI.corecli.Alert;
 
 /**
- *
+ * 
  * @author Pierre CREGUT
  * @since JDK5.0
  */
 public class XMLOutput {
 
 	private Element root;
-    private Document doc;
-    private File file;
+	private Document doc;
+	private File file;
 
-    public XMLOutput(String dir, String rootElt) {
-    	try {
-    		File file = new File(dir, rootElt + ".xml");
-    		this.file = file;
-    		doc = DocumentHelper.createDocument();
-    		root = doc.addElement(rootElt);
-    	} catch (Exception e) {
-    		Alert.raise(e,"Problem while preparing " + file);
-    	}
-    }
-
-//	public XMLOutput(String rootElt) {
-//		try {
-//			String tempDir = Configuration.getProperty(Configuration.TEMPDIR, System.getProperty("TEMP"));
-//    		this.file = new File(tempDir, rootElt + ".xml");
-//    		doc = DocumentHelper.createDocument();
-//    		root = doc.addElement(rootElt);
-//    	} catch (Exception e) {
-//    		Alert.raise(e,"Problem while preparing " + file);
-//    	}
-//	}
+	public XMLOutput(String dir, String rootElt) {
+		try {
+			File file = new File(dir, rootElt + ".xml");
+			this.file = file;
+			doc = DocumentHelper.createDocument();
+			root = doc.addElement(rootElt);
+		} catch (Exception e) {
+			Alert.raise(e, "Problem while preparing " + file);
+		}
+	}
 
 	public Element root() {
-    	return root;
-    }
+		return root;
+	}
 
-    public Document document() {
-    	return doc;
-    }
+	public Document document() {
+		return doc;
+	}
 
-    public void generate() {
-    	try {
-    		OutputFormat format = OutputFormat.createPrettyPrint();
-    		format.setEncoding("UTF-8");
-    		XMLWriter writer = new XMLWriter(new FileWriter(file), format);
-    		writer.write(doc);
-    		writer.close();
-    	} catch (Exception e) {
-    		Alert.raise(e,"While generating " + file);
-    	}
-    }
+	public void generate() {
+		try {
+			OutputFormat format = OutputFormat.createPrettyPrint();
+			format.setEncoding("UTF-8");
+			XMLWriter writer = new XMLWriter(new FileWriter(file), format);
+			writer.write(doc);
+			writer.close();
+		} catch (Exception e) {
+			Alert.raise(e, "While generating " + file);
+		}
+	}
 
 	public File getFile() {
 		return file;

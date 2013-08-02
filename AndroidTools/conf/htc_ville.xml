@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--  Android HTC ville configuration file   -->
+<!--   Screen resolution 320x526   -->
+<Android-config>
+  <CanalPattern>
+    <Pattern canal="keyboard" value="cy8c-touchkey"/>
+    <Pattern canal="touchscreen" value="atmel-touchscreen"/>
+  </CanalPattern>
+  <KeyMapping canal="keyboard">
+    <Key name="MENU" code="249"/>
+    <Key name="HOME" code="102"/>
+    <Key name="BACK" code="158"/>
+  </KeyMapping>
+  <SoftKeyMapping/>
+  <Touchscreen>
+    <!--!!! THIS IS JUST TOUCHSCREEN Elements TEMPLATE !!!-->
+    <!--!!! SEE ATK User Guide - Configuration section - and UPDATE following values !!!-->
+    <Pattern name="X" value="0 0 "/>
+    <Pattern name="Y" value="0 0 "/>
+    <Pattern name="ratioX" value="1.0"/>
+    <Pattern name="ratioY" value="1.0"/>
+    <Pattern name="down" value="0 0 0"/>
+    <Pattern name="downmax" value="0 0 0"/>
+    <Pattern name="up" value="0 0 0"/>
+    <Pattern name="flush" value="0 0 0"/>
+    <Pattern name="flush2" value="0 2 0"/>
+    <Threshold name="move" value="15"/>
+    <Option name="sendMouseDownForMove" value="true"/>
+    <Option name="sendMouseEventFirst" value="true"/>
+    <Option name="useMonkeyForPress" value="true"/>
+  </Touchscreen>
+</Android-config>

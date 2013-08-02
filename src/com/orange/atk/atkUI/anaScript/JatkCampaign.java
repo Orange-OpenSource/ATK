@@ -44,7 +44,7 @@ public class JatkCampaign extends Campaign {
 	public Campaign readCampaign(XMLParser parser) {
 		Campaign camp = new JatkCampaign();
 		Element root = parser.getRoot();
-		Element[] flashStepList = parser.getElements(root, JatkStep.type);
+		Element[] flashStepList = parser.getElements(root, JatkStep.TYPE);
 		for (int i=0; i<flashStepList.length; i++) {
 			String flashFilePath = flashStepList[i].attributeValue("file");
 

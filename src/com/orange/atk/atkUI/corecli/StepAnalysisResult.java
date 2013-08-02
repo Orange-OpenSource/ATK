@@ -72,22 +72,49 @@ public abstract class StepAnalysisResult {
 	 * Compares this ResultStep to the given object. The result is true if and only if 
 	 * the argument is not null and is a ResultStep object that represents the same 
 	 * result step as this object.
+	 * 
+	 * 	WARNING : There is a precision difference between 
+	 *  timestamp (YYYYMMDDHHMMSS) and calendar (same+milliseconds)
 	 */
-	public boolean equals(Object obj){
-		if (obj==null) return false;
-		if ((obj instanceof StepAnalysisResult)) {
-			StepAnalysisResult res = (StepAnalysisResult) obj;
-			return ( 
-					//cal.equals(rs.cal) //WARNING : There is a precision difference between 
-										 // timestamp (YYYYMMDDHHMMSS) and calendar (same+milliseconds)
-					(analysisDate.getTimeInMillis()/1000)==(res.analysisDate.getTimeInMillis()/1000)
-					&& (http_authorized.equals(res.http_authorized))
-					&& (matos_version.equals(res.matos_version))
-				   );
-			
-		} else {
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = (int) (prime * result
+				+ ((analysisDate == null) ? 0 : analysisDate.getTimeInMillis()/1000));
+		result = prime * result
+				+ ((http_authorized == null) ? 0 : http_authorized.hashCode());
+		result = prime * result
+				+ ((matos_version == null) ? 0 : matos_version.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
 			return false;
-		}
+		if (getClass() != obj.getClass())
+			return false;
+		StepAnalysisResult other = (StepAnalysisResult) obj;
+		if (analysisDate == null) {
+			if (other.analysisDate != null)
+				return false;
+		} else if (!((analysisDate.getTimeInMillis()/1000)==(other.analysisDate.getTimeInMillis()/1000)))
+			return false;
+		if (http_authorized == null) {
+			if (other.http_authorized != null)
+				return false;
+		} else if (!http_authorized.equals(other.http_authorized))
+			return false;
+		if (matos_version == null) {
+			if (other.matos_version != null)
+				return false;
+		} else if (!matos_version.equals(other.matos_version))
+			return false;
+		return true;
 	}
 
 	/**

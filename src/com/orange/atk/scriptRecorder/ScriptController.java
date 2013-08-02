@@ -31,6 +31,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -46,6 +47,7 @@ import org.apache.log4j.Logger;
 import com.orange.atk.interpreter.ast.ASTFUNCTION;
 import com.orange.atk.interpreter.ast.ASTLOOP;
 import com.orange.atk.interpreter.ast.ASTNUMBER;
+import com.orange.atk.interpreter.ast.ASTSTRING;
 import com.orange.atk.interpreter.ast.ASTStart;
 import com.orange.atk.interpreter.ast.Node;
 import com.orange.atk.interpreter.ast.SimpleNode;
@@ -103,6 +105,13 @@ public class ScriptController {
 
 
 	private static ScriptController singleton;
+
+	//param for robotium test 
+	public static String PackageName="";
+	public static String MainActivityName="";
+	public static String PackageSourceDir="";
+	public static int Versioncode=-1;
+
 
 
 	private ScriptController() {
@@ -431,6 +440,21 @@ public class ScriptController {
 		scriptPath=null;
 		screenshotDirPath=null;
 		ast = new ASTStart(ATKScriptParserTreeConstants.JJTSTART);
+		//first instruction, start main log	
+		if (ast.jjtGetNumChildren()==0) {
+			//empty ast, so first Instruction ...
+			ASTFUNCTION startmainlog = new ASTFUNCTION(ATKScriptParserTreeConstants.JJTFUNCTION);
+			startmainlog.setValue("StartMainlog");
+			ASTNUMBER param = new ASTNUMBER(ATKScriptParserTreeConstants.JJTNUMBER);
+			param.setValue("1000");
+			startmainlog.jjtAddChild(param, 0);
+			ast.jjtAddChild( startmainlog ,0);
+		}else{
+			Node lastnode = ast.jjtGetChild(ast.jjtGetNumChildren() -1);
+			if(lastnode instanceof ASTFUNCTION &&
+					"stopmainlog".equals( ((ASTFUNCTION)lastnode).getValue().toLowerCase() ))
+				ast.jjtRemoveChild(ast.jjtGetNumChildren() -1);
+		}
 	}
 
 
@@ -553,7 +577,7 @@ public class ScriptController {
 
 		Date stopRecordTime  = new Date();
 		Date startRecordTime = phoneListener.getStartRecordTime();
-		
+
 		if(stopRecordTime.getTime()-startRecordTime.getTime()>0)
 			addEvent("Sleep("+(stopRecordTime.getTime()-startRecordTime.getTime())+ ")");
 
@@ -568,10 +592,10 @@ public class ScriptController {
 						JOptionPane.showMessageDialog(ui, "Phone recording problem", e.getMessage(), JOptionPane.ERROR_MESSAGE);
 						phone.stopRecordingMode();
 					}
-					return;
+				return;
 			}
 		}
-		
+
 		SimpleDateFormat formatter = null;
 		// Windows/Linux
 		if (Platform.OS_NAME.toLowerCase().contains("windows")) {
@@ -596,9 +620,9 @@ public class ScriptController {
 		if (screenshotDirPath==null){
 			askScreenshotDir();
 		}
-//		if (phonemode.equals("Phone")){
-//			phone.stopScriptRecording();
-//		}
+		//		if (phonemode.equals("Phone")){
+		//			phone.stopScriptRecording();
+		//		}
 		try {
 			RenderedImage ss= phone.screenShot();
 			if (ss == null) {
@@ -609,7 +633,7 @@ public class ScriptController {
 			File directory =new File (screenshotDirPath);
 			if (!directory.exists()){
 				if(!directory.mkdirs())
-			       Logger.getLogger(this.getClass() ).warn("Can't  make dir  "+directory.getPath());			
+					Logger.getLogger(this.getClass() ).warn("Can't  make dir  "+directory.getPath());			
 			}
 			try {
 				if (!ImageIO.write(ss, "png", fichier)) {
@@ -769,6 +793,86 @@ public class ScriptController {
 		phone = device;
 
 	}
+
+	public void newFileForRobotium() {
+		if (isRecording()){
+			stop();
+		}
+		scriptPath=null;
+		screenshotDirPath=null;
+		ast = new ASTStart(ATKScriptParserTreeConstants.JJTSTART);
+
+		if (ast.jjtGetNumChildren()==0) {
+			//empty ast, so first Instruction ...
+			ASTFUNCTION startmainlog = new ASTFUNCTION(ATKScriptParserTreeConstants.JJTFUNCTION);
+			startmainlog.setValue("StartMainlog");
+			ASTNUMBER param = new ASTNUMBER(ATKScriptParserTreeConstants.JJTNUMBER);
+			param.setValue("1000");
+			startmainlog.jjtAddChild(param, 0);
+			ast.jjtAddChild(startmainlog, 0);
+
+			ASTFUNCTION startTest = new ASTFUNCTION(ATKScriptParserTreeConstants.JJTFUNCTION);
+			startTest.setValue("StartRobotiumTestOn");
+			ASTSTRING param1 = new ASTSTRING(ATKScriptParserTreeConstants.JJTSTRING);
+			param1.setValue("'"+PackageName+"'");
+			ASTSTRING param2 = new ASTSTRING(ATKScriptParserTreeConstants.JJTSTRING);
+			param2.setValue("'"+MainActivityName+"'");
+			ASTSTRING param3 = new ASTSTRING(ATKScriptParserTreeConstants.JJTSTRING);
+			param3.setValue("'"+PackageSourceDir+"'");
+			ASTNUMBER param4 = new ASTNUMBER(ATKScriptParserTreeConstants.JJTNUMBER);
+			param4.setValue(String.valueOf(Versioncode));
+			startTest.jjtAddChild(param1, 0);
+			startTest.jjtAddChild(param2, 1);
+			startTest.jjtAddChild(param3, 2);
+			startTest.jjtAddChild(param4, 3);
+			ast.jjtAddChild(startTest, 1);
+
+			ASTFUNCTION exitSolo = new ASTFUNCTION(ATKScriptParserTreeConstants.JJTFUNCTION);
+			exitSolo.setValue("ExitSolo");
+			ast.jjtAddChild(exitSolo, 2);
+
+			PackageName="";
+			MainActivityName="";
+			PackageSourceDir="";
+			Versioncode=-1;
+		}else{
+			Node lastnode = ast.jjtGetChild(ast.jjtGetNumChildren() -1);
+			if(lastnode instanceof ASTFUNCTION &&
+					"stopmainlog".equals( ((ASTFUNCTION)lastnode).getValue().toLowerCase() ))
+				ast.jjtRemoveChild(ast.jjtGetNumChildren() -1);
+		} 
+	}
+
+	public void setTestAPKWithRobotiumParam(String packName, String activityName, String packsourceDir,int versioncode) {
+
+		PackageName=packName;
+		MainActivityName=activityName;
+		PackageSourceDir=packsourceDir;
+		Versioncode= versioncode;
+	}
+
+	public ArrayList<String> getAllInstalledAPK() {
+		ArrayList<String> allapk=null;
+		initPhone();
+		try {
+			allapk= phone.getAllInstalledAPK();
+		} catch (PhoneException e) {
+			Logger.getLogger(this.getClass() ).error(e.getMessage()+" in function getAllInstalledAPK");
+		}
+		return allapk;
+	}
+
+	public ArrayList<String> getForegroundApp() {
+		ArrayList<String> allapk=null;
+		initPhone();
+		try {
+			allapk= phone.getForegroundApp();
+		}catch (PhoneException e) {
+			Logger.getLogger(this.getClass() ).error(e.getMessage()+" in function getForegroundApp");
+		}
+		return allapk;
+	}
+
 
 
 }

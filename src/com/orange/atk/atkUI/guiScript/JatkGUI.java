@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 import javax.swing.JMenuItem;
-import javax.swing.JToolBar;
 import javax.swing.border.EmptyBorder;
 
 import com.orange.atk.atkUI.anaScript.JatkStep;
@@ -35,12 +34,13 @@ import com.orange.atk.atkUI.corecli.Campaign;
 import com.orange.atk.atkUI.corecli.Step;
 import com.orange.atk.atkUI.coregui.AnalysisGUICommon;
 import com.orange.atk.atkUI.coregui.CheckListTable;
+import com.orange.atk.atkUI.coregui.actions.MatosAbstractAction;
 import com.orange.atk.atkUI.coregui.actions.MatosAction;
 import com.orange.atk.atkUI.guiScript.actions.JatkGUIAction;
 import com.orange.atk.phone.detection.AutomaticPhoneDetection;
 
 /**
- *
+ * 
  * @author Aurore PENAULT
  * @since JDK5.0
  */
@@ -49,46 +49,45 @@ public class JatkGUI extends AnalysisGUICommon {
 	public JatkGUI() {
 
 		// populate a flash toolBar with flash specifics feature
-		addInToolbar(JatkGUIAction.ADDFLASHANIMATION.getAsJButton() );
-		addInToolbar(new JToolBar.Separator());
-		addInToolbar(MatosAction.VIEWREPORT.getAsJButton() );
-		addInToolbar(new JToolBar.Separator());
-		addInToolbar(JatkGUIAction.ANALYSEALLFLASH.getAsJButton());
-		addInToolbar(JatkGUIAction.ANALYSESELECTIONFLASH.getAsJButton());
-		addInToolbar(JatkGUIAction.STOPSCRIPT.getAsJButton());
-		//addInToolbar(JatkGUIAction.CHECCNX.getAsJButton());
-		//addInToolbar(JatkGUIAction.STOPTEST.getAsJButton());
+		// addInToolbar(JatkGUIAction.ADDTASK.getAsJButton());
+		// addInToolbar(new JToolBar.Separator());
+		// addInToolbar(MatosAction.VIEWREPORT.getAsJButton());
+		// addInToolbar(new JToolBar.Separator());
+		// addInToolbar(JatkGUIAction.ANALYSEALLTASK.getAsJButton());
+		// addInToolbar(JatkGUIAction.ANALYSESELECTEDTASKS.getAsJButton());
+		// addInToolbar(JatkGUIAction.STOPTASK.getAsJButton());
 
-
-		toolBar.setFloatable(false);
+		// toolBar.setFloatable(false);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.orange.atk.atkUI.coregui.AnalysisGUICommon#buildCampaignFromDirectory(java.io.File)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.orange.atk.atkUI.coregui.AnalysisGUICommon#buildCampaignFromDirectory
+	 * (java.io.File)
 	 */
 	@Override
 	public Campaign buildCampaignFromDirectory(File dir) {
 		Campaign campaign = new Campaign();
 		// Jad files
-		FilenameFilter swfFilter = new FilenameFilter(){
+		FilenameFilter swfFilter = new FilenameFilter() {
 
-			public boolean accept(File dir, String name){
-				if(AutomaticPhoneDetection.getInstance()
-						.isNokia())
+			public boolean accept(File dir, String name) {
+				if (AutomaticPhoneDetection.getInstance().isNokia())
 					return name.endsWith(".xml");
 				else
 					return name.endsWith(".tst");
 
 			}
 		};
-		String [] swfFiles = dir.list(swfFilter);
-
+		String[] swfFiles = dir.list(swfFilter);
 
 		if (swfFiles != null) {
-			for (int i=0; i<swfFiles.length; i++) {
+			for (int i = 0; i < swfFiles.length; i++) {
 				String swfName = swfFiles[i];
-				File swfFile = new File(dir.getAbsolutePath()+File.separator+swfName);
-				Step step = new JatkStep(swfFile.getAbsolutePath(), swfFile );
+				File swfFile = new File(dir.getAbsolutePath() + File.separator + swfName);
+				Step step = new JatkStep(swfFile.getAbsolutePath(), swfFile);
 				campaign.add(step);
 			}
 		}
@@ -96,62 +95,81 @@ public class JatkGUI extends AnalysisGUICommon {
 		return campaign;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.orange.atk.atkUI.coregui.AnalysisGUICommon#editSelectedStepProperties()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.orange.atk.atkUI.coregui.AnalysisGUICommon#editSelectedStepProperties
+	 * ()
 	 */
 	@Override
 	public void editSelectedStepProperties() {
 		int indexRow = getCheckListTable().getTable().getSelectedRow();
 		int numCampaign = getCheckListTable().getNumCampaign(indexRow);
-		JatkStep flashStep = (JatkStep)(getCheckListTable().getCampaign().get(numCampaign));
+		JatkStep flashStep = (JatkStep) (getCheckListTable().getCampaign().get(numCampaign));
 
 		new JatkPropertiesDialog(flashStep);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.orange.atk.atkUI.coregui.AnalysisGUICommon#getAddStepMenuItem()
 	 */
 	@Override
 	public JMenuItem getAddStepMenuItem() {
-		return JatkGUIAction.ADDFLASHANIMATION.getAsMenuItem("Add ATK Script...");
+		return JatkGUIAction.ADDTASK.getAsMenuItem("Add ATK Script...");
 	}
 
-	/* (non-Javadoc)
-	 * @see com.orange.atk.atkUI.coregui.AnalysisGUICommon#getAnalyseAllMenuItem()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.orange.atk.atkUI.coregui.AnalysisGUICommon#getAnalyseAllMenuItem()
 	 */
 	@Override
 	public JMenuItem getAnalyseAllMenuItem() {
-		return JatkGUIAction.ANALYSEALLFLASH.getAsMenuItem("ATK");
+		return JatkGUIAction.ANALYSEALLTASK.getAsMenuItem("ATK");
 	}
 
-	/* (non-Javadoc)
-	 * @see com.orange.atk.atkUI.coregui.AnalysisGUICommon#getAnalyseSelectionMenuItem()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.orange.atk.atkUI.coregui.AnalysisGUICommon#getAnalyseSelectionMenuItem
+	 * ()
 	 */
 	@Override
 	public JMenuItem getAnalyseSelectionMenuItem() {
-		return JatkGUIAction.ANALYSESELECTIONFLASH.getAsMenuItem("ATK");
+		return JatkGUIAction.ANALYSESELECTEDTASKS.getAsMenuItem("ATK");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.orange.atk.atkUI.coregui.AnalysisGUICommon#getCheckListTable()
 	 */
 	@Override
 	public CheckListTable getCheckListTable() {
 		if (checkListTable == null) {
 			checkListTable = new JatkCheckListTable();
-			checkListTable./*getPanel().*/setBorder( new EmptyBorder(0,0,0,0));
+			checkListTable./* getPanel(). */setBorder(new EmptyBorder(0, 0, 0, 0));
 		}
 		return checkListTable;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.orange.atk.atkUI.coregui.AnalysisGUICommon#getDisplayName()
 	 */
 	public String getDisplayName() {
 		return "Script Test";
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.orange.atk.atkUI.coregui.AnalysisGUICommon#getDisplayName()
 	 */
 	public String getConfigPanelName() {
@@ -160,27 +178,30 @@ public class JatkGUI extends AnalysisGUICommon {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.orange.atk.atkUI.coregui.IGUICommon#notifySelected()
 	 */
 	public void notifySelected() {
 		updateButtons();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.orange.atk.atkUI.coregui.IGUICommon#updateButtons()
 	 */
 	public void updateButtons() {
-		if (checkListTable!=null) {
-			boolean hasRow = (checkListTable.getStepNumber()>0);
-			JatkGUIAction.ANALYSEALLFLASH.setEnabled(hasRow);
-			boolean isRowSelected = (getCheckListTable().getSelectedRowCount()>0);
-			JatkGUIAction.ANALYSESELECTIONFLASH.setEnabled(isRowSelected);
+		if (checkListTable != null) {
+			boolean hasRow = (checkListTable.getStepNumber() > 0);
+			JatkGUIAction.ANALYSEALLTASK.setEnabled(hasRow);
+			boolean isRowSelected = (getCheckListTable().getSelectedRowCount() > 0);
+			JatkGUIAction.ANALYSESELECTEDTASKS.setEnabled(isRowSelected);
 
-			if (getCheckListTable().getSelectedRowCount()==1) {
+			if (getCheckListTable().getSelectedRowCount() == 1) {
 				Step step = getCheckListTable().getSelectedStep();
 				// REPORT
 				String repPath = step.getOutFilePath();
-				if ((repPath==null)||(repPath.trim().length()==0)) {
+				if ((repPath == null) || (repPath.trim().length() == 0)) {
 					MatosAction.VIEWREPORT.setEnabled(false);
 				} else {
 					MatosAction.VIEWREPORT.setEnabled(true);
@@ -189,10 +210,12 @@ public class JatkGUI extends AnalysisGUICommon {
 				MatosAction.VIEWREPORT.setEnabled(isRowSelected);
 			}
 		}
-		JatkGUIAction.STOPSCRIPT.setEnabled(false);
+		JatkGUIAction.STOPTASK.setEnabled(false);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.orange.atk.atkUI.coregui.IGUICommon#enableUserActions(boolean)
 	 */
 	public void enableUserActions(boolean b) {
@@ -204,10 +227,15 @@ public class JatkGUI extends AnalysisGUICommon {
 
 	public void disableButtonsButStop() {
 		enableUserActions(true);
-		JatkGUIAction.ADDFLASHANIMATION.setEnabled(false);
-		JatkGUIAction.ANALYSEALLFLASH.setEnabled(false);
-		JatkGUIAction.ANALYSESELECTIONFLASH.setEnabled(false);
-		JatkGUIAction.STOPSCRIPT.setEnabled(true);
+		JatkGUIAction.ADDTASK.setEnabled(false);
+		JatkGUIAction.ANALYSEALLTASK.setEnabled(false);
+		JatkGUIAction.ANALYSESELECTEDTASKS.setEnabled(false);
+		JatkGUIAction.STOPTASK.setEnabled(true);
 	}
-		
+
+	@Override
+	public MatosAbstractAction getAddScriptAction() {
+		return JatkGUIAction.ADDTASK.getAction();
+	}
+
 }

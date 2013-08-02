@@ -26,18 +26,19 @@ package com.orange.atk.atkUI.corecli;
 /**
  * ICommandLineParser allows adding own command line options from other plugins.
  * It is an extension point of the corecli plugin.
- *
+ * 
  * @author Nicolas MOTEAU
  * @since JDK5.0
  */
 public interface ICommandLineParser {
-	
-	public CommandLine parse(String[] args);
+
+	CommandLine parse(String[] args);
 
 	/**
 	 * Gets back the synopsis of the command line
+	 * 
 	 * @return
 	 */
-	public String getSynopsis();
+	String getSynopsis();
 
 }

@@ -23,7 +23,9 @@
  */
 package com.orange.atk.interpreter.estimators;
 
+import com.orange.atk.interpreter.ast.ASTBOOLEAN;
 import com.orange.atk.interpreter.ast.ASTCOMMENT;
+import com.orange.atk.interpreter.ast.ASTFLOAT;
 import com.orange.atk.interpreter.ast.ASTFUNCTION;
 import com.orange.atk.interpreter.ast.ASTINCLUDE;
 import com.orange.atk.interpreter.ast.ASTLOOP;
@@ -200,6 +202,16 @@ public class ASTtoTSTVisitor implements ATKScriptParserVisitor {
 		
 		codetext += node.jjtGetChild(0).jjtAccept(this, data) +")" ;
 		return codetext;
+	}
+
+	@Override
+	public Object visit(ASTBOOLEAN node, Object data) {
+		return node.getValue();
+	}
+
+	@Override
+	public Object visit(ASTFLOAT node, Object data) {
+		return node.getValue();
 	}
 
 }

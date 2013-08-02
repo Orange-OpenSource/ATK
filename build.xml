@@ -1,5 +1,19 @@
 <project name="atk" default="dist" basedir=".">
 
+    <!-- Ajout de la tâche Sonar pour Ant. -->
+    <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+        <!-- Cette librairie peut aussi être ajoutée dans le répertoire ${ANT_HOME\}/lib -->
+        <!-- Dans ce cas, le node classpath ci-dessous est inutile. -->
+        <classpath path="C:/DevProgramFiles/jar/sonar-ant-task-2.1.jar" /> 
+    </taskdef>
+    
+    <!-- Propriétés propres à Sonar, par exemple pour MySQL : -->
+    <property name="sonar.jdbc.url" 
+        value="jdbc:h2:tcp://localhost:9092/sonar" />
+    <property name="sonar.jdbc.driverClassName" value="org.h2.Driver" />
+    <property name="sonar.jdbc.username" value="sonar" />
+    <property name="sonar.jdbc.password" value="sonar" />
+    
 	<!-- import distrib directory properties-->
 	<property file="build.properties" />
 
@@ -78,39 +92,7 @@
          <jar destfile="${dist.dir}/jar/plugins/android.jar"
            basedir="${build.dir}"  includes="com/orange/atk/phone/android/**">
         </jar>
-        
 
-        <!-- create a property containing all .jar files, prefix lib/, and seperated with a space -->  
-        <pathconvert property="libs.project" pathsep=";">     
-            <mapper>       
-                <chainedmapper>                    
-                    <!-- remove absolute path -->        
-                    <flattenmapper /> 
-                    <!-- add lib/ prefix -->
-                    <globmapper from="*" to="C:\Progra~1\ATK\jar\*" />   
-                </chainedmapper>     
-            </mapper>       
-            <path>         
-            <!-- lib.home contains all jar files, in several subdirectories -->      
-            <fileset dir="${dist.dir}/jar">         
-                <include name="**/*.jar" />       
-            </fileset>     
-            </path>   
-        </pathconvert>
-        <!--  
-		<touch file="${dist.dir}/jar/ATK.bat"/>
-		<echo file="${dist.dir}/jar/ATK.bat">
-@ECHO OFF${line.separator}
-SET ATKParam=${line.separator}
-:Loop${line.separator}
-	IF "%1"=="" GOTO Continue${line.separator}
-	SET ATKParam=%ATKParam% %1${line.separator}
-	SHIFT${line.separator}
-GOTO Loop${line.separator}
-:Continue${line.separator}
-${line.separator}
-java -classpath ${libs.project} com.orange.atk.launcher.LaunchJATK %ATKParam%</echo> 
-		-->
 		<!--copy ressouce out the jar-->
 	       <copy todir="${dist.dir}/jar">
 	           <fileset dir="${lib.dir}">
@@ -130,41 +112,30 @@ java -classpath ${libs.project} com.orange.atk.launcher.LaunchJATK %ATKParam%</e
           </copy>
 		  
 	</target>
-
 		
 	<!-- Build a zip for installation on windows
 	  	 To be used after a dist* target to build the win_pack zip of this distrib 
 	  -->
-	<target name="win_pack">
-		<mkdir dir="win_dist/windows"/>
+	<target name="linux_pack">
+	    <delete dir="dist/linux"/>
+		<mkdir dir="dist/linux"/>
 
 		<!-- Copy dist into the windist directory -->
-		<copy todir="win_dist/windows">
-		   <fileset dir="${dist}">
+		<copy todir="dist/linux">
+		   <fileset dir="${dist.dir}">
 				<!-- to be sure to not distribute a license this way -->
-				<exclude name="**/*.lic"/>
+				<exclude name="**/*.exe"/>
+				<exclude name="**/*.log"/>
+				<exclude name="**/*.bat"/>
+				<exclude name="**/*.nsi"/>
+				<exclude name="**/*.dll"/>
+				<exclude name="**/*.zip"/>
+				<exclude name="**/launch4j/**"/>
 		   </fileset>
 		</copy>
-
-		<!-- Copy windows installer files -->
-		<copy todir="win_dist/windows">
-		   <fileset dir="windows_installer/windows"/>
-		</copy>
-		<copy file="windows_installer/matos.nsi" todir="win_dist"/>
-		
-		<xmlproperty file="REVISION.xml"/>
-		<!-- patch matos.nsi with the MATOS VERSION and REVISION -->
-		<replaceregexp file="win_dist/matos.nsi"
-		               match="!define MATOSVERSION .*"
-		               replace="!define MATOSVERSION &quot;${matosVersion}&quot;"
-                       byline="true"/>
-		<replaceregexp file="win_dist/matos.nsi"
-		               match="!define MATOSREVISION .*"
-		               replace="!define MATOSREVISION &quot;rev.${info.entry(revision)}&quot;"
-                       byline="true"/>
-		
-		<zip destfile="matos_win_pack_r${info.entry(revision)}.zip" update="no">
-			<zipfileset dir="win_dist" prefix="matos_win_pack_r${info.entry(revision)}"/>   
+			
+		<zip destfile="install/ATK_linux_snapshot.zip" update="no">
+			<zipfileset dir="dist/linux" prefix="ATK"/>   
 		</zip>
 	</target>
 	
@@ -189,12 +160,8 @@ java -classpath ${libs.project} com.orange.atk.launcher.LaunchJATK %ATKParam%</e
 	</target>
 
 	<!-- clean win_pack artifacts -->
-	<target name="clean_win_pack">
-		<xmlproperty file="REVISION.xml"/>
-		<delete>
-		    <fileset dir="." includes="matos_win_pack_r${info.entry(revision)}.zip"/>
-		</delete>
-		<delete dir="win_dist"/>
+	<target name="clean_linux_pack">
+		<delete dir="dist/linux"/>
 	</target>
 
 	<!-- clean jpf's temp directory -->
@@ -221,29 +188,40 @@ java -classpath ${libs.project} com.orange.atk.launcher.LaunchJATK %ATKParam%</e
 	</target>
 
 	<!-- clean all want can be rebuilded -->
-	<target name="clean_all" depends="clean_dist, clean_dist_zip, clean_win_pack, clean, clean_eclipse_build, clean_temp"/>
+	<target name="clean_all" depends="clean_dist, clean_dist_zip, clean_linux_pack, clean, clean_eclipse_build, clean_temp"/>
 
 	<!-- run tests -->
-	<target name="test">
-		<mkdir dir="temp" /> <!-- used by FileResolver to store downloaded files -->
-		<!-- call plugin's build.xml-->
-		<iterate target="test"/>
-
-		<tstamp>
-			<format property="PRECISE_TIMESATMP" pattern="yyyy-MM-dd_H:mm:ss" locale="en,FR" />
-		</tstamp>
-		<property name="testreport_now" value="${basedir}/testreport_${PRECISE_TIMESATMP}" />
-		<mkdir dir="${testreport_now}" />
-
-		<junitreport todir="${testreport_now}">
-			<fileset dir="plugins">
-				<include name="**/TEST-*.xml" />
-			</fileset>
-		<report format="frames" todir="${basedir}/testreport/html" />
-		</junitreport>
-		<echo>Test report generated in ${basedir}/testreport/html/index.html</echo>
-
+	<target name="test" depends="build">
+		
 	</target>
+	
+	<target name="unittest">
+	    <tstamp>
+            <format property="PRECISE_TIMESATMP" pattern="yyyy-MM-dd_H:mm:ss" locale="en,FR" />
+        </tstamp>
+        <property name="testreport_now" value="${basedir}/testreport_${PRECISE_TIMESATMP}" />
+        <junitreport todir="${testreport_now}">
+            <fileset dir="plugins">
+                <include name="**/TEST-*.xml" />
+            </fileset>
+        <report format="frames" todir="${basedir}/testreport/html" />
+        </junitreport>
+        <echo>Test report generated in ${basedir}/testreport/html/index.html</echo>
+	</target>
+	
+	<target name="sonar">
+        <!-- On définit les propriétés obligatoires pour Sonar -->
+        <property name="sonar.sources" value="src" />
+
+        <!-- On définit les propriétés optionnelles pour Sonar -->
+        <property name="sonar.projectName" value="ATK" />
+        <property name="sonar.binaries" value="build" />
+        <!-- property name="sonar.tests" value="list of test source directories separated by a comma" / -->
+
+        <property name="sonar.projectKey" value="com.orange.atk:atk" />
+        <property name="sonar.projectVersion" value="2.17" />
+        <sonar:sonar xmlns:sonar="antlib:org.sonar.ant"/>
+    </target>
 
 	<!-- print some help -->
 	<target name="help">

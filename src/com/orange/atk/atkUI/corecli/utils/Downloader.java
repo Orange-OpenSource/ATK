@@ -42,22 +42,21 @@ import org.apache.log4j.Logger;
 
 import com.orange.atk.atkUI.corecli.Alert;
 
-/** 
- * A class to handle an HTTP download session, in an independant
- * thread. The class implements the TimerMonitor interface, to allow
- * for abortion of the session upon timeout. The Timers used just have
- * to call the timeout() method to make the session end. There's a
- * timer to guard the connection phase itself, then a second one to
- * guard the data transfer.
+/**
+ * A class to handle an HTTP download session, in an independant thread. The
+ * class implements the TimerMonitor interface, to allow for abortion of the
+ * session upon timeout. The Timers used just have to call the timeout() method
+ * to make the session end. There's a timer to guard the connection phase
+ * itself, then a second one to guard the data transfer.
  */
 public class Downloader extends Thread implements TimerMonitor {
-	
-	DownloadMonitor monitor;
-	String url;
-	File target;
-	int httpMaxConTime, httpMaxDwnTime;
-	Timer connectionTimer; 
-	Timer downloadTimer;
+
+	private DownloadMonitor monitor;
+	private String url;
+	private File target;
+	private int httpMaxConTime, httpMaxDwnTime;
+	private Timer connectionTimer;
+	private Timer downloadTimer;
 	/**
 	 * A login to access to the specified URL.
 	 */
@@ -66,86 +65,97 @@ public class Downloader extends Thread implements TimerMonitor {
 	 * A password to access to the specified URL.
 	 */
 	private String password;
-	
+
 	/**
 	 * if the connection requires an authentification of the device.
 	 */
-	private String user_agent;
-	
+	private String userAgent;
+
 	/** stop condition for this thread */
 	private boolean shouldStop = false;
-	
+
 	/**
 	 * Error message
 	 */
 	private String errorMessage;
-	
-	/** 
-	 * Construct a Downloader to download the file located at the
-	 * given URL, and save it to the target file passed. The max times
-	 * allowed for timers are other parameters. The last
-	 * parameter is the DownloadMonitor to whom report the evolution of
-	 * the session).
-	 * @param url The URL to open
-	 * @param target The target file where to save the downloaded file
-	 * @param httpMaxConTime The maximum number of seconds allowed
-	 * before the connection timeout
-	 * @param httpMaxDwnTime  The maximum number of seconds allowed
-	 * before the transfer timeout
-	 * @param monitor The download monitor to use to report changes of
-	 * the session status
+
+	/**
+	 * Construct a Downloader to download the file located at the given URL, and
+	 * save it to the target file passed. The max times allowed for timers are
+	 * other parameters. The last parameter is the DownloadMonitor to whom
+	 * report the evolution of the session).
+	 * 
+	 * @param url
+	 *            The URL to open
+	 * @param target
+	 *            The target file where to save the downloaded file
+	 * @param httpMaxConTime
+	 *            The maximum number of seconds allowed before the connection
+	 *            timeout
+	 * @param httpMaxDwnTime
+	 *            The maximum number of seconds allowed before the transfer
+	 *            timeout
+	 * @param monitor
+	 *            The download monitor to use to report changes of the session
+	 *            status
 	 */
-	Downloader(String url, File target, 
-			int httpMaxConTime, int httpMaxDwnTime, 
+	Downloader(String url, File target, int httpMaxConTime, int httpMaxDwnTime,
 			DownloadMonitor monitor) {
 		this.url = url;
 		this.target = target;
 		this.httpMaxConTime = httpMaxConTime;
 		this.httpMaxDwnTime = httpMaxDwnTime;
 		this.monitor = monitor;
-		connectionTimer = new Timer(httpMaxConTime,this);
-		downloadTimer = new Timer(httpMaxDwnTime,this);
+		connectionTimer = new Timer(httpMaxConTime, this);
+		downloadTimer = new Timer(httpMaxDwnTime, this);
 	}
-			
-	/** 
-	 * Terminates the download session. Dumps the passed message
-	 * (will be "(stopped)" if null is passed). Also,
-	 * changes the status of the DownloadMonitor provided at
-	 * creation, as per the one passed. Finally, the thread is
-	 * stopped.
-	 * @param message The message to dump  
-	 * @param status The status to report to the associated
-	 * DownloadMonitor. Valid values are the ones defined in the
-	 * DownloadMonitor class.
-	 * @throws Alert 
+
+	/**
+	 * Terminates the download session. Dumps the passed message (will be
+	 * "(stopped)" if null is passed). Also, changes the status of the
+	 * DownloadMonitor provided at creation, as per the one passed. Finally, the
+	 * thread is stopped.
+	 * 
+	 * @param message
+	 *            The message to dump
+	 * @param status
+	 *            The status to report to the associated DownloadMonitor. Valid
+	 *            values are the ones defined in the DownloadMonitor class.
+	 * @throws Alert
 	 */
-	public void terminate(String message, int status){
-		if (message == null) message = "(stopped)";
-		errorMessage = "Download: " + message + "("+url+")";
+	public void terminate(String message, int status) {
+		if (message == null) {
+			message = "(stopped)";
+		}
+		errorMessage = "Download: " + message + "(" + url + ")";
 		monitor.setDownloadStatus(status);
 		stopAsap();
 	}
-	
-	/** Method of the TimerMonitor interface. A Timer that expires
-	 * calls that method, passing a reference to itself. Depending
-	 * on its identity, the corresponding message and status are
-	 * passed to terminate().
-	 * @param t The Timer object that calls that method, so the
-	 * Downloader can identify which timer expired
+
+	/**
+	 * Method of the TimerMonitor interface. A Timer that expires calls that
+	 * method, passing a reference to itself. Depending on its identity, the
+	 * corresponding message and status are passed to terminate().
+	 * 
+	 * @param t
+	 *            The Timer object that calls that method, so the Downloader can
+	 *            identify which timer expired
 	 */
 	public void timeout(Timer t) {
 		if (t == connectionTimer) {
-			terminate("Connection attempt aborted, timeout ("+ httpMaxConTime +" s).", DownloadMonitor.DLOAD_TIMEOUT_C);
-		} else if (t == downloadTimer) {
-			terminate("File transfer aborted, timeout ("+httpMaxDwnTime+" s).", DownloadMonitor.DLOAD_TIMEOUT_T);
-		} else { 
-			String msg = "An unknown timer has expired !";
-			Out.main.println(msg); 
-			Out.log.println(msg);
-			stopAsap(); 
-		}
+			terminate("Connection attempt aborted, timeout (" + httpMaxConTime + " s).",
+					DownloadMonitor.DLOAD_TIMEOUT_C);
+		} else
+			if (t == downloadTimer) {
+				terminate("File transfer aborted, timeout (" + httpMaxDwnTime + " s).",
+						DownloadMonitor.DLOAD_TIMEOUT_T);
+			} else {
+				String msg = "An unknown timer has expired !";
+				Logger.getLogger(this.getClass()).error(msg);
+				stopAsap();
+			}
 	}
-	
+
 	/** Stop this thread as soon as possible. */
 	public synchronized void stopAsap() {
 		shouldStop = true;
@@ -153,12 +163,12 @@ public class Downloader extends Thread implements TimerMonitor {
 		connectionTimer.stopAsap();
 		downloadTimer.stopAsap();
 	}
-	
-	/** 
-	 * Main entry point of the thread, when started. 
+
+	/**
+	 * Main entry point of the thread, when started.
 	 */
 	public void run() {
-		if (isAuthenticate()){
+		if (isAuthenticate()) {
 			Authenticator.setDefault(new MyAuthenticator());
 		}
 		PrintStream outstream = null;
@@ -166,141 +176,121 @@ public class Downloader extends Thread implements TimerMonitor {
 		OutputStream out = null;
 		Socket socket = null;
 		InputStream in = null;
-		try { 
-			if (target == null){
-				Logger.getLogger(this.getClass() ).warn("target null");
+		try {
+			if (target == null) {
+				Logger.getLogger(this.getClass()).warn("target null");
 			}
 			outstream = new PrintStream(new FileOutputStream(target));
 			URL urlObj = new URL(url);
 
-			if ((user_agent != null)&&(user_agent.trim().length()>0)){ 
-				if (user_agent.indexOf('\n')>0) {
-					Out.log.println("INVALID user_agent: '" + user_agent +"' : contains a newline character --> No user agent used" );
+			if ((userAgent != null) && (userAgent.trim().length() > 0)) {
+				if (userAgent.indexOf('\n') > 0) {
+					Logger.getLogger(this.getClass()).warn(
+							"INVALID user_agent: '" + userAgent
+									+ "' : contains a newline character --> No user agent used");
 				} else {
-					System.getProperties().put( "http.agent", user_agent);
+					System.getProperties().put("http.agent", userAgent);
 				}
 			}
-			
+
 			huc = (HttpURLConnection) urlObj.openConnection();
 			connectionTimer.start();
 			huc.connect();
-			if (!shouldStop) { // no timeout occurs during connection 
+			if (!shouldStop) { // no timeout occurs during connection
 				connectionTimer.stopAsap();
 				int code = huc.getResponseCode();
-				if (code != 200) { 
+				if (code != 200) {
 					huc.disconnect();
-					if (code == 404 || code == 401 || code == 502){
-						terminate("Connection failed. Server returned HTTP code "+code+".", DownloadMonitor.DLOAD_FAILED_NO_NEW_ATTEMPT);
-					}else{
-						terminate("Connection failed. Server returned HTTP code "+code+".", DownloadMonitor.DLOAD_FAILED);
+					if (code == 404 || code == 401 || code == 502) {
+						terminate("Connection failed. Server returned HTTP code " + code + ".",
+								DownloadMonitor.DLOAD_FAILED_NO_NEW_ATTEMPT);
+					} else {
+						terminate("Connection failed. Server returned HTTP code " + code + ".",
+								DownloadMonitor.DLOAD_FAILED);
 					}
-				} else { 
+				} else {
 					// Get an input stream for reading
 					in = huc.getInputStream();
 				}
 			}
-			if (in!=null){
+			if (in != null) {
 				BufferedInputStream bufIn = new BufferedInputStream(in);
-				
+
 				// Read bytes until end of stream, and write them to local file
 				downloadTimer.start();
 				int data = bufIn.read();
-				while ((!shouldStop)&&(data!=-1)) {
+				while ((!shouldStop) && (data != -1)) {
 					outstream.write(data);
 					data = bufIn.read();
 				}
 				bufIn.close();
-				if (!shouldStop) { // no timeout occurs during download 
+				if (!shouldStop) { // no timeout occurs during download
 					downloadTimer.stopAsap();
 					terminate("Completed.", DownloadMonitor.DLOAD_SUCCESS);
 				}
 			}
-			if (huc!=null){
+			if (huc != null) {
 				huc.disconnect();
-//			}else{
-//				if (out!=null) out.close();
-//				if (socket!=null) socket.close();
 			}
-//			if (in!=null) in.close();
-//			if (outstream!=null) outstream.close();
-		} catch (MalformedURLException e)	{
+		} catch (MalformedURLException e) {
 			terminate("Malformed URL", DownloadMonitor.DLOAD_FAILED);
 		} catch (FileNotFoundException e) {
-			terminate("Can't create file:"+target.getAbsolutePath(), DownloadMonitor.DLOAD_FAILED);
+			terminate("Can't create file:" + target.getAbsolutePath(), DownloadMonitor.DLOAD_FAILED);
 		} catch (IOException e) {
 			terminate("I/O Error - " + e, DownloadMonitor.DLOAD_FAILED);
 		} catch (SecurityException e) {
-			terminate("Can't create file (security issue):"+target.getAbsolutePath(), DownloadMonitor.DLOAD_FAILED);
-		} finally { //do it what ever exception occurs or not
-			
-			System.getProperties().remove( "http.agent" );
+			terminate("Can't create file (security issue):" + target.getAbsolutePath(),
+					DownloadMonitor.DLOAD_FAILED);
+		} finally { // do it what ever exception occurs or not
+
+			System.getProperties().remove("http.agent");
 
 			try {
-				if (out!=null) out.close();
-				if (socket!=null) socket.close();
-				if (in!=null) in.close();
-				if (outstream!=null) outstream.close();
+				if (out != null)
+					out.close();
+				if (socket != null)
+					socket.close();
+				if (in != null)
+					in.close();
+				if (outstream != null)
+					outstream.close();
 			} catch (IOException e) {
 				terminate("I/O Error - " + e, DownloadMonitor.DLOAD_FAILED);
 			}
 		}
 	}
-	
-//	/**
-//	 * When downloading a file with opening a socket, cut the HTTP headers contained in the result file.
-//	 * @param in the socket input stream
-//	 * @return the same input stream without HTTP headers
-//	 */
-//	private InputStream getContentInputStream(InputStream in) {	
-//	   /* wait for data */
-//	   try {	
-//	      /* skip HTTP header */
-//	      int   i;
-//	      int   i1 = -1;
-//	      int   i2 = -1;
-//	      int   i3 = -1;
-//	      while ((i = in.read()) >= 0) {
-//	         if ((i1 == '\r') && (i2 == '\n') && (i3 == '\r') && (i == '\n'))
-//	            break;
-//	         i1 = i2;
-//	         i2 = i3;
-//	         i3 = i;
-//	      }
-//	   } catch(Exception excp) {
-//	      Out.log.println("ERROR HttpObjectRequest getContentInputStream: Exception caught, excp=" + excp);
-//	      in = null;
-//	   }
-//	
-//	   /* done */
-//	   return(in);
-//	}
 
 	/**
-	 * This class allows making a connection with an authentication (login and password).
+	 * This class allows making a connection with an authentication (login and
+	 * password).
+	 * 
 	 * @author apenault
-	 *
+	 * 
 	 */
 	public class MyAuthenticator extends Authenticator {
 		// This method is called when a password-protected URL is accessed
-		protected PasswordAuthentication getPasswordAuthentication() {    
+		protected PasswordAuthentication getPasswordAuthentication() {
 			return new PasswordAuthentication(login, password.toCharArray());
 		}
 	}
-	
+
 	/**
 	 * To know if the connection must be authenticated by a login and a password
-	 * @return true if the connection to the given URL requires a login and a password
+	 * 
+	 * @return true if the connection to the given URL requires a login and a
+	 *         password
 	 */
-	public boolean isAuthenticate(){
-		return (login!= null && password!=null);
+	public boolean isAuthenticate() {
+		return (login != null && password != null);
 	}
 
 	/**
 	 * Sets the value of User-Agent to use for the HTTP connection.
-	 * @param user_agent
+	 * 
+	 * @param userAgent
 	 */
-	public void setUser_agent(String user_agent) {
-		this.user_agent = user_agent;
+	public void setUserAgent(String userAgent) {
+		this.userAgent = userAgent;
 	}
 
 	public void setLogin(String login) {

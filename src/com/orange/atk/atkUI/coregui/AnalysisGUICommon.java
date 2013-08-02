@@ -28,18 +28,17 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.io.File;
 
-import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
-import javax.swing.border.EmptyBorder;
 
 import com.orange.atk.atkUI.corecli.Campaign;
+import com.orange.atk.atkUI.coregui.actions.MatosAbstractAction;
 
 /**
- *
+ * 
  * @author Aurore PENAULT
  * @since JDK5.0
  */
@@ -50,37 +49,39 @@ public abstract class AnalysisGUICommon implements IGUICommon {
 	protected boolean hasCopied = false;
 	protected JToolBar toolBar = null;
 
-
-	protected JLabel loopLabel= null;
+	protected JLabel loopLabel = null;
 	/**
 	 * To get back the check-list from each plugin.
+	 * 
 	 * @return
 	 */
 	public abstract CheckListTable getCheckListTable();
 
 	public void addInToolbar(Component comp) {
-		if (toolBar==null) {
+		if (toolBar == null) {
 			toolBar = new JToolBar();
 		}
 		toolBar.add(comp);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.francetelecom.rd.matos.coregui.IGUICommon#getMainPanel(int)
 	 */
 	public JPanel getMainPanel() {
-		if (mainPanel==null) {
+		if (mainPanel == null) {
 			mainPanel = new JPanel();
 			mainPanel.setLayout(new BorderLayout());
 			JPanel upPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-			
-			if (toolBar!=null) {
-				upPanel.add(Box.createHorizontalStrut(5));
-				upPanel.add(toolBar);
+
+			if (toolBar != null) {
+				// upPanel.add(Box.createHorizontalStrut(5));
+				// upPanel.add(toolBar);
 			}
-			upPanel.setBorder(new EmptyBorder(2,0,0,0));
-			mainPanel.add(upPanel, BorderLayout.NORTH);
-			mainPanel.add(getCheckListTable()/*.getPanel()*/, BorderLayout.CENTER);
+			// upPanel.setBorder(new EmptyBorder(2, 0, 0, 0));
+			// mainPanel.add(upPanel, BorderLayout.NORTH);
+			mainPanel.add(getCheckListTable()/* .getPanel() */, BorderLayout.CENTER);
 		}
 		return mainPanel;
 	}
@@ -104,28 +105,36 @@ public abstract class AnalysisGUICommon implements IGUICommon {
 	 */
 	public abstract void editSelectedStepProperties();
 
-	/* (non-Javadoc)
-	 * @see com.francetelecom.rd.matos.coregui.IGUICommon#enableUserActions(boolean)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.francetelecom.rd.matos.coregui.IGUICommon#enableUserActions(boolean)
 	 */
 	public void enableUserActions(boolean b) {
-		checkListTable/*.getPanel()*/.setEnabled(b);
+		checkListTable/* .getPanel() */.setEnabled(b);
 	}
 
 	/**
 	 * Get back a menu to add a step in the check-list.
+	 * 
 	 * @return a JMenuItem that is able to launch process for adding a step
 	 */
 	public abstract JMenuItem getAddStepMenuItem();
 
 	/**
 	 * Get back a menu to analyse all steps of current tab of the check-list.
+	 * 
 	 * @return a JMenuItem that is able to launch process for analysing all step
 	 */
 	public abstract JMenuItem getAnalyseAllMenuItem();
 
 	/**
-	 * Get back a menu to analyse selected steps of current tab of the check-list.
-	 * @return a JMenuItem that is able to launch process for analysing selected step
+	 * Get back a menu to analyse selected steps of current tab of the
+	 * check-list.
+	 * 
+	 * @return a JMenuItem that is able to launch process for analysing selected
+	 *         step
 	 */
 	public abstract JMenuItem getAnalyseSelectionMenuItem();
 
@@ -137,6 +146,7 @@ public abstract class AnalysisGUICommon implements IGUICommon {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.francetelecom.rd.matos.coregui.IGUICommon#getMenuItem()
 	 */
 	public JMenuItem getFileMenuItem() {
@@ -149,12 +159,13 @@ public abstract class AnalysisGUICommon implements IGUICommon {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.francetelecom.rd.matos.coregui.IGUICommon#getToolsMenuItems()
 	 */
 	public JMenuItem getToolsMenuItem() {
 		return null;
 	}
 
-	
+	public abstract MatosAbstractAction getAddScriptAction();
 
 }

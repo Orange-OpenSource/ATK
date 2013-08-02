@@ -82,8 +82,12 @@ public class Alert extends RuntimeException {
     		}
     	}
     	if (chan2!=null) {
-    		if (dumpMessage2) chan2.println(msg);
-    		if ((e!=null)&&(dumpExceptionTrace2)) e.printStackTrace(chan2);
+    		if (dumpMessage2){
+    			chan2.println(msg);
+    		}
+    		if ((e!=null)&&(dumpExceptionTrace2)){
+    			e.printStackTrace(chan2);
+    		}
     	}
     	throw new Alert(msg);
     }

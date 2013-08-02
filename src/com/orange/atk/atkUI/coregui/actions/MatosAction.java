@@ -30,130 +30,134 @@ import javax.swing.JMenuItem;
 import com.orange.atk.atkUI.coregui.CoreGUIPlugin;
 
 /**
- *
+ * 
  * @author Nicolas MOTEAU
  * @since JDK5.0
  */
 public enum MatosAction {
-	NEWCHECKLIST ("new", new NewCheckListAction(
-			    "new",
-			 	new ImageIcon(CoreGUIPlugin.getIconURL("tango/filenew.png")),
-    			"Create a new check-list")),
+	NEWCHECKLIST("new", new NewCheckListAction("new", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/filenew.png")), "Create a new check-list")),
 
-	OPEN ("open", new OpenAction(
-			      "open",
-			      new ImageIcon(CoreGUIPlugin.getIconURL("tango/folder_green.png")),
-    			  "Open a check-list.")),
+	OPEN("open", new OpenAction("open", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/folder_green.png")), "Open a check-list.")),
 
-    SAVEALLALL ("saveAllAll", new SaveAction(
-    		                  "saveAllAll",
-    		                  new ImageIcon(CoreGUIPlugin.getIconURL("tango/filesave.png")),
-	 					 	  "Save the current check-list.")),
+	SAVEALLALL("saveAllAll", new SaveAction("saveAllAll", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/filesave.png")), "Save the current check-list.")),
 
-	SAVEAS ("saveAs", new SaveAsAction(
-			          "saveAs",
-			          new ImageIcon(CoreGUIPlugin.getIconURL("tango/filesaveas.png")),
-			 		  "Save the current check-list as...")),
+	SAVEAS("saveAs", new SaveAsAction("saveAs", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/filesaveas.png")), "Save the current check-list as...")),
 
-	SAVESELECTIONAS ("saveSelectionAs", new SaveSelectionAsAction(
-						          "saveSelectionAs",
-						          null,
-						          "Save the selection in a file.")),
-    OPENRECORDER ("openRecorder", new OpenRecorderAction(
-		  	"openRecorder",
-		  	new ImageIcon(CoreGUIPlugin.getIconURL("tango/record.png")),
-  			"Open the script recorder")),
+	SAVESELECTIONAS("saveSelectionAs", new SaveSelectionAsAction("saveSelectionAs", null,
+			"Save the selection in a file.")), OPENRECORDER("openRecorder", new OpenRecorderAction(
+			"openRecorder", new ImageIcon(CoreGUIPlugin.getIconURL("tango/record.png")),
+			"Open the script recorder")),
 
-    MONITOR ("monitor", new MonitorAction(
-		  	"monitor",
-		  	new ImageIcon(CoreGUIPlugin.getIconURL("tango/graph.png")),
-  			"Monitor the phone (without runnning a test)")),
-  	
-  	BENCHMARK ("benchmark", new BenchmarkAction(
-  				  	"benchmark",
-  				  	new ImageIcon(CoreGUIPlugin.getIconURL("gauge.png")),
-  		  			"Benchmark the phone")),
-  								        		    			
-	ADDDIR ("addDir", new AddDirectoryAction(
-			          "addDir", new ImageIcon(CoreGUIPlugin.getIconURL("tango/add-dir.png")),
-		       		  "Add a directory to the current check-list.")),
+	MONITOR("monitor", new MonitorAction("monitor", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/graph.png")),
+			"Monitor the phone (without runnning a test)")),
 
-	ADDCHECKLIST ("addCheckList", new AddCheckListAction(
-								  "addCheckList", null,
-								  "Add a checklist to the current check-list.")),
+	BENCHMARK("benchmark", new BenchmarkAction("benchmark", new ImageIcon(
+			CoreGUIPlugin.getIconURL("gauge-22.png")), "Benchmark the phone")),
 
-	SELECTALLALL ("selectAllAll", new SelectAllAction(
-			   					  "selectAllAll", null,
-			   					  "Select all items of the the current check-list.")),
+	ADDDIR("addDir", new AddDirectoryAction("addDir", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/add-dir.png")),
+			"Add a directory to the current check-list.")),
 
-	UNSELECTALLALL ("unselectAllAll", new UnselectAllAction(
-									  "unselectAllAll", null,
-									  "Unselect all items of the the current check-list.")),
+	ADDCHECKLIST("addCheckList", new AddCheckListAction("addCheckList", null,
+			"Add a checklist to the current check-list.")),
 
-	COPY ("copy", new CopyAction("copy",
-								 new ImageIcon(CoreGUIPlugin.getIconURL("tango/edit_copy.png")),
-	  							 "Copy the selected steps of the current check-list.")),
+	SELECTALLALL("selectAllAll", new SelectAllAction("selectAllAll", null,
+			"Select all items of the the current check-list.")),
 
-	PASTE ("paste", new PasteAction("paste",
-									new ImageIcon(CoreGUIPlugin.getIconURL("tango/paste.png")),
-	   								"Paste the copied steps under the current selection.")),
+	UNSELECTALLALL("unselectAllAll", new UnselectAllAction("unselectAllAll", null,
+			"Unselect all items of the the current check-list.")),
 
-	REMOVE ("remove", new RemoveAction("remove",
-									   new ImageIcon(CoreGUIPlugin.getIconURL("tango/messagebox_critical.png")),
-									   "Remove the selected steps of the current check-list.")),
+	COPY("copy", new CopyAction("copy", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/edit_copy.png")),
+			"Copy the selected steps of the current check-list.")),
 
-	PROPERTIES ("properties", new EditPropertiesAction(
-			 				  "properties", null,
-			 				  "Modify the properties of the selected step(s).")),
+	PASTE("paste", new PasteAction("paste", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/paste.png")),
+			"Paste the copied steps under the current selection.")),
 
-	CONFIGURATION ("configuration", new ConfigurationAction(
-	    								"configuration", null,
-	    								"Set global parameters of the analysis process.")),
-	 
-//actionMap.put("addCheckList", new AddCheckListAction("addCheckList", null, "Add a checklist to the current checklist."));
-	VIEWREPORT ("viewReport", new ViewReportAction(
-			                  "viewReport", new ImageIcon(CoreGUIPlugin.getIconURL("tango/view-rep.png")),
-                 			  "View latest report of the selected element.")),
+	REMOVE("remove", new RemoveAction("remove", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/edit-delete.png")),
+			"Remove the selected steps of the current check-list.")),
 
-	CONFIRMVERDICT ("confirmVerdict", new ConfirmVerdictAction(
-									  "confirmVerdict", null,
-									  "Confirm the given verdict of the selected step")),
+	PROPERTIES("properties", new EditPropertiesAction("properties", null,
+			"Modify the properties of the selected step(s).")),
 
-	MODIFYVERDICT ("modifyVerdict", new ModifyVerdictAction(
-									"modifyVerdict", null,
-									"Modify the given verdict of the selected step")),
+	CONFIGURATION("configuration", new ConfigurationAction("configuration", null,
+			"Set global parameters of the analysis process.")),
 
-	STATISTICSALL ("statisticsAll", new StatisticsAction(
-									"statisticsAll", new ImageIcon(CoreGUIPlugin.getIconURL("tango/colorscm.png")),
-									"View statistics about the current check-list")),
+	// actionMap.put("addCheckList", new AddCheckListAction("addCheckList",
+	// null, "Add a checklist to the current checklist."));
+	VIEWREPORT("viewReport", new ViewReportAction("viewReport", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/view-rep.png")),
+			"View latest report of the selected element.")),
 
-	VIEWLOG ("viewLog", new ViewLogAction("viewLog", new ImageIcon(CoreGUIPlugin.getIconURL("tango/txt2.png")), "Open log file")),
+	VIEWANALYZER("viewAnalyzer", new ViewAnalyzerAction("viewAnalyzer", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/graph.png")),
+			"View latest analyze of the selected element.")),
 
-	ANALYSESELECTIONALLTAB ("analyseSelectionAll", new AnalyseSelectionAllTabAction(
-										  "analyseSelectionAll", new ImageIcon(CoreGUIPlugin.getIconURL("tango/play-selection.png")),
-										  "Analyse all selected elements of the check-list (all tabs).")),
+	CONFIRMVERDICT("confirmVerdict", new ConfirmVerdictAction("confirmVerdict", null,
+			"Confirm the given verdict of the selected step")),
 
-	ANALYSESELECTIONCURRENTTAB ("analyseSelection", new AnalyseSelectionCurrentTabAction(
-													  "analyseSelection", new ImageIcon(CoreGUIPlugin.getIconURL("tango/play-selection.png")),
-													  "Analyse all selected elements of the current tab.")),
+	MODIFYVERDICT("modifyVerdict", new ModifyVerdictAction("modifyVerdict", null,
+			"Modify the given verdict of the selected step")),
 
-	ANALYSEALLCURRENTTAB ("analyseAll", new AnalyseAllCurrentTabAction(
-										"analyseAll",
-										new ImageIcon(CoreGUIPlugin.getIconURL("tango/noatunplay.png")),
-										"Analyse all elements of the current check-list part.")),
+	STATISTICSALL("statisticsAll", new StatisticsAction("statisticsAll", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/colorscm.png")),
+			"View statistics about the current check-list")),
 
-	ANALYSEALLALLTAB ("analyseAllAll", new AnalyseAllAllTabAction(
-									   "analyseAllAll",
-									   new ImageIcon(CoreGUIPlugin.getIconURL("tango/noatunplay.png")),
-									   "Analyse all elements of the check-list (all tabs)")),
+	VIEWLOG("viewLog", new ViewLogAction("viewLog", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/txt2.png")), "Open log file")),
 
-	EXIT ("exit", new ExitAction("exit", new ImageIcon(CoreGUIPlugin.getIconURL("tango/exit.png")), "Quit the application.")),
+	ANALYSESELECTIONALLTAB("analyseSelectionAll", new AnalyseSelectionAllTabAction(
+			"analyseSelectionAll", new ImageIcon(
+					CoreGUIPlugin.getIconURL("tango/play-selection.png")),
+			"Analyse all selected elements of the check-list (all tabs).")),
 
-	ABOUT ("about", new AboutAction("about", new ImageIcon(CoreGUIPlugin.getIconURL("tango/messagebox_info.png")), "About ATK")),
+	ANALYSESELECTIONCURRENTTAB("analyseSelection", new AnalyseSelectionCurrentTabAction(
+			"analyseSelection",
+			new ImageIcon(CoreGUIPlugin.getIconURL("tango/play-selection.png")),
+			"Analyse all selected elements of the current tab.")),
 
-	USERGUIDE ("User Guide", new HelpAction("Sony Ericsson", new ImageIcon(CoreGUIPlugin.getIconURL("tango/messagebox_info.png")), "ATK User Guide", "index.html"));
-	
-	//------------------------------------------------------------------------------
+	ANALYSEALLCURRENTTAB("analyseAll", new AnalyseAllCurrentTabAction("analyseAll", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/noatunplay.png")),
+			"Analyse all elements of the current check-list part.")),
+
+	ANALYSEALLALLTAB("analyseAllAll", new AnalyseAllAllTabAction("analyseAllAll", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/noatunplay.png")),
+			"Analyse all elements of the check-list (all tabs)")),
+
+	EXIT("exit", new ExitAction("exit", new ImageIcon(CoreGUIPlugin.getIconURL("tango/exit.png")),
+			"Quit the application.")),
+
+	ABOUT("about", new AboutAction("about", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/messagebox_info.png")), "About ATK")),
+
+	USERGUIDE("User Guide", new HelpAction("Sony Ericsson", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/messagebox_info.png")), "ATK User Guide", "index.html")),
+
+	ADDTASK("add script", new AddTaskAction("Add a task", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/add.png")), "Add a task to the current check-list.")),
+
+	ANALYSEALLTASKS("LaunchAllScript", new LaunchAllScript("LaunchAllScript", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/noatunplay.png")),
+			"Launch all scripts of the check-list.")),
+
+	ANALYSESELECTEDTASK("LaunchSelectedScript", new LaunchSelectedScript("LaunchSelectedScript",
+			new ImageIcon(CoreGUIPlugin.getIconURL("tango/play-selection.png")),
+			"Launch selected Script of the check-list.")),
+
+	STOPTASK("StopScript", new StopScript("StopScript", new ImageIcon(
+			CoreGUIPlugin.getIconURL("tango/noatunstop.png")), "Stop the current task.")),
+
+	ARODATANALYSER("AroDataAnalyser", new RunARODataAnalyser("AroDataAnalyser", new ImageIcon(
+			CoreGUIPlugin.getIconURL("aro_22.png")), "Run ARO Data Analyser"));
+
+	// ------------------------------------------------------------------------------
 
 	private String name = null;
 	private MatosAbstractAction action = null;
@@ -172,8 +176,11 @@ public enum MatosAction {
 	}
 
 	/**
-	 * Enable/Disable this <code>Action</code> action (ie all its related GUI components)
-	 * @param enable new status for matosAction
+	 * Enable/Disable this <code>Action</code> action (ie all its related GUI
+	 * components)
+	 * 
+	 * @param enable
+	 *            new status for matosAction
 	 */
 	public void setEnabled(boolean enable) {
 		action.setEnabled(enable);
@@ -181,6 +188,7 @@ public enum MatosAction {
 
 	/**
 	 * Returns a menuItem that performs the given action
+	 * 
 	 * @param label
 	 * @return a new <code>JMenuItem</code> object
 	 */
@@ -190,13 +198,13 @@ public enum MatosAction {
 
 	/**
 	 * Returns a JButton that performs the given action
-	 * @param action action do register to the Button
+	 * 
+	 * @param action
+	 *            action do register to the Button
 	 * @return a new <code>JButton</code> object
 	 */
 	public JButton getAsJButton() {
 		return action.getAsJButton();
 	}
-
-
 
 }

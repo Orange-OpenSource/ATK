@@ -51,7 +51,7 @@ import com.orange.atk.phone.detection.AutomaticPhoneDetection;
 
 /**
  * A campaign is a kind of Step list.
- *
+ * 
  * @author Nicolas MOTEAU
  * @since JDK5.0
  */
@@ -59,7 +59,8 @@ public class Campaign extends ArrayList<Step> {
 
 	private static final long serialVersionUID = 1L;
 
-	//Allows to call the read method on specified Campaign object (JavaCampaign, FlashCampaign...)
+	// Allows to call the read method on specified Campaign object
+	// (JavaCampaign, FlashCampaign...)
 	public static ArrayList<Campaign> campaignsList = new ArrayList<Campaign>();
 
 	private String name = null;
@@ -74,7 +75,7 @@ public class Campaign extends ArrayList<Step> {
 		Campaign.execute = execute;
 	}
 
-	private static boolean execute = false;	
+	private static boolean execute = false;
 	private static boolean firstloop = true;
 	private static int loop = 1;
 	public static int getTemploop() {
@@ -93,7 +94,6 @@ public class Campaign extends ArrayList<Step> {
 
 	public static LaunchJATK exec;
 
-
 	public static boolean isExecuteloop() {
 		return executeloop;
 	}
@@ -111,25 +111,28 @@ public class Campaign extends ArrayList<Step> {
 		Campaign.exec = exec;
 	}
 	public void setName(String s) {
-		if (!isEmpty(s)) name = s.trim();
+		if (!isEmpty(s))
+			name = s.trim();
 	}
 
 	public void setAuthor(String s) {
-		if (!isEmpty(s)) author = s.trim();
+		if (!isEmpty(s))
+			author = s.trim();
 	}
 
 	public void setDate(String s) {
-		if (!isEmpty(s)) date = s.trim();
+		if (!isEmpty(s))
+			date = s.trim();
 	}
 
 	public void setDescription(String s) {
-		if (!isEmpty(s)) description = s.trim();
+		if (!isEmpty(s))
+			description = s.trim();
 	}
 
 	private boolean isEmpty(String s) {
-		return (s==null)||(s.trim().length()==0);
+		return (s == null) || (s.trim().length() == 0);
 	}
-
 
 	public static int getLoop() {
 		return loop;
@@ -141,96 +144,102 @@ public class Campaign extends ArrayList<Step> {
 
 	/**
 	 * Runs the analysis method on each step of this campaign (in sequence)
+	 * 
 	 * @return the analysis's verdict for this campaign.
-	 * @throws LicenceException if a problem is detected with the licence.
+	 * @throws LicenceException
+	 *             if a problem is detected with the licence.
 	 */
-	public Verdict analyse() throws LicenceException {
-		return analyse( null, null);
+	public Verdict analyse() {
+		return analyse(null, null);
 	}
 
 	/**
 	 * Runs the analysis method on each step of this campaign (in sequence)
+	 * 
 	 * @param profileName
-	 * @param destDir directory to place generated analysis reports. May be null (in this case, the temporary directory will be used)
-	 * @param mon a monitor that allow to be informed of the analysis's progress and to interrupt it.
+	 * @param destDir
+	 *            directory to place generated analysis reports. May be null (in
+	 *            this case, the temporary directory will be used)
+	 * @param mon
+	 *            a monitor that allow to be informed of the analysis's progress
+	 *            and to interrupt it.
 	 * @return the analysis's verdict for this campaign.
-	 * @throws LicenceException if a problem is detected with the licence.
+	 * @throws LicenceException
+	 *             if a problem is detected with the licence.
 	 */
-	//public Verdict analyse(StatusBar statusBar,String profileName, File destDir, IAnalysisMonitor mon) throws LicenceException {
-	public Verdict analyse( File destDir, IAnalysisMonitor mon) throws LicenceException {
+	// public Verdict analyse(StatusBar statusBar,String profileName, File
+	// destDir, IAnalysisMonitor mon) throws LicenceException {
+	public Verdict analyse(File destDir, IAnalysisMonitor mon) {
 
 		Verdict campVerdict = Verdict.NONE;
 		boolean stop = false;
 		boolean initFailed = false;
-		
+
 		setExecute(true);
 		Iterator<Step> it = this.iterator();
-		if(AutomaticPhoneDetection.getInstance().
-				getDevice() instanceof DefaultPhone)
-		{ 
+		if (AutomaticPhoneDetection.getInstance().getDevice() instanceof DefaultPhone) {
 			JOptionPane.showMessageDialog(CoreGUIPlugin.mainFrame, "Can't Detect device");
 			initFailed = true;
-		}else if(AutomaticPhoneDetection.getInstance().
-				getDevice().getCnxStatus()!=PhoneInterface.CNX_STATUS_AVAILABLE)
-		{
-			JOptionPane.showMessageDialog(CoreGUIPlugin.mainFrame, "Can't Detect device");
-			initFailed = true;
-		}
-		
-		while (it.hasNext() && !stop) {
-			Step step = it.next();
-			Verdict step_verdict;
-			if((null == step.getXmlfilepath())||(step.getXmlfilepath().contains(CheckListTable.NOT_SELECTED))){
-				JOptionPane.showMessageDialog(CoreGUIPlugin.mainFrame, "You must select the phone monitoring configuration for the test.");
+		} else
+			if (AutomaticPhoneDetection.getInstance().getDevice().getCnxStatus() != PhoneInterface.CNX_STATUS_AVAILABLE) {
+				JOptionPane.showMessageDialog(CoreGUIPlugin.mainFrame, "Can't Detect device");
 				initFailed = true;
 			}
 
-			if (destDir!=null) {
-				//step.setOutFilePath(destDir+File.separator+name);
+		while (it.hasNext() && !stop) {
+			Step step = it.next();
+			Verdict step_verdict;
+			if ((null == step.getXmlfilepath())
+					|| (step.getXmlfilepath().contains(CheckListTable.NOT_SELECTED))) {
+				JOptionPane.showMessageDialog(CoreGUIPlugin.mainFrame,
+						"You must select the phone monitoring configuration for the test.");
+				initFailed = true;
+			}
+
+			if (destDir != null) {
+				// step.setOutFilePath(destDir+File.separator+name);
 				step.setOutFilePath(destDir.getAbsolutePath());
 			}
-			//Verdict step_verdict = step.analyse(statusBar,profileName, mon);
-			if(!initFailed){
-				step_verdict = step.analyse( mon);	
-			}else{
+			// Verdict step_verdict = step.analyse(statusBar,profileName, mon);
+			if (!initFailed) {
+				step_verdict = step.analyse(mon);
+			} else {
 				step_verdict = Verdict.INITFAILED;
 				step.setVerdict(step_verdict);
 			}
-			
-			//yvain
-			campVerdict=step_verdict;
-			switch (campVerdict) {
-			case NONE:
-				campVerdict=step_verdict;
-				break;
-			case SKIPPED:
-				if (step_verdict==Verdict.FAILED) {
-					campVerdict=step_verdict;
-				}
-				break;
-			case INITFAILED:
-			case FAILED:
-				CoreGUIPlugin.mainFrame.statusBar.setStop();
-				break;
-			case PASSED:
-				if ((step_verdict!=Verdict.PASSED)&&(step_verdict!=Verdict.NONE)) {
-					campVerdict=step_verdict;
-				}
-				break;
 
-			default:
-				break;
+			// yvain
+			campVerdict = step_verdict;
+			switch (campVerdict) {
+				case NONE :
+					campVerdict = step_verdict;
+					break;
+				case SKIPPED :
+					if (step_verdict == Verdict.FAILED) {
+						campVerdict = step_verdict;
+					}
+					break;
+				case INITFAILED :
+				case FAILED :
+					CoreGUIPlugin.mainFrame.statusBar.setStop();
+					break;
+				case PASSED :
+					if ((step_verdict != Verdict.PASSED) && (step_verdict != Verdict.NONE)) {
+						campVerdict = step_verdict;
+					}
+					break;
+
+				default :
+					break;
 			}
-			if (mon!=null) {
+			if (mon != null) {
 				stop = mon.isStop();
 				mon.notifyStepAnalysed(step);
 			}
 		}
 		setExecute(false);
 
-
-
-		if (mon!=null) {
+		if (mon != null) {
 			mon.notifyAllAnalysisDone();
 		}
 		CoreGUIPlugin.mainFrame.statusBar.stopJob();
@@ -238,9 +247,11 @@ public class Campaign extends ArrayList<Step> {
 	}
 
 	/**
-	 * Read a campaign file, and return a simplified representation of
-	 * what is to be done (abstraction of a campaign).
-	 * @param campaignFile The campaign file to read.
+	 * Read a campaign file, and return a simplified representation of what is
+	 * to be done (abstraction of a campaign).
+	 * 
+	 * @param campaignFile
+	 *            The campaign file to read.
 	 * @return A campaign structure
 	 */
 	public static Campaign readCampaign(File campaignFile) throws Alert {
@@ -252,17 +263,19 @@ public class Campaign extends ArrayList<Step> {
 
 	/**
 	 * Populates this campaign using the given XMLParser
-	 * @param parser the XML parser to use
+	 * 
+	 * @param parser
+	 *            the XML parser to use
 	 * @return this campaign
 	 */
 	public Campaign readCampaign(XMLParser parser) {
 		Element root = parser.getRoot();
-		//parser.getElements(e, name)
+		// parser.getElements(e, name)
 		setName(root.attributeValue("name"));
 		setAuthor(root.attributeValue("author"));
 		setDate(root.attributeValue("date"));
 		setDescription(root.attributeValue("description"));
-		
+
 		// Read the different type of campaign
 		for (Campaign defCamp : campaignsList) {
 			addAll(defCamp.readCampaign(parser));
@@ -271,10 +284,15 @@ public class Campaign extends ArrayList<Step> {
 	}
 
 	/**
-	 * Initializes the "outputFile" field of the "CmdLine" object with testing its validity.
-	 * @param step the command line to update
-	 * @param stepName the name of the step
-	 * @param stepNumber the number of the step
+	 * Initializes the "outputFile" field of the "CmdLine" object with testing
+	 * its validity.
+	 * 
+	 * @param step
+	 *            the command line to update
+	 * @param stepName
+	 *            the name of the step
+	 * @param stepNumber
+	 *            the number of the step
 	 * @throws Alert
 	 */
 	protected static void initOutputFile(Step step, String stepName, int stepNumber) throws Alert {
@@ -282,22 +300,28 @@ public class Campaign extends ArrayList<Step> {
 			new URI(stepName);
 			step.setOutFilePath(stepName + ".html");
 		} catch (URISyntaxException e) {
-			Alert.raise(e,"Campaign step number "+stepNumber+", invalid step name: "+stepName+". Can't create an output file based on that name.");
+			Alert.raise(e, "Campaign step number " + stepNumber + ", invalid step name: "
+					+ stepName + ". Can't create an output file based on that name.");
 		}
 	}
 
 	/**
 	 * Save current campaign in .mcl file
+	 * 
 	 * @param clFileName
 	 * @throws IOException
 	 */
 	public static void save(String clFileName, Campaign camp) {
 		Document document = DocumentHelper.createDocument();
 		Element root = document.addElement("campaign");
-		if (camp.getName() != null) root.addAttribute("name", camp.getName());
-		if (camp.getAuthor() != null) root.addAttribute("author", camp.getAuthor());
-		if (camp.getDate() != null) root.addAttribute("date", camp.getDate());
-		if (camp.getDescription() != null) root.addAttribute("description", camp.getDescription());
+		if (camp.getName() != null)
+			root.addAttribute("name", camp.getName());
+		if (camp.getAuthor() != null)
+			root.addAttribute("author", camp.getAuthor());
+		if (camp.getDate() != null)
+			root.addAttribute("date", camp.getDate());
+		if (camp.getDescription() != null)
+			root.addAttribute("description", camp.getDescription());
 		int stepNumber = 0;
 		for (Step step : camp) {
 			step.save(root, stepNumber);
@@ -307,35 +331,34 @@ public class Campaign extends ArrayList<Step> {
 		XMLWriter writer = null;
 		try {
 			writer = new XMLWriter(new FileWriter(clFileName), format);
-			writer.write( document );
+			writer.write(document);
 			writer.close();
 		} catch (IOException e) {
 			Alert.raise(e, "Unable to save check-list in a file.");
 		}
 	}
 
-	public void movesample(SortedSet<Integer> srcrow, int dest){
-		Campaign temptoadd= new Campaign(); 
-		//		Logger.getLogger(this.getClass() ).debug("src"+srcrow.first());
-		//		Logger.getLogger(this.getClass() ).debug("dest"+dest);
+	public void movesample(SortedSet<Integer> srcrow, int dest) {
+		Campaign temptoadd = new Campaign();
+		// Logger.getLogger(this.getClass() ).debug("src"+srcrow.first());
+		// Logger.getLogger(this.getClass() ).debug("dest"+dest);
 		Iterator<Integer> it = srcrow.iterator();
-		int index =0;
-		while (it.hasNext()){
+		int index = 0;
+		while (it.hasNext()) {
 			int numToRemove = it.next();
-			temptoadd.add(this.get(numToRemove+index));
-			this.remove(numToRemove+index);
+			temptoadd.add(this.get(numToRemove + index));
+			this.remove(numToRemove + index);
 			index--;
 		}
 
-		//copy to selected location
-		if(dest<srcrow.first())
-			this.addAll(dest,temptoadd);
-		else
-			this.addAll(dest-srcrow.size()+1,temptoadd);
-
+		// copy to selected location
+		if (dest < srcrow.first()) {
+			this.addAll(dest, temptoadd);
+		} else {
+			this.addAll(dest - srcrow.size() + 1, temptoadd);
+		}
 
 	}
-
 
 	public String getAuthor() {
 		return author;

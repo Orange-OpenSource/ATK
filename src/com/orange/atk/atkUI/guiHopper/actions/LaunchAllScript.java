@@ -36,9 +36,8 @@ import com.orange.atk.atkUI.coregui.tasks.AnalyseTask;
 import com.orange.atk.atkUI.guiHopper.HopperGUI;
 import com.orange.atk.atkUI.guiHopper.guihopperLink;
 
-
 /**
- *
+ * 
  * @author Aurore PENAULT
  * @since JDK5.0
  */
@@ -55,8 +54,11 @@ public class LaunchAllScript extends MatosAbstractAction {
 		super(name, icon, shortDescription);
 	}
 
-	/* (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent e) {
 

@@ -21,17 +21,21 @@ public interface ATKScriptParserConstants {
   /** RegularExpression Id. */
   int NUMBER = 7;
   /** RegularExpression Id. */
-  int DIGIT = 8;
+  int FLOAT = 8;
   /** RegularExpression Id. */
-  int EOL = 9;
+  int DIGIT = 9;
   /** RegularExpression Id. */
-  int VARNAME = 10;
+  int BOOLEAN = 10;
   /** RegularExpression Id. */
-  int STRING = 11;
+  int EOL = 11;
   /** RegularExpression Id. */
-  int CHAR = 12;
+  int VARNAME = 12;
   /** RegularExpression Id. */
-  int SINGLE_LINE_COMMENT = 13;
+  int STRING = 13;
+  /** RegularExpression Id. */
+  int CHAR = 14;
+  /** RegularExpression Id. */
+  int SINGLE_LINE_COMMENT = 15;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -46,7 +50,9 @@ public interface ATKScriptParserConstants {
     "\"Include\"",
     "\"SetVar\"",
     "<NUMBER>",
+    "<FLOAT>",
     "<DIGIT>",
+    "<BOOLEAN>",
     "<EOL>",
     "<VARNAME>",
     "<STRING>",

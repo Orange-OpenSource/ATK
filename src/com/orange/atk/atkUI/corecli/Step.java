@@ -35,11 +35,9 @@ import org.dom4j.Element;
 
 import com.orange.atk.atkUI.coregui.CoreGUIPlugin;
 
-
-
 /**
  * The Step class represents a step in the checklist.
- *
+ * 
  * @author Nicolas MOTEAU
  * @since JDK5.0
  */
@@ -53,12 +51,12 @@ public abstract class Step {
 	protected Verdict verdict = Verdict.NONE;
 	protected Verdict userVerdict = Verdict.NONE;
 	protected Verdict screenshotVerdict = Verdict.NONE;
-	
+
 	protected String skippedMessage = "";
 	protected String userComment = "";
 
-	protected final static String type = "step"; 
-	
+	protected final static String type = "step";
+
 	/**
 	 * List of authorized URLs.
 	 */
@@ -66,18 +64,18 @@ public abstract class Step {
 
 	protected boolean initialized = false;
 	private String xmlfilepath = null;
-   public static String currentxmlfilepath=null;
+	public static String currentxmlfilepath = null;
 	protected String profilePath = null;
 
-	/** login&password to use to download files*/
+	/** login&password to use to download files */
 	protected String login = "";
 	protected String password = "";
-	/** User-Agent to use to download files*/
+	/** User-Agent to use to download files */
 	protected String useragent = "";
 
 	protected String tempDir = null;
 
-	//CID attributes
+	// CID attributes
 	protected int id_cid = -1;
 	protected int id_location = -1;
 	protected String cidName = null;
@@ -89,21 +87,14 @@ public abstract class Step {
 	private StepAnalysisResult lastAnalysisResult = null;
 	private String configurationPath;
 
-
-
-
-	
 	/** Definition of test verdicts */
 	public enum Verdict {
-		PASSED,
-		FAILED,
-		INITFAILED,	
-		TESTFAILED,				
-		SKIPPED,	// something goes wrong during analysis
-		NONE;		// not yet analysed
+		PASSED, FAILED, INITFAILED, TESTFAILED, SKIPPED, // something goes wrong
+															// during analysis
+		NONE; // not yet analysed
 	}
 
-	/** Verdicts as <code>String</code>*/
+	/** Verdicts as <code>String</code> */
 	public static Map<Verdict, String> verdictAsString = new HashMap<Verdict, String>();
 	{
 		verdictAsString.put(Verdict.PASSED, "Passed");
@@ -111,11 +102,11 @@ public abstract class Step {
 		verdictAsString.put(Verdict.SKIPPED, "Skipped");
 		verdictAsString.put(Verdict.INITFAILED, "Init Failed");
 		verdictAsString.put(Verdict.TESTFAILED, "Test Failed");
-		
+
 		verdictAsString.put(Verdict.NONE, "");
 	}
 
-	/** Verdicts from <code>String</code>*/
+	/** Verdicts from <code>String</code> */
 	public static Map<String, Verdict> verdictFromString = new HashMap<String, Verdict>();
 	{
 		verdictFromString.put("Passed", Verdict.PASSED);
@@ -124,12 +115,13 @@ public abstract class Step {
 		verdictFromString.put("", Verdict.NONE);
 		verdictFromString.put("Init Failed", Verdict.INITFAILED);
 		verdictFromString.put("Test Failed", Verdict.TESTFAILED);
-		
+
 		verdictFromString.put("None", Verdict.NONE);
 	}
 
 	/**
 	 * Get back the last analysis result.
+	 * 
 	 * @return the last analysis result
 	 */
 	public StepAnalysisResult getLastAnalysisResult() {
@@ -137,21 +129,23 @@ public abstract class Step {
 	}
 
 	/**
-	 * Declares a new analysis result.
-	 * Notify registered analysis results managers
+	 * Declares a new analysis result. Notify registered analysis results
+	 * managers
 	 */
-	//TODO: verify
+	// TODO: verify
 	public void newLastAnalysisResult(StepAnalysisResult res) {
 		lastAnalysisResult = res;
-	/*	List<IAnalysisResultsManager> arManagers = Matos.getInstance().getAnalysisResultsManagers();
-		for (IAnalysisResultsManager arManager : arManagers) {
-			arManager.notify(this, res);
-		}*/
+		/*
+		 * List<IAnalysisResultsManager> arManagers =
+		 * Matos.getInstance().getAnalysisResultsManagers(); for
+		 * (IAnalysisResultsManager arManager : arManagers) {
+		 * arManager.notify(this, res); }
+		 */
 	}
 
 	/**
-	 * Update analysis result.
-	 * Do not Notify registered analysis results managers
+	 * Update analysis result. Do not Notify registered analysis results
+	 * managers
 	 */
 	public void updateLastAnalysisResult(StepAnalysisResult res) {
 		lastAnalysisResult = res;
@@ -162,7 +156,6 @@ public abstract class Step {
 		skippedMessage = res.getReason();
 		userComment = res.getComment();
 	}
-
 
 	public boolean isInitialized() {
 		return initialized;
@@ -175,69 +168,50 @@ public abstract class Step {
 	public abstract void init();
 
 	/**
-	 * Tells wheter this step reference file located on this computer or distant ones
+	 * Tells wheter this step reference file located on this computer or distant
+	 * ones
+	 * 
 	 * @return true iff files are on this computer
 	 */
 	public abstract boolean isLocal();
 
 	/**
 	 * Check licence validity.
-	 * @throws LicenceException if a problem is detected with the licence.
+	 * 
+	 * @throws LicenceException
+	 *             if a problem is detected with the licence.
 	 */
-	protected void check() throws LicenceException  {
-		// ----------------- FLEX - LICENSE CHECKPOINT
-		// LICPIFTInfo (vendor class) is expected to be precompiled
-		// and available in a jar in the CLASSPATH. Can be
-		// precompiled with "make vendorclass".
-		/*try {
-			String licenseFile, licenseVersion;
-			licenseFile = System.getProperty("LICENSEPATH");
-			licenseVersion = System.getProperty("LICENSEVERSION");
-			if (licenseFile==null) {
-				String message = "Unable to find the license file. It should be specified with LICENSEPATH environment variable.";
-				Out.log.println(message);
-				throw new LicenceException(message);
-			}
-			if (licenseVersion==null) {
-				String message = "Unable to find the license version. It should be specified with LICENSEVERSION environment variable.";
-				Out.log.println(message);
-				throw new LicenceException(message);
+	protected void check() {
 
-			}
-			FeatureSpecifier fs = new FeatureSpecifier("matos", licenseVersion);
-			LICPIFTInfo vendorInfo =  new LICPIFTInfo();
-			License lic = new License(fs, licenseFile, vendorInfo, null);
-			lic.checkout(1);
-			lic.checkin();
-		} catch (FlexlmException e) {
-			throw new LicenceException("A problem occurs with your license.\n"+
-										e.getMessage());
-		}*/
-		// ------------------
 	}
 
 	/**
 	 * Run analysis on this step. Analysis kind is step dependent
+	 * 
 	 * @param profileName
 	 * @param monitor
 	 * @return analysis verdict
-	 * @throws LicenceException if a problem is detected with the licence.
+	 * @throws LicenceException
+	 *             if a problem is detected with the licence.
 	 */
-	//public abstract Verdict analyse(StatusBar statusbar,String profileName, IAnalysisMonitor monitor) throws LicenceException;
-	public abstract Verdict analyse( IAnalysisMonitor monitor) throws LicenceException;
+	// public abstract Verdict analyse(StatusBar statusbar,String profileName,
+	// IAnalysisMonitor monitor) throws LicenceException;
+	public abstract Verdict analyse(IAnalysisMonitor monitor);
 
 	/**
-	 * Complete the specified external tool command line
-	 * with step's specificities.
-	 * @param cmdline the command line of the external tool,
-	 *                to be completed with step information
-	 * @return a 'ready to launch' command line
-	 * or null if it cannot be fullfilled with this Step's information
+	 * Complete the specified external tool command line with step's
+	 * specificities.
+	 * 
+	 * @param cmdline
+	 *            the command line of the external tool, to be completed with
+	 *            step information
+	 * @return a 'ready to launch' command line or null if it cannot be
+	 *         fullfilled with this Step's information
 	 */
 	public String completeExternalToolCommandLine(String cmdline) {
 		// replace %REP% by coresponding
-		if (cmdline.indexOf("%REP%")>0) {
-			if (lastAnalysisResult!=null) {
+		if (cmdline.indexOf("%REP%") > 0) {
+			if (lastAnalysisResult != null) {
 				cmdline = cmdline.replaceAll("%REP%", lastAnalysisResult.reportPath);
 				return cmdline;
 			} else {
@@ -249,31 +223,31 @@ public abstract class Step {
 	}
 
 	/**
-	 * Add the step in the given campaign xml document.
-	 * Format to use is Step dependent.
-	 * @param root the root element in the document (usualy <code>camp.root()</code>).
+	 * Add the step in the given campaign xml document. Format to use is Step
+	 * dependent.
+	 * 
+	 * @param root
+	 *            the root element in the document (usualy
+	 *            <code>camp.root()</code>).
 	 */
 	public abstract void writeInCampaign(Element root);
 
-	
 	public abstract String getFlashFilePath();
 	public abstract void setFlashFilePath(String flashFilePath);
 
-	
-	public boolean readfromelement(Element element, Step step,String flashFilePath){
+	public boolean readfromelement(Element element, Step step, String flashFilePath) {
 		Boolean testFileExist = true;
 		if (step.getFlashFilePath() != null && step.getFlashFilePath().length() != 0) {
 			step.setFlashFilePath(flashFilePath.trim());
 			if (step.getFlashFilePath().startsWith("http:")) {
 				try {
 					new URL(step.getFlashFilePath());
-				}catch (MalformedURLException e) {
-					Alert.raise(e, "Campaign invalid URL: "+step.getFlashFilePath());
+				} catch (MalformedURLException e) {
+					Alert.raise(e, "Campaign invalid URL: " + step.getFlashFilePath());
 				}
-			}
-			else{
+			} else {
 				File file = new File(flashFilePath);
-				if(!file.exists()){
+				if (!file.exists()) {
 					testFileExist = false;
 				}
 			}
@@ -282,25 +256,24 @@ public abstract class Step {
 		step.setPassword(element.attributeValue("password"));
 		step.setUseragent(element.attributeValue("useragent"));
 
-		if(null!=element.attributeValue("configfile")){
+		if (null != element.attributeValue("configfile")) {
 			File configfile = new File(element.attributeValue("configfile"));
-			if(!configfile.exists()){
-				//TODO: add test if file doesn't exist.
-				JOptionPane.showMessageDialog(CoreGUIPlugin.mainFrame, "The configuration file " + configfile + " does not exist. It will be ignored.");
-			}
-			else{
+			if (!configfile.exists()) {
+				// TODO: add test if file doesn't exist.
+				JOptionPane.showMessageDialog(CoreGUIPlugin.mainFrame, "The configuration file "
+						+ configfile + " does not exist. It will be ignored.");
+			} else {
 				step.setXmlfilepath(configfile.toString());
 			}
 		}
 		return testFileExist;
 	}
-	
-	
+
 	protected boolean isEmpty(String s) {
-		return (s==null)||(s.length()==0);
+		return (s == null) || (s.length() == 0);
 	}
 
-	public boolean hasHttpAuthorized(){
+	public boolean hasHttpAuthorized() {
 		return !isEmpty(httpAuthorized);
 	}
 
@@ -320,7 +293,8 @@ public abstract class Step {
 	}
 
 	/**
-	 * @param cidName the cidName to set
+	 * @param cidName
+	 *            the cidName to set
 	 */
 	public void setCidName(String cidName) {
 		this.cidName = cidName;
@@ -334,7 +308,8 @@ public abstract class Step {
 	}
 
 	/**
-	 * @param id_cid the id_cid to set
+	 * @param id_cid
+	 *            the id_cid to set
 	 */
 	public void setId_cid(int id_cid) {
 		this.id_cid = id_cid;
@@ -348,7 +323,8 @@ public abstract class Step {
 	}
 
 	/**
-	 * @param id_location the id_location to set
+	 * @param id_location
+	 *            the id_location to set
 	 */
 	public void setId_location(int id_location) {
 		this.id_location = id_location;
@@ -362,7 +338,8 @@ public abstract class Step {
 	}
 
 	/**
-	 * @param service the service to set
+	 * @param service
+	 *            the service to set
 	 */
 	public void setService(String service) {
 		this.service = service;
@@ -376,7 +353,8 @@ public abstract class Step {
 	}
 
 	/**
-	 * @param sms the sms to set
+	 * @param sms
+	 *            the sms to set
 	 */
 	public void setSms(String sms) {
 		this.sms = sms;
@@ -390,7 +368,8 @@ public abstract class Step {
 	}
 
 	/**
-	 * @param terminal the terminal to set
+	 * @param terminal
+	 *            the terminal to set
 	 */
 	public void setTerminal(String terminal) {
 		this.terminal = terminal;
@@ -404,7 +383,8 @@ public abstract class Step {
 	}
 
 	/**
-	 * @param version the version to set
+	 * @param version
+	 *            the version to set
 	 */
 	public void setVersion(String version) {
 		this.version = version;
@@ -412,18 +392,20 @@ public abstract class Step {
 
 	/**
 	 * Builds a clone copy of this <code>Step</code>
+	 * 
 	 * @return a copy of this <code>Step</code>
 	 */
 	public abstract Object getClone();
 
 	/**
 	 * Save the step in XML file
+	 * 
 	 * @param root
 	 */
 	public abstract void save(Element root, int stepNumber);
 
-	/** Common part for clone. To be completed by subclasses*/
-	public void clone(Step newCmdLine){
+	/** Common part for clone. To be completed by subclasses */
+	public void clone(Step newCmdLine) {
 		newCmdLine.httpAuthorized = httpAuthorized;
 		newCmdLine.initialized = initialized;
 		newCmdLine.configurationPath = configurationPath;
@@ -523,6 +505,3 @@ public abstract class Step {
 	public abstract String getShortName();
 
 }
-
-
-

@@ -31,7 +31,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JFileChooser;
@@ -49,6 +48,7 @@ import com.orange.atk.util.FileUtil;
 
 /**
  * This class represents the configuration parameters.
+ * 
  * @author Nicolas MOTEAU
  * @since JDK5.0
  */
@@ -56,18 +56,13 @@ public class Configuration {
 
 	private static SortedProperties properties = new SortedProperties();
 	private static Vector<String> defaultPhoneConfigs;
-	private HashMap <String,String> defaultConfig;
-	public static String defaultPhoneConfigPath = Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"ConfigFiles"+Platform.FILE_SEPARATOR;
+	private HashMap<String, String> defaultConfig;
+	public static String defaultPhoneConfigPath = Platform.getInstance().getJATKPath()
+			+ Platform.FILE_SEPARATOR + "ConfigFiles" + Platform.FILE_SEPARATOR;
 	private static String configFileName = null;
 
 	/** A file resolver to get back file from URI */
 	public static FileResolver fileResolver;
-
-
-	/** List of tools */
-	/** Parser to parse the file which contains the list of tools */
-	private static ExternalToolXMLParser externalToolParser = null;
-
 
 	// properties's valid keys
 	public static final String LOGFILENAME = "logFile";
@@ -86,6 +81,8 @@ public class Configuration {
 	public static final String ADBPATH = "ADBPath";
 	public static final String SCROTATION = "screenshotRotation";
 	public static final String BENCHMARKDIRECTORY = "benchmarkDir";
+	public static final String AROPATH = "aroPath";
+
 	// PDF properties name
 	public static final String pdfEncryptionUserPassword = "pdf.encryption.userpasswd";
 	public static final String pdfEncryptionOwnerPassword = "pdf.encryption.ownerpasswd";
@@ -99,7 +96,6 @@ public class Configuration {
 	public static final String httpMaxDownloadTime = "httpMaxDownloadTime";
 	public static final String httpMaxAttempts = "httpMaxAttempts";
 
-
 	public static final String MATOS_VERSION = "matosVersion";
 	public static final String MATOS_REVISION = "matosRevision";
 
@@ -110,38 +106,40 @@ public class Configuration {
 	public static final String GUI_LOCATION_Y = "gui.locationY";
 
 	private static Configuration instance;
-	
-	public static Configuration getInstance(){
-		if(instance ==null) {
+
+	public static Configuration getInstance() {
+		if (instance == null) {
 			instance = new Configuration();
 		}
 		return instance;
 	}
-	
+
 	private Configuration() {
-		defaultConfig = new HashMap<String,String>();
-		defaultConfig.put("com.orange.atk.phone.android.AndroidDriver","android.xml");
-		defaultConfig.put("com.orange.atk.phone.android.AndroidMonkeyDriver","android.xml");
-		defaultConfig.put("com.orange.atk.phone.android.AndroidICSDriver","android.xml");
-		defaultConfig.put("com.orange.atk.phone.android.AndroidJBDriver","android.xml");
-		defaultConfig.put("com.orange.atk.phone.mediatek.MediatekPhone","mediatek.xml");
+		defaultConfig = new HashMap<String, String>();
+		defaultConfig.put("com.orange.atk.phone.android.AndroidDriver", "android.xml");
+		defaultConfig.put("com.orange.atk.phone.android.AndroidMonkeyDriver", "android.xml");
+		defaultConfig.put("com.orange.atk.phone.android.AndroidICSDriver", "android.xml");
+		defaultConfig.put("com.orange.atk.phone.android.AndroidJBDriver", "android.xml");
+		defaultConfig.put("com.orange.atk.phone.mediatek.MediatekPhone", "mediatek.xml");
 		defaultPhoneConfigs = new Vector<String>();
 		Iterator<String> configNames = defaultConfig.values().iterator();
 		while (configNames.hasNext()) {
 			String name = configNames.next();
-			if (!defaultPhoneConfigs.contains(name)) defaultPhoneConfigs.add(name);
+			if (!defaultPhoneConfigs.contains(name)) {
+				defaultPhoneConfigs.add(name);
+			}
 		}
-		
+
 	}
 
-	public HashMap<String,String> getDefaultConfig() {
+	public HashMap<String, String> getDefaultConfig() {
 		return defaultConfig;
 	}
-	
+
 	public Vector<String> defaultPhoneConfigNames() {
 		return defaultPhoneConfigs;
 	}
-	
+
 	public static boolean loadConfigurationFile(String configFileName) {
 		
 		String userConfigDirPath = Platform.getInstance().getUserConfigDirPath();
@@ -163,11 +161,12 @@ public class Configuration {
 			
 		}
 		
-		Logger.getLogger(Configuration.class).info("COnfiguration.configFileName= " + Configuration.configFileName);
+		Logger.getLogger(Configuration.class).info("Configuration.configFileName= " + Configuration.configFileName);
 
 			FileInputStream fileInputStream = new FileInputStream(Configuration.configFileName);			
 			properties.load(fileInputStream);			
 			fileInputStream.close();
+
 			
 			fileResolver = new FileResolver(new File(Platform.TMP_DIR), 
 					Integer.parseInt(getProperty(httpMaxConnectionTime)), 
@@ -186,12 +185,14 @@ public class Configuration {
 						if(!userConfigFilesDir.mkdir()){
 							Logger.getLogger("").debug("The installation folder with the configurations files" +
 									"does not exits.\n It should be under "+userConfigFilesDir.getPath());
+
 						}
 						FilenameFilter filter = new FilenameFilter() {
 							public boolean accept(File dir, String name) {
 								return name.endsWith(".xml");
 							}
 						};
+
 						String atkConfigFilesDirPath = atkPath + Platform.FILE_SEPARATOR + "ConfigFiles" + Platform.FILE_SEPARATOR; 
 						String[] listfiles = new File(atkConfigFilesDirPath).list(filter);
 						for(String fileName : listfiles){
@@ -200,52 +201,48 @@ public class Configuration {
 							FileUtil.copyfile(newFile, originalFile);
 						}
 						
+
 			}
 			return true;
 		} catch (FileNotFoundException fnfe) {
-			Alert.raise(fnfe, "Unable to find configuration file '"+configFileName+"'");
+			Alert.raise(fnfe, "Unable to find configuration file '" + configFileName + "'");
 		} catch (IOException ioe) {
-			Alert.raise(ioe, "Unable to access configuration file '"+configFileName+"'");
+			Alert.raise(ioe, "Unable to access configuration file '" + configFileName + "'");
 		}
 		return false;
 	}
 
-	
+
+
+
 
 	/**
-	 * Saves definitions of external tools
-	 * @throws Exception 
-	 */
-	public static void updateExternalToolList(List<ExternalTool> tools) throws Exception {
-		if (externalToolParser==null) {
-			externalToolParser = new ExternalToolXMLParser();
-		}
-	}
-
-	public static String getConfigFileName() {
-		return configFileName;
-	}
-
-	/**
-	 * Retrieves a config property value by its name.
-	 * Use static field of this class as keys.
-	 * @param key the name of the property
+	 * Retrieves a config property value by its name. Use static field of this
+	 * class as keys.
+	 * 
+	 * @param key
+	 *            the name of the property
 	 * @return the value of the property.
-	 * @throws Alert if the property cannot be found.
+	 * @throws Alert
+	 *             if the property cannot be found.
 	 */
 	public static String getProperty(String key) {
 		String val = properties.getProperty(key);
-		if (val==null) {
-			Alert.raise(null, "Unable to find config property named '"+key+"' in "+Configuration.configFileName );
+		if (val == null) {
+			Alert.raise(null, "Unable to find config property named '" + key + "' in "
+					+ Configuration.configFileName);
 		}
 		return val;
 	}
 
 	/**
-	 * Retrieves a config property value by its name.
-	 * Use static field of this class as keys.
-	 * @param key the name of the property
-	 * @param defaultValue the value to use if the key is not found
+	 * Retrieves a config property value by its name. Use static field of this
+	 * class as keys.
+	 * 
+	 * @param key
+	 *            the name of the property
+	 * @param defaultValue
+	 *            the value to use if the key is not found
 	 * @return the value of the property, or the default value.
 	 */
 	public static String getProperty(String key, String defaultValue) {
@@ -260,6 +257,7 @@ public class Configuration {
 
 	/**
 	 * Set a avalue to a property
+	 * 
 	 * @param property
 	 * @param value
 	 */
@@ -277,13 +275,14 @@ public class Configuration {
 			properties.store(fileOutputStream, "");
 			fileOutputStream.close();
 
-			//	externalToolParser.writeInFile(externalToolsList, Configuration.extToolsConfigFileName);
+			// externalToolParser.writeInFile(externalToolsList,
+			// Configuration.extToolsConfigFileName);
 		} catch (FileNotFoundException fne) {
-			Alert.raise(fne, "Cannot find configuration file: "+fne.getMessage());
+			Alert.raise(fne, "Cannot find configuration file: " + fne.getMessage());
 		} catch (IOException ioe) {
-			Alert.raise(ioe, "Cannot write configuration file: "+ioe.getMessage());
+			Alert.raise(ioe, "Cannot write configuration file: " + ioe.getMessage());
 		} catch (Exception ex) {
-			Alert.raise(ex, "Cannot write configuration file: "+ex.getMessage());
+			Alert.raise(ex, "Cannot write configuration file: " + ex.getMessage());
 		}
 	}
 

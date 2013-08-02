@@ -30,71 +30,56 @@ import com.orange.atk.atkUI.corecli.Step;
 import com.orange.atk.atkUI.corecli.StepAnalysisResult;
 
 /**
- *
+ * 
  * @author Aurore PENAULT
  * @since JDK5.0
  */
 public class JatkStepAnalysisResult extends StepAnalysisResult {
 
 	private String flashDigest = null;
-	private String flash_name = null;
+	private String flashName = null;
 
 	/**
-	 *
+	 * 
 	 * @param flashDigest
 	 * @param reportPath
-	 * @param flash_name
+	 * @param flashName
 	 * @param profile_name
 	 * @param profile_version
 	 * @param analysisDate
 	 * @param verdict
-	 * @param user_verdict
+	 * @param userVerdict
 	 * @param reason
-	 * @param http_authorized
-	 * @param matos_version
+	 * @param httpAuthorized
+	 * @param matosVersion
 	 */
-	public JatkStepAnalysisResult(String flashDigest, String reportPath,
-			String flash_name, Calendar analysisDate, String verdict, String user_verdict,
-			String reason, String http_authorized, String matos_version) {
-		super(reportPath, analysisDate, verdict,
-				user_verdict, reason, http_authorized, matos_version);
+	public JatkStepAnalysisResult(String flashDigest, String reportPath, String flashName,
+			Calendar analysisDate, String verdict, String userVerdict, String reason,
+			String httpAuthorized, String matosVersion) {
+		super(reportPath, analysisDate, verdict, userVerdict, reason, httpAuthorized,
+				matosVersion);
 		this.flashDigest = flashDigest;
-		this.flash_name = flash_name;
+		this.flashName = flashName;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.orange.atk.atkUI.corecli.StepAnalysisResult#equals(java.lang.Object)
-	 */
-	public boolean equals(Object obj) {
-		if (obj==null) return false;
-		if ((obj instanceof JatkStepAnalysisResult)&& super.equals(obj)) {
-			JatkStepAnalysisResult res = (JatkStepAnalysisResult) obj;
-			return (
-					(flash_name.equals(res.flash_name))
-					&& (flashDigest.equals(res.flashDigest))
-			);
-
-		} else {
-			return false;
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
+	 * 
 	 * @see com.orange.atk.atkUI.corecli.StepAnalysisResult#toString()
 	 */
 	public String toString() {
-		String st = "Result for :"+
-		"\n flashname:"+ ((flash_name==null) ? "none" : flash_name)+
-		"\n flashfilemd5:"+ flashDigest+
-		super.toString();
+		String st = "Result for :" + "\n flashname:" + ((flashName == null) ? "none" : flashName)
+				+ "\n flashfilemd5:" + flashDigest + super.toString();
 		return st;
 
 	}
 
-	/* (non-Javadoc)
-	 * @see com.orange.atk.atkUI.corecli.StepAnalysisResult#toHTML(com.orange.atk.atkUI.corecli.Step)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.orange.atk.atkUI.corecli.StepAnalysisResult#toHTML(com.orange.atk
+	 * .atkUI.corecli.Step)
 	 */
 	@Override
 	public String toHTML(Step currentStep) {
@@ -102,22 +87,18 @@ public class JatkStepAnalysisResult extends StepAnalysisResult {
 
 		JatkStep step = (JatkStep) currentStep;
 
-//		if (!flashDigest.equals(step.getFlashFileDigest())) {
 		if (!same(flashDigest, step.getFlashFileDigest())) {
-
-			 st = st + "<font color=red>";
-		}
-//		st = st + "<b>flash file</b>: "+ ((flash_name==null) ? "none" : flash_name);
-		st = st + "<b>flash file</b>: "+ ((flashDigest==null) ? "none" : flash_name);
-//		if (!flashDigest.equals(step.getFlashFileDigest())) {
-		if (!same(flashDigest, step.getFlashFileDigest())) {
-			 st = st + "</font>";
+			st = st + "<font color=red>";
 		}
 
+		st = st + "<b>flash file</b>: " + ((flashDigest == null) ? "none" : flashName);
+		if (!same(flashDigest, step.getFlashFileDigest())) {
+			st = st + "</font>";
+		}
 
-		st = st + "<br> <b>verdict</b>: "+verdict;
-		st = st + "<br> <b>user verdict</b>: "+ ((user_verdict==null) ? "none" : user_verdict);
-		if (http_authorized!=null && http_authorized.length()!=0){
+		st = st + "<br> <b>verdict</b>: " + verdict;
+		st = st + "<br> <b>user verdict</b>: " + ((user_verdict == null) ? "none" : user_verdict);
+		if (http_authorized != null && http_authorized.length() != 0) {
 			if (!http_authorized.equals(step.getHttpAuthorized())) {
 				st = st + "<font color=red>";
 			}
@@ -131,19 +112,62 @@ public class JatkStepAnalysisResult extends StepAnalysisResult {
 		if (!matos_version.equals(currentMatosVersion)) {
 			st = st + "<font color=red>";
 		}
-		st = st + "<br> <b>midlet analyser version</b>: "+matos_version;
+		st = st + "<br> <b>midlet analyser version</b>: " + matos_version;
 		if (!matos_version.equals(currentMatosVersion)) {
 			st = st + "</font>";
 		}
 
 		st = st + "<br> <b>on</b>: ";
-		if (analysisDate==null) {
+		if (analysisDate == null) {
 			st = st + "?";
 		} else {
-			st = st + analysisDate.getTime().toString();	}
+			st = st + analysisDate.getTime().toString();
+		}
 
 		st = st + "</html>";
 		return st;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((flashDigest == null) ? 0 : flashDigest.hashCode());
+		result = prime * result + ((flashName == null) ? 0 : flashName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		JatkStepAnalysisResult other = (JatkStepAnalysisResult) obj;
+		if (flashDigest == null) {
+			if (other.flashDigest != null) {
+				return false;
+			}
+		} else {
+			if (!flashDigest.equals(other.flashDigest)) {
+				return false;
+			}
+		}
+		if (flashName == null) {
+			if (other.flashName != null) {
+				return false;
+			}
+		} else {
+			if (!flashName.equals(other.flashName)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

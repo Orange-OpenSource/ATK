@@ -348,5 +348,13 @@ public class RelativeDateFormat extends DateFormat {
         }
         return true;
     }
+    
+    @Override
+    public int hashCode(){
+    	final int prime = 31;
+		int result = 1;
+		result = (int) (prime * result + super.hashCode() + (int)(this.baseMillis^(this.baseMillis>>>32)));
+		return result;
+    }
 
  }

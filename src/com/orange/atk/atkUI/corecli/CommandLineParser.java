@@ -26,11 +26,9 @@ package com.orange.atk.atkUI.corecli;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.orange.atk.atkUI.corecli.utils.Out;
-
 /**
  * The CommandLineParser parses command line options.
- *
+ * 
  * @author Nicolas MOTEAU
  * @since JDK5.0
  */
@@ -41,7 +39,7 @@ public class CommandLineParser {
 	 */
 	private Collection<ICommandLineParser> cmdLineParsers = new ArrayList<ICommandLineParser>();
 
-	private String [] args;
+	private String[] args;
 
 	public CommandLineParser(String[] arg1) {
 		args = arg1;
@@ -49,36 +47,40 @@ public class CommandLineParser {
 
 	/**
 	 * Register a new parser. If the given parser is null, nothing is done.
-	 * @param parser parser to add
+	 * 
+	 * @param parser
+	 *            parser to add
 	 */
 	public void registerParser(ICommandLineParser parser) {
-		if (parser!=null) cmdLineParsers.add(parser);
+		if (parser != null)
+			cmdLineParsers.add(parser);
 	}
 
 	/**
 	 * Parses the command line arguments
+	 * 
 	 * @args the arguments
 	 */
 	public CommandLine parse() {
 		CommandLine globalOptions = new CommandLine();
 
 		// general treatment of options here..
-		if ((args.length == 0) || ((args.length==1) && (!args[0].startsWith("-")))) {
+		if ((args.length == 0) || ((args.length == 1) && (!args[0].startsWith("-")))) {
 			globalOptions.setMode(CommandLine.Modes.GUI);
 		}
 
-		for (int i=0; i<args.length; i++) {
+		for (int i = 0; i < args.length; i++) {
 			String arg = args[i].trim();
 			if (arg.contains("-help")) {
-				Out.main.println();
-				Out.main.println(getSynopsis());
+				System.out.println();
+				System.out.println(getSynopsis());
 			}
 		}
 
-		//conciders extension's options
-		for (ICommandLineParser p : cmdLineParsers){
+		// conciders extension's options
+		for (ICommandLineParser p : cmdLineParsers) {
 			CommandLine op = p.parse(args);
-			if (op!=null) {
+			if (op != null) {
 				globalOptions.agregate(op);
 			}
 		}
@@ -88,11 +90,13 @@ public class CommandLineParser {
 
 	/**
 	 * Gets back the synopsis of the command line
+	 * 
 	 * @return
 	 */
 	public String getSynopsis() {
 		StringBuffer synopsis = new StringBuffer();
-		synopsis.append("Mobile Code Analysis TOols release "+Configuration.getVersion()+" (rev."+Configuration.getRevision()+") help:\n");
+		synopsis.append("Mobile Code Analysis TOols release " + Configuration.getVersion()
+				+ " (rev." + Configuration.getRevision() + ") help:\n");
 		return synopsis.toString();
 	}
 

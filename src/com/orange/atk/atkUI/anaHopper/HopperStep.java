@@ -23,9 +23,6 @@
  */
 package com.orange.atk.atkUI.anaHopper;
 
-
-
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -45,10 +42,8 @@ import com.orange.atk.atkUI.corecli.Alert;
 import com.orange.atk.atkUI.corecli.Campaign;
 import com.orange.atk.atkUI.corecli.Configuration;
 import com.orange.atk.atkUI.corecli.IAnalysisMonitor;
-import com.orange.atk.atkUI.corecli.LicenceException;
 import com.orange.atk.atkUI.corecli.Step;
 import com.orange.atk.atkUI.corecli.utils.Digest;
-import com.orange.atk.atkUI.corecli.utils.Out;
 import com.orange.atk.atkUI.corecli.utils.StringUtilities;
 import com.orange.atk.atkUI.corecli.utils.XMLOutput;
 import com.orange.atk.graphAnalyser.CreateGraph;
@@ -71,23 +66,23 @@ public class HopperStep extends Step {
 	/**
 	 * Path to the flash file to analyse.
 	 */
-	Map<String, PerformanceGraph> mapPerfGraph;
-	Map<String, GraphMarker> mapAction = null;
 	private String jatkFilePath;
 	private File flashFile;
-	private CreateGraph JaTKCharts;
-	private String JATKpath= Platform.getInstance().getJATKPath();
-	protected RealtimeGraph realtime;  
+	private CreateGraph jatkCharts;
+	private String jatkPath = Platform.getInstance().getJATKPath();
+	private RealtimeGraph realtime;
 
 	private static PhoneInterface currentPhone = null;
 
-	private Hashtable<String,String> hopperStepParam= new Hashtable<String,String>();
-	public static final String PARAM_TIME = "hopperparam"; // do not change this name, for backward compatibility purpose
+	private Hashtable<String, String> hopperStepParam = new Hashtable<String, String>();
+
+	// do not change this name, for backward compatibility purpose
+	public static final String PARAM_TIME = "hopperparam";
 	public static final String PARAM_NBEVENTS = "nbeventsparam";
 	public static final String PARAM_THROTTLE = "throttleparam";
 
-	public final static String type = "hopper"; 
-	
+	public static final String TYPE = "hopper";
+
 	/**
 	 * Builds a hopper step with the path to the hopper file
 	 * 
@@ -99,8 +94,6 @@ public class HopperStep extends Step {
 		currentPhone = AutomaticPhoneDetection.getInstance().getDevice();
 	}
 
-
-
 	public boolean isLocal() {
 		return !jatkFilePath.startsWith("http");
 	}
@@ -111,9 +104,9 @@ public class HopperStep extends Step {
 	 * @see com.orange.atk.atkUI.corecli.Step#analyse()
 	 */
 	@Override
-	//	public Verdict analyse(StatusBar statusbar,String profileName, IAnalysisMonitor monitor)
-	public Verdict analyse(  IAnalysisMonitor monitor)
-	throws LicenceException {
+	// public Verdict analyse(StatusBar statusbar,String profileName,
+	// IAnalysisMonitor monitor)
+	public Verdict analyse(IAnalysisMonitor monitor) {
 		try {
 			check();
 			init();
@@ -122,9 +115,8 @@ public class HopperStep extends Step {
 			this.outFilePath = null;
 			this.verdict = Verdict.SKIPPED;
 			this.skippedMessage = a.getMessage().trim();
-			newLastAnalysisResult(new HopperStepAnalysisResult(
-					getFlashFileDigest(), outFilePath, getFlashFileName(),
-					Calendar.getInstance(), verdictAsString.get(verdict), null,
+			newLastAnalysisResult(new HopperStepAnalysisResult(getFlashFileDigest(), outFilePath,
+					getFlashFileName(), Calendar.getInstance(), verdictAsString.get(verdict), null,
 					null, null, Configuration.getVersion()));
 			return verdict;
 		}
@@ -133,28 +125,19 @@ public class HopperStep extends Step {
 		Element flashResultsElem = jatkResults.root();
 		flashResultsElem.addAttribute("flashfile", jatkFilePath);
 		Calendar cal = new GregorianCalendar();
-		String currentDate = cal.get(Calendar.DAY_OF_MONTH) + "."
-		+ cal.get(Calendar.MONTH) + "." + cal.get(Calendar.YEAR);
+		String currentDate = cal.get(Calendar.DAY_OF_MONTH) + "." + cal.get(Calendar.MONTH) + "."
+				+ cal.get(Calendar.YEAR);
 		flashResultsElem.addAttribute("date", currentDate);
 		flashResultsElem.addAttribute("matosversion", Configuration.getVersion());
 		try {
 			// on lance le test
 			{
 				Thread.sleep(4000);
-				launchtest( );
+				launchtest();
 			}
-
-
-
-
-			// anaflashPhase.run();
-			// //
-			// //
-
 		} catch (Exception e) {
-			Out.log.println("Problem in analysis of the following hopper test: "
-					+ jatkFilePath);
-			e.printStackTrace();
+			Logger.getLogger(this.getClass()).error(
+					"Problem in analysis of the following hopper test: " + jatkFilePath, e);
 		}
 		String outFolder = this.outFilePath + File.separator + "report.html";
 
@@ -163,36 +146,29 @@ public class HopperStep extends Step {
 		File reportFile = null;
 		if (outFolder != null) {
 			reportFile = new File(outFolder);
-		} else {
-			reportFile = new File(tempDir, "report.html");
-		}		
-		try {
-			//
-			// verdict = reportGenerator.generateResult();
-		} catch (Exception e) {
-			e.printStackTrace();
-			Alert.raise(e, "Problem when generating results");
 		}
-		outFolder = reportFile.getAbsolutePath();
-		//	this.verdict = verdict;
 
-		newLastAnalysisResult(new HopperStepAnalysisResult(getFlashFileDigest(),
-				outFolder, getFlashFileName(), Calendar.getInstance(),
-				verdictAsString.get(verdict), null, null, null, Configuration
-				.getVersion()));
+		outFolder = reportFile.getAbsolutePath();
+
+		newLastAnalysisResult(new HopperStepAnalysisResult(getFlashFileDigest(), outFolder,
+				getFlashFileName(), Calendar.getInstance(), verdictAsString.get(verdict), null,
+				null, null, Configuration.getVersion()));
 		return verdict;
 	}
-	private void displayRealTimeGraph() {
-		boolean isrealtime =Boolean.valueOf(Configuration.getProperty(Configuration.REALTIMEGRAPH, "true"));
 
-		if(!(AutomaticPhoneDetection.getInstance().isNokia()) &&isrealtime)
-		{
+	private void displayRealTimeGraph() {
+		boolean isrealtime = Boolean.valueOf(Configuration.getProperty(Configuration.REALTIMEGRAPH,
+				"true"));
+
+		if (!(AutomaticPhoneDetection.getInstance().isNokia()) && isrealtime) {
 			java.awt.EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					currentPhone.addTcpdumpLineListener(JaTKCharts);
-					realtime = new RealtimeGraph(JaTKCharts );
+					currentPhone.addTcpdumpLineListener(jatkCharts);
+					realtime = new RealtimeGraph(jatkCharts);
 					realtime.setVisible(true);
-					if (currentPhone.isDeviceRooted() && Boolean.valueOf(Configuration.getProperty(Configuration.NETWORKMONITOR, "false"))){
+					if (currentPhone.isDeviceRooted()
+							&& Boolean.valueOf(Configuration.getProperty(
+									Configuration.NETWORKMONITOR, "false"))) {
 						realtime.addUrlMarkerCheckBox();
 					}
 				}
@@ -202,99 +178,83 @@ public class HopperStep extends Step {
 	}
 
 	private void stopRealTimeGraph() {
-		boolean isrealtime =Boolean.valueOf(Configuration.getProperty(Configuration.REALTIMEGRAPH, "true"));
-		if (realtime!=null && !AutomaticPhoneDetection.getInstance().isNokia()&&isrealtime)
-		{
+		boolean isrealtime = Boolean.valueOf(Configuration.getProperty(Configuration.REALTIMEGRAPH,
+				"true"));
+		if (realtime != null && !AutomaticPhoneDetection.getInstance().isNokia() && isrealtime) {
 			realtime.close();
 		}
-		realtime=null;
+		realtime = null;
 	}
 
-	public void launchtest()
-	{
+	private void runtest() {
+		// get test filename
+		String tstfile = jatkFilePath;
 
-		Logger.getLogger(this.getClass() ).debug("outFilePath start"+outFilePath);		
-		Logger.getLogger(this.getClass() ).debug("Random Test Paramaters:");
+		// get UID and TestName
+		PhoneInterface phone = AutomaticPhoneDetection.getInstance().getDevice();
+		if (phone.getType() == PhoneInterface.TYPE_ANDROID) {
+			outFilePath = outFilePath + File.separator + tstfile;
+		}
+		outFilePath = outFilePath.replace(".", "_").replace(",", "_");
+		File outputdirF = new File(outFilePath);
+		if (!outputdirF.exists() && !outputdirF.mkdir()) {
+			Logger.getLogger(this.getClass()).debug("Can't Create dir " + outputdirF.getPath());
+		}
+		verdict = Verdict.NONE;
+
+		LaunchJATK exec = new LaunchJATK(outFilePath, jatkPath, tstfile, tstfile,
+				LaunchJATK.PDF_TYPE);
+		Campaign.setLaunchExec(exec);
+
+		jatkCharts = new CreateGraph();
+		String xmlconfilepath = getXmlfilepath();
+		currentxmlfilepath = xmlconfilepath;
+		boolean empty = jatkCharts.createPerfGraphsAndMarkers(xmlconfilepath);
+		jatkCharts.createEmptyDataset();
+		jatkCharts.initializeTimeAxis();
+		Map<String, PerformanceGraph> mapPerfGraph = jatkCharts.getMapPerfGraph();
+		Map<String, GraphMarker> mapAction = jatkCharts.getMapAction();
+
+		exec.setMapPerfGraph(mapPerfGraph);
+		exec.setMapAction(mapAction);
+		try {
+			if (!empty) {
+				displayRealTimeGraph();
+			}
+
+			if (exec.launchRandomTest(xmlconfilepath, hopperStepParam).equals(
+					PhoneInterface.STATUS_PASSED)) {
+				verdict = Verdict.PASSED;
+			} else {
+				verdict = Verdict.FAILED;
+			}
+
+		} catch (FileNotFoundException e) {
+			Logger.getLogger(this.getClass()).error(e);
+		} catch (PhoneException pe) {
+			verdict = Verdict.TESTFAILED;
+		}
+		stopRealTimeGraph();
+		exec.stopExecution();
+		exec = null;
+		Logger.getLogger(this.getClass()).debug("End of Thread Exec JATK");
+	}
+
+	private void launchtest() {
+
+		Logger.getLogger(this.getClass()).debug("outFilePath start" + outFilePath);
+		Logger.getLogger(this.getClass()).debug("Random Test Paramaters:");
 		Enumeration<String> paramKeys = hopperStepParam.keys();
-		while(paramKeys.hasMoreElements()) {
+		while (paramKeys.hasMoreElements()) {
 			String key = paramKeys.nextElement();
-			Logger.getLogger(this.getClass() ).debug("\tParam "+key+" = "+hopperStepParam.get(key));
+			Logger.getLogger(this.getClass()).debug(
+					"\tParam " + key + " = " + hopperStepParam.get(key));
 		}
 
 		Thread t = new Thread() {
 			public void run() {
-
-				//get test filename
-				String tstfile = jatkFilePath;
-
-				//get UID and TestName
-				PhoneInterface phone = AutomaticPhoneDetection.getInstance().getDevice();
-				if ( phone.getType() == PhoneInterface.TYPE_SE )
-				{
-					String[] elements = tstfile.split(",");
-					String AppName=elements[0]+elements[2];
-					AppName =AppName.replace(" ", "_");
-					AppName =AppName.replace(".", "_");
-					Logger.getLogger(this.getClass() ).debug("Name: "+AppName);
-					outFilePath = outFilePath + File.separator + AppName;
-					tstfile=elements[0];
-				}	   
-				else if (phone.getType() == PhoneInterface.TYPE_ANDROID )
-				{
-					outFilePath = outFilePath + File.separator + tstfile;
-				}		
-				else if (phone.getType() == PhoneInterface.TYPE_S60 )
-				{
-					Logger.getLogger(this.getClass() ).debug("outpath3 :"+outFilePath);
-					String[] temp =tstfile.split(":");
-					outFilePath = outFilePath + File.separator + temp[0].replace(" ", "_");
-				}
-
-				outFilePath = outFilePath.replace(".", "_");
-				outFilePath = outFilePath.replace(",", "_");
-				File outputdirF =new File(outFilePath);
-				if(!outputdirF.exists())
-					if(!outputdirF.mkdir())
-						Logger.getLogger(this.getClass() ).debug("Can't Create dir "+outputdirF.getPath());
-				verdict = Verdict.NONE;
-
-				// LaunchJATK  =  new LaunchJATK();
-				LaunchJATK exec =  
-					new LaunchJATK(outFilePath,JATKpath,tstfile,tstfile,LaunchJATK.PDF_TYPE);
-				Campaign.setLaunchExec(exec);
-				
-				JaTKCharts = new CreateGraph();
-				String xmlconfilepath=getXmlfilepath();
-				currentxmlfilepath=xmlconfilepath;
-				boolean empty = JaTKCharts.createPerfGraphsAndMarkers(xmlconfilepath);
-				JaTKCharts.createEmptyDataset();
-				JaTKCharts.initializeTimeAxis();
-				mapPerfGraph = JaTKCharts.getMapPerfGraph();
-				mapAction = JaTKCharts.getMapAction();
-
-				exec.setMapPerfGraph(mapPerfGraph);
-				exec.setMapAction(mapAction);
-				try {
-					if(!empty)
-						displayRealTimeGraph();
-
-					if(exec.launchRandomTest(xmlconfilepath, hopperStepParam).equals(PhoneInterface.STATUS_PASSED))
-						verdict = Verdict.PASSED;
-					else
-						verdict = Verdict.FAILED;
-						    
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (PhoneException pe) {				
-					verdict = Verdict.TESTFAILED;
-				}
-				stopRealTimeGraph();
-				exec.stopExecution();
-				exec=null;
-				Logger.getLogger(this.getClass() ).debug("End of Thread Exec JATK");
+				runtest();
 			}
-
 
 		};
 		t.setName("lanceJATK");
@@ -303,19 +263,15 @@ public class HopperStep extends Step {
 			t.join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger(this.getClass()).error(e);
 		}
 	}
-
 
 	public boolean copyfile(File newfile, File originalFile) {
 
 		if (originalFile.exists()) {
-
-			if (newfile.exists()) {
-				if(!newfile.delete())
-					Logger.getLogger(this.getClass() ).debug("Can't delete  "+newfile.getPath());
-
+			if (newfile.exists() && !newfile.delete()) {
+				Logger.getLogger(this.getClass()).debug("Can't delete  " + newfile.getPath());
 			}
 
 			// copy file to output dir
@@ -323,10 +279,10 @@ public class HopperStep extends Step {
 				newfile.createNewFile();
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				Logger.getLogger(this.getClass()).error(e1);
 			}
-			FileChannel in = null; // canal d'entrée
-			FileChannel out = null; // canal de sortie
+			FileChannel in = null;
+			FileChannel out = null;
 
 			try {
 				// Init
@@ -336,8 +292,8 @@ public class HopperStep extends Step {
 				// Copie depuis le in vers le out
 				in.transferTo(0, in.size(), out);
 			} catch (Exception e) {
-				e.printStackTrace(); // n'importe quelle exception
-			} finally { // finalement on ferme
+				Logger.getLogger(this.getClass()).error(e);
+			} finally {
 				if (in != null) {
 					try {
 						in.close();
@@ -363,15 +319,12 @@ public class HopperStep extends Step {
 	 */
 	public void init() {
 		if (!initialized) {
-			if (jatkFilePath != null
-					&& (flashFile == null || !flashFile.exists())) {
+			if (jatkFilePath != null && (flashFile == null || !flashFile.exists())) {
 				String extension = ".tst";
 
-				if (AutomaticPhoneDetection.getInstance().isNokia())
-					extension = ".xml";
 				if (jatkFilePath.endsWith(extension)) {
-					flashFile = Configuration.fileResolver.getFile(jatkFilePath,
-							"tmpjatk", extension, login, password, useragent);
+					flashFile = Configuration.fileResolver.getFile(jatkFilePath, "tmpjatk",
+							extension, login, password, useragent);
 				}
 
 			}
@@ -398,31 +351,33 @@ public class HopperStep extends Step {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.orange.atk.atkUI.corecli.Step#completeExternalToolCommandLine
+	 * @see com.orange.atk.atkUI.corecli.Step#completeExternalToolCommandLine
 	 * (java.lang.String)
 	 */
 	@Override
 	public String completeExternalToolCommandLine(String cmdline) {
-		String sup_cmdLine = super.completeExternalToolCommandLine(cmdline);
-		if (sup_cmdLine != null) {
-			cmdline = sup_cmdLine;
+		String cmdToExecute = cmdline;
+		String supCmdLine = super.completeExternalToolCommandLine(cmdToExecute);
+		if (supCmdLine != null) {
+			cmdToExecute = supCmdLine;
 		}
 
 		// replace %SWF% by coresponding
-		if (cmdline.indexOf("%SWF%") > 0) {
-			init(); // just to be sure that files are resolved
-			cmdline = cmdline.replaceAll("%SWF%", flashFile.getAbsolutePath());
+		if (cmdToExecute.indexOf("%SWF%") > 0) {
+			// just to be sure that files are resolved
+			init();
+			cmdToExecute = cmdToExecute.replaceAll("%SWF%", flashFile.getAbsolutePath());
 		} else {
-			return null; // not for this Step
+			// not for this Step
+			return null;
 		}
 
-		if (cmdline.indexOf("%") > 0) { // unable to complet all...
+		if (cmdToExecute.indexOf('%') > 0) {
+			// unable to complet all...
 			return null;
 		} else {
-			return cmdline;
+			return cmdToExecute;
 		}
-
 	}
 
 	/*
@@ -438,8 +393,8 @@ public class HopperStep extends Step {
 		} else {
 			shortName = StringUtilities.guessName(jatkFilePath, ".sis");
 		}
-		if (shortName.lastIndexOf(".") != -1) {
-			shortName = shortName.substring(0, shortName.lastIndexOf("."));
+		if (shortName.lastIndexOf('.') != -1) {
+			shortName = shortName.substring(0, shortName.lastIndexOf('.'));
 		}
 		return shortName;
 	}
@@ -451,7 +406,7 @@ public class HopperStep extends Step {
 	 */
 	@Override
 	public void save(Element root, int stepNumber) {
-		Element anaElem = root.addElement(type);
+		Element anaElem = root.addElement(TYPE);
 		anaElem.addAttribute("name", "hopperstep_" + stepNumber);
 		anaElem.addAttribute("file", getFlashFilePath());
 		if (getLogin() != null) {
@@ -461,33 +416,24 @@ public class HopperStep extends Step {
 		if (getUseragent() != null) {
 			anaElem.addAttribute("useragent", getUseragent());
 		}
-		if (getXmlfilepath()!= null){
+		if (getXmlfilepath() != null) {
 			anaElem.addAttribute("configfile", getXmlfilepath());
 		}
 		Enumeration<String> paramKeys = hopperStepParam.keys();
-		while(paramKeys.hasMoreElements()) {
+		while (paramKeys.hasMoreElements()) {
 			String key = paramKeys.nextElement();
 			anaElem.addAttribute(key, hopperStepParam.get(key));
 		}
 	}
-	
-/*	public void addParam(String key, String value) {
-		this.hopperStepParam.put(key, value);
-	}
-	
-	public String getParam(String key) {
-		return this.hopperStepParam.get(key);
-	}*/
-	
-	public Hashtable<String,String> getParam() {
+
+	public Map<String, String> getParam() {
 		return this.hopperStepParam;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.orange.atk.atkUI.corecli.Step#writeInCampaign(org.dom4j.Element
+	 * @see com.orange.atk.atkUI.corecli.Step#writeInCampaign(org.dom4j.Element
 	 * )
 	 */
 	@Override
@@ -508,8 +454,7 @@ public class HopperStep extends Step {
 		if (jatkFilePath == null) {
 			return null;
 		}
-		return jatkFilePath
-		.substring(jatkFilePath.lastIndexOf(File.separator) + 1);
+		return jatkFilePath.substring(jatkFilePath.lastIndexOf(File.separator) + 1);
 	}
 
 	public File getFlashFile() {
@@ -529,7 +474,7 @@ public class HopperStep extends Step {
 				fis = new FileInputStream(flashFile);
 				digest = Digest.runSHA1(fis);
 			} catch (FileNotFoundException e) {
-				e.printStackTrace();
+				Logger.getLogger(this.getClass()).error(e);
 			}
 		}
 		return digest;

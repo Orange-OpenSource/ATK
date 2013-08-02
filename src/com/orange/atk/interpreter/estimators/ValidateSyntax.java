@@ -30,7 +30,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import com.orange.atk.interpreter.ast.ASTBOOLEAN;
 import com.orange.atk.interpreter.ast.ASTCOMMENT;
+import com.orange.atk.interpreter.ast.ASTFLOAT;
 import com.orange.atk.interpreter.ast.ASTFUNCTION;
 import com.orange.atk.interpreter.ast.ASTINCLUDE;
 import com.orange.atk.interpreter.ast.ASTLOOP;
@@ -137,6 +139,12 @@ public class ValidateSyntax implements ATKScriptParserVisitor {
 				
 			if(fils.jjtGetID()==ATKScriptParserTreeConstants.JJTSTRING )	 
 				signature.add("STRING");
+			
+			if(fils.jjtGetID()==ATKScriptParserTreeConstants.JJTFLOAT )	 
+				signature.add("FLOAT");
+			
+			if(fils.jjtGetID()==ATKScriptParserTreeConstants.JJTBOOLEAN)	 
+				signature.add("BOOLEAN");
 		}
 		  
 //conclusion
@@ -246,6 +254,15 @@ public class ValidateSyntax implements ATKScriptParserVisitor {
 			errorString = "File " + include + " is not valid";
 		}
 		return errorString;
+	}
+
+
+	public Object visit(ASTBOOLEAN node, Object data) {
+		return "";
+	}
+
+	public Object visit(ASTFLOAT node, Object data) {
+		return "";
 	}
 
 }

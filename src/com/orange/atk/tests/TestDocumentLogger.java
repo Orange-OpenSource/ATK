@@ -30,6 +30,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import junit.framework.JUnit4TestAdapter;
 
@@ -52,9 +53,9 @@ public class TestDocumentLogger {
 
 	@Before
 	public void setUp() {
-		dl = new DocumentLogger("tests\\file");
-		File file = new File("C:\\Program Files\\JATK\\log\\SEphoneConfile.xml");
-		dl.load(file);
+		URL configfile = TestDocumentLogger.class.getResource("file/config.xml");
+		dl = new DocumentLogger(LOG_DIR);
+		dl.load(configfile.getFile());
 
 	}
 
@@ -81,21 +82,21 @@ public class TestDocumentLogger {
 		if (!((msgsInfo.getType() == Message.INFO_MSG)
 				&& (msgsInfo.getLine() == 2)
 				&& ("info".equals(msgsInfo.getMessage())) && ("aScript1"
-				.equals(msgsInfo.getScriptName())))) {
+					.equals(msgsInfo.getScriptName())))) {
 			fail("Info message has not been saved correctly");
 		}
 
 		if (!((msgsErro.getType() == Message.ERROR_MSG)
 				&& (msgsErro.getLine() == 3)
 				&& ("error".equals(msgsErro.getMessage())) && ("aScript2"
-				.equals(msgsErro.getScriptName())))) {
+					.equals(msgsErro.getScriptName())))) {
 			fail("Error message has not been saved correctly");
 		}
 
 		if (!((msgsWarn.getType() == Message.WARN_MSG)
 				&& (msgsWarn.getLine() == 4)
 				&& ("warning".equals(msgsWarn.getMessage())) && ("aScript3"
-				.equals(msgsWarn.getScriptName())))) {
+					.equals(msgsWarn.getScriptName())))) {
 			fail("Warning message has not been saved correctly");
 		}
 	}
@@ -126,63 +127,63 @@ public class TestDocumentLogger {
 
 	@Test
 	public void testDefaultMinValue() {
-		assertEquals(Long.MAX_VALUE, dl.getMinValueFromList("BATTERY"));
-		assertEquals(Long.MAX_VALUE, dl.getMinValueFromList("CPU"));
-		assertEquals(Long.MAX_VALUE, dl.getMinValueFromList("MEMORY"));
-		assertEquals(Long.MAX_VALUE, dl.getMinValueFromList("STORAGE"));
+		assertEquals(Long.MAX_VALUE, dl.getMinValueFromList("Battery"));
+		assertEquals(Long.MAX_VALUE, dl.getMinValueFromList("Cpu"));
+		assertEquals(Long.MAX_VALUE, dl.getMinValueFromList("Memory"));
+		assertEquals(Long.MAX_VALUE, dl.getMinValueFromList("Storage"));
 	}
 
 	@Test
 	public void testDefaultMaxValue() {
-		assertEquals(Long.MIN_VALUE, dl.getMaxValueFromList("BATTERY"));
-		assertEquals(Long.MIN_VALUE, dl.getMaxValueFromList("CPU"));
-		assertEquals(Long.MIN_VALUE, dl.getMaxValueFromList("MEMORY"));
-		assertEquals(Long.MIN_VALUE, dl.getMaxValueFromList("STORAGE"));
+		assertEquals(Long.MIN_VALUE, dl.getMaxValueFromList("Battery"));
+		assertEquals(Long.MIN_VALUE, dl.getMaxValueFromList("Cpu"));
+		assertEquals(Long.MIN_VALUE, dl.getMaxValueFromList("Memory"));
+		assertEquals(Long.MIN_VALUE, dl.getMaxValueFromList("Storage"));
 	}
 
 	@Test
 	public void testDefaultAveValue() {
-		assertEquals(Double.NaN, dl.getAveValueFromList("BATTERY"));
-		assertEquals(Double.NaN, dl.getAveValueFromList("CPU"));
-		assertEquals(Double.NaN, dl.getAveValueFromList("MEMORY"));
-		assertEquals(Double.NaN, dl.getAveValueFromList("STORAGE"));
+		assertEquals(Double.NaN, dl.getAveValueFromList("Battery"), 0.1);
+		assertEquals(Double.NaN, dl.getAveValueFromList("Cpu"), 0.1);
+		assertEquals(Double.NaN, dl.getAveValueFromList("Memory"), 0.1);
+		assertEquals(Double.NaN, dl.getAveValueFromList("Storage"), 0.1);
 	}
 
 	@Test
 	public void testAddDataToList() {
-		dl.addDataToList("BATTERY", 1L, 10F);
+		dl.addDataToList("Battery", 1L, 10F);
 
-		dl.addDataToList("CPU", 1L, -10F);
-		dl.addDataToList("CPU", 2L, 10F);
+		dl.addDataToList("Cpu", 1L, -10F);
+		dl.addDataToList("Cpu", 2L, 10F);
 
-		dl.addDataToList("MEMORY", 1L, 10000F);
-		dl.addDataToList("MEMORY", 3L, -30F);
-		dl.addDataToList("MEMORY", 8L, -10F);
+		dl.addDataToList("Memory", 1L, 10000F);
+		dl.addDataToList("Memory", 3L, -30F);
+		dl.addDataToList("Memory", 8L, -10F);
 
-		dl.addDataToList("STORAGE", 100L, 10F);
-		dl.addDataToList("STORAGE", 10000L, 10F);
-		dl.addDataToList("STORAGE", 10001L, 10F);
-		dl.addDataToList("STORAGE", 11000L, 30F);
+		dl.addDataToList("Storage", 100L, 10F);
+		dl.addDataToList("Storage", 10000L, 10F);
+		dl.addDataToList("Storage", 10001L, 10F);
+		dl.addDataToList("Storage", 11000L, 30F);
 
-		assertEquals(10L, dl.getMinValueFromList("BATTERY"));
-		assertEquals(-10L, dl.getMinValueFromList("CPU"));
-		assertEquals(-30L, dl.getMinValueFromList("MEMORY"));
-		assertEquals(10L, dl.getMinValueFromList("STORAGE"));
+		assertEquals(10L, dl.getMinValueFromList("Battery"));
+		assertEquals(-10L, dl.getMinValueFromList("Cpu"));
+		assertEquals(-30L, dl.getMinValueFromList("Memory"));
+		assertEquals(10L, dl.getMinValueFromList("Storage"));
 
-		assertEquals(10L, dl.getMaxValueFromList("BATTERY"));
-		assertEquals(10L, dl.getMaxValueFromList("CPU"));
-		assertEquals(10000L, dl.getMaxValueFromList("MEMORY"));
-		assertEquals(30L, dl.getMaxValueFromList("STORAGE"));
+		assertEquals(10L, dl.getMaxValueFromList("Battery"));
+		assertEquals(10L, dl.getMaxValueFromList("Cpu"));
+		assertEquals(10000L, dl.getMaxValueFromList("Memory"));
+		assertEquals(30L, dl.getMaxValueFromList("Storage"));
 
-		assertEquals(10L, dl.getAveValueFromList("BATTERY"));
-		assertEquals(0, dl.getAveValueFromList("CPU"));
-		assertEquals(3320L, dl.getAveValueFromList("MEMORY"));
-		assertEquals(15L, dl.getAveValueFromList("STORAGE"));
+		assertEquals(10L, dl.getAveValueFromList("Battery"), 0.1);
+		assertEquals(0, dl.getAveValueFromList("Cpu"), 0.1);
+		assertEquals(3320L, dl.getAveValueFromList("Memory"), 0.1);
+		assertEquals(15L, dl.getAveValueFromList("Storage"), 0.1);
 
-		assertEquals(1, dl.getPlotList("BATTERY").getSize());
-		assertEquals(2, dl.getPlotList("CPU").getSize());
-		assertEquals(3, dl.getPlotList("MEMORY").getSize());
-		assertEquals(4, dl.getPlotList("STORAGE").getSize());
+		assertEquals(1, dl.getPlotList("Battery").getSize());
+		assertEquals(2, dl.getPlotList("Cpu").getSize());
+		assertEquals(3, dl.getPlotList("Memory").getSize());
+		assertEquals(4, dl.getPlotList("Storage").getSize());
 	}
 
 	public boolean isValidFileName(String name) {
