@@ -1,3 +1,4 @@
+
 /*
  * Software Name : ATK
  *
@@ -68,5 +69,6 @@ public abstract class Platform {
 	public abstract String getRemoveSignature();
 	public abstract String getZipalignLocation();
 	public abstract String getAtkKeyLocation();
+	public abstract String getUserConfigDirPath();
 
 }
