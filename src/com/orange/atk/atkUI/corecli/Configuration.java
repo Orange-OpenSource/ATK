@@ -294,4 +294,8 @@ public class Configuration {
 		return getProperty("matosRevision");
 	}
 
+	public static String getConfigFileName() { 
+		return Configuration.configFileName;
+	}
+
 }
