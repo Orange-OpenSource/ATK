@@ -38,8 +38,6 @@ import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 
-import sun.util.logging.PlatformLogger;
-
 import com.orange.atk.atkUI.corecli.utils.FileResolver;
 import com.orange.atk.atkUI.corecli.utils.FileUtilities;
 import com.orange.atk.atkUI.corecli.utils.SortedProperties;
