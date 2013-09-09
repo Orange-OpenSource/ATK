@@ -139,91 +139,69 @@ public class Configuration {
 	}
 
 	public static boolean loadConfigurationFile(String configFileName) {
-		Configuration.configFileName = configFileName;
+		
+		String userConfigDirPath = Platform.getInstance().getUserConfigDirPath();
+		Configuration.configFileName = userConfigDirPath+configFileName;		
+		String atkPath = Platform.getInstance().getJATKPath();	
+		File atkConfigDir = new File(userConfigDirPath);
+		
 		try {
-			FileInputStream fileInputStream = new FileInputStream(configFileName);
-			properties.load(fileInputStream);
+		if (!(atkConfigDir.exists())) { 
+			// Create configuration directory in user home
+			atkConfigDir.mkdir(); 
+			Logger.getLogger(Configuration.class).info("Config directory created in " + atkConfigDir.getPath());
+			// Copy the main configuration file into it
+			File newFile = new File(userConfigDirPath + Platform.FILE_SEPARATOR + configFileName);
+			File originalFile = new File(atkPath + Platform.FILE_SEPARATOR + configFileName);
+			FileUtil.copyfile(newFile, originalFile);
+			Logger.getLogger(Configuration.class).info(configFileName + " copied into " + atkConfigDir.getPath());
+			// Create the configFile directory if necessary and copy the config files
+			
+		}
+		
+		Logger.getLogger(Configuration.class).info("Configuration.configFileName= " + Configuration.configFileName);
+
+			FileInputStream fileInputStream = new FileInputStream(Configuration.configFileName);			
+			properties.load(fileInputStream);			
 			fileInputStream.close();
-			fileResolver = new FileResolver(new File(Platform.TMP_DIR),
-					Integer.parseInt(getProperty(httpMaxConnectionTime)),
-					Integer.parseInt(getProperty(httpMaxDownloadTime)),
-					Integer.parseInt(getProperty(httpMaxAttempts)),
-					Boolean.parseBoolean(getProperty(PROXYSET)), getProperty(PROXYHOST),
+
+			
+			fileResolver = new FileResolver(new File(Platform.TMP_DIR), 
+					Integer.parseInt(getProperty(httpMaxConnectionTime)), 
+					Integer.parseInt(getProperty(httpMaxDownloadTime)), 
+					Integer.parseInt(getProperty(httpMaxAttempts)), 
+					Boolean.parseBoolean(getProperty(PROXYSET)),
+					getProperty(PROXYHOST),
 					getProperty(PROXYPORT));
-			String configdir = properties.getProperty(CONFIGDIRECTORY);
-			if ((null == configdir) || (configdir.equals(""))) {
-				int option = JOptionPane.showConfirmDialog(null,
-						"You must specify a folder to save the configuration files.\n"
-								+ "Please select a folder.\n"
-								+ "(A folder ConfigFiles will created in the folder you  select)",
-						"Select a folder for the configuration files...",
-						JOptionPane.OK_CANCEL_OPTION);
-				if (JOptionPane.CANCEL_OPTION == option) {
-					return false;
-				}
-				JFileChooser fileChooser = new JFileChooser();
-				fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				fileChooser.setFileFilter(new FileUtilities.FilterDir());
-				int returnVal = -1;
-				do {
-					returnVal = fileChooser.showDialog(null,
-							"Select location to create the directory for the configuration files.");
-					if (returnVal == JFileChooser.APPROVE_OPTION) {
-						String selectedFolder = fileChooser.getSelectedFile().toString();
-						selectedFolder += File.separator + "ConfigFiles" + File.separator;
-						File folder = new File(selectedFolder);
-						if (!folder.exists()) {
-							if (!folder.mkdir()) {
-								if (JOptionPane.CANCEL_OPTION == JOptionPane
-										.showConfirmDialog(
-												null,
-												"Could not create the configuration folder in the selected folder.\n"
-														+ "Please selecte a new folder.",
-												"Need to select another folder",
-												JOptionPane.OK_CANCEL_OPTION)) {
-									return false;
-								}
-							}
-						}
+			
+			String userConfigFilesDirPath = userConfigDirPath + Platform.FILE_SEPARATOR + "ConfigFiles" + Platform.FILE_SEPARATOR ; //properties.getProperty(CONFIGDIRECTORY);
+			File userConfigFilesDir = new File (userConfigFilesDirPath); 
+			
+			if((!userConfigFilesDir.exists()) || (!userConfigFilesDir.isDirectory())){
+				//create the configuration Directory 
+				Logger.getLogger(Configuration.class).info("creating ConfigFiles directory in "+userConfigFilesDir.getPath());
+						if(!userConfigFilesDir.mkdir()){
+							Logger.getLogger("").debug("The installation folder with the configurations files" +
+									"does not exits.\n It should be under "+userConfigFilesDir.getPath());
 
-						properties.setProperty(CONFIGDIRECTORY, selectedFolder);
-						writeProperties();
-
-						// We have to copy the default configuration files
-						String folderPath = Platform.getInstance().getJATKPath();
-						folderPath += Platform.FILE_SEPARATOR + Platform.FILE_SEPARATOR
-								+ "ConfigFiles" + File.separator;
-
-						File folderinstall = new File(folderPath);
-						if (!folderinstall.exists()) {
-							Logger.getLogger("").debug(
-									"The installation folder with the configurations files"
-											+ "does not exits.\n It should be under " + folderPath);
 						}
 						FilenameFilter filter = new FilenameFilter() {
 							public boolean accept(File dir, String name) {
 								return name.endsWith(".xml");
 							}
 						};
-						String[] listfiles = folderinstall.list(filter);
-						for (String fileName : listfiles) {
-							File newFile = new File(selectedFolder + fileName);
-							File toCopy = new File(folderPath + fileName);
-							FileUtil.copyfile(newFile, toCopy);
-						}
-						return true;
 
-					}
-				} while (true);
-			} else {
-				if (!new File(configdir).exists()) {
-					JOptionPane.showMessageDialog(null,
-							"The directory where configuration files are saved does not exist:\n"
-									+ configdir, "Error", JOptionPane.ERROR_MESSAGE);
-				}
+						String atkConfigFilesDirPath = atkPath + Platform.FILE_SEPARATOR + "ConfigFiles" + Platform.FILE_SEPARATOR; 
+						String[] listfiles = new File(atkConfigFilesDirPath).list(filter);
+						for(String fileName : listfiles){
+							File newFile = new File(userConfigFilesDirPath+fileName);
+							File originalFile = new File(atkConfigFilesDirPath+fileName);
+							FileUtil.copyfile(newFile, originalFile);
+						}
+						
+
 			}
 			return true;
-
 		} catch (FileNotFoundException fnfe) {
 			Alert.raise(fnfe, "Unable to find configuration file '" + configFileName + "'");
 		} catch (IOException ioe) {
@@ -232,9 +210,9 @@ public class Configuration {
 		return false;
 	}
 
-	public static String getConfigFileName() {
-		return configFileName;
-	}
+
+
+
 
 	/**
 	 * Retrieves a config property value by its name. Use static field of this
@@ -312,6 +290,10 @@ public class Configuration {
 
 	public static String getRevision() {
 		return getProperty("matosRevision");
+	}
+
+	public static String getConfigFileName() { 
+		return Configuration.configFileName;
 	}
 
 }

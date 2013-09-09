@@ -307,7 +307,7 @@ public class AndroidWizard extends JFrame {
 	}
 	
 	public void printReport() {
-		String configXmlFileName = configFileName+"_template.xml";
+		String configXmlFileName = configFileName+".xml";
 
 		Document configxml = DocumentHelper.createDocument();
 		
@@ -417,8 +417,7 @@ public class AndroidWizard extends JFrame {
 		JOptionPane.showConfirmDialog(this, 
 			"A template of the config file has been created under \n"+
 			configXmlFileName+"\n"+
-			"See ATK User guide to configure the Touchscreen section of this template\n"+
-			"Once you've completed the configuration, just rename the file by removing \"_template\" and restart ATK.", 
+			"See ATK User guide to configure the Touchscreen section of this template\n", 
 			"Success",JOptionPane.CLOSED_OPTION);
 		exit(true);
 

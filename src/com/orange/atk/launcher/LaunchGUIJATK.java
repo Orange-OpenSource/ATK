@@ -25,8 +25,12 @@ package com.orange.atk.launcher;
 
 import java.io.File;
 
+
+
+
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+
 
 import org.apache.log4j.xml.DOMConfigurator;
 
@@ -42,19 +46,23 @@ public class LaunchGUIJATK {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// verify win32com.dll
-		File win32 = new File(System.getenv("java.home") + Platform.FILE_SEPARATOR + "win32com.dll");
 
-		if (!win32.exists() && System.getenv("java.home") != null)
-			FileUtil.copyfile(win32, new File("win32com.dll"));
-
-		// init configuration (jatk and log4j)
-		if (!Configuration.loadConfigurationFile("config.properties"))
-			return;
+		//init log4j
 		DOMConfigurator.configure("log4j.xml");
-
+		//verify win32com.dll
+		File win32 =new File(System.getenv("java.home")+Platform.FILE_SEPARATOR+"win32com.dll");
+		
+		if(!win32.exists()&&System.getenv("java.home")!=null)		
+			FileUtil.copyfile(win32, new File("win32com.dll"));
+		
+		//init configuration atk
+		if(!Configuration.loadConfigurationFile("config.properties"))
+			return;
+	
+		
 		WebServer.run();
-		// laucnh JATK
+		//launch ATK
+
 		try {
 			try {
 				// Set System L&F
