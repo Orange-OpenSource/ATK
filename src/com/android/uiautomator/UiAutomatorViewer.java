@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2012 The Android Open Source Project
+ * Software Name : ATK - UIautomatorViewer Robotium Version
+ *
+ * Copyright (C) 2007 - 2012 France Télécom
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +14,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * 
+ * ------------------------------------------------------------------
+ * File Name   : UiAutomatorViewer.java
+ *
+ * Created     : 05/06/2013
+ * Author(s)   : D'ALMEIDA Joana
  */
 
 package com.android.uiautomator;
@@ -97,6 +105,10 @@ public class UiAutomatorViewer extends JFrame {
 	private int mDx, mDy;
 	private ScrenshotCanvas screenshotPanel;
 	private RecorderFrame recorderFrame =null;
+	public static String PackageName="";
+	public static String MainActivityName="";
+	public static String PackageSourceDir="";
+	public static int Versioncode=-1;
 	public  InfiniteProgressPanel glassPane= new InfiniteProgressPanel();
 	private JPopupMenu rightPopup =null;
 	private ArrayList<BasicTreeNode> listeOfnodeForThisClass=null;
@@ -381,8 +393,9 @@ public class UiAutomatorViewer extends JFrame {
 			@Override
 			public void windowClosing(WindowEvent arg0) {
 				if(!dumpXMLFirstTime){
-					screenshotAction.screenshotAction("exit","Stopping instrumentation");
+					screenshotAction.screenshotAction("exit","Stopping instrumentation");	
 				}
+				RecorderFrame.UiautomatorViewerLaunched=false;
 			}
 			@Override
 			public void windowClosed(WindowEvent arg0) {
@@ -546,30 +559,56 @@ public class UiAutomatorViewer extends JFrame {
 		this.recorderFrame = recorderFrame;
 	}
 
+	/**
+	 * prepare and add the command to the Script Recorder and execute the command.
+	 * @param action 
+	 * @param index
+	 * @param text
+	 */
 	public void addNodeToASTScript(String action, int index, String text) {
 		char[] stringArray = action.toCharArray();
-		String command=action;
+		String command;
+		ASTFUNCTION function;
 		stringArray[0] = Character.toUpperCase(stringArray[0]);
-		action = new String(stringArray);
-
-		ASTFUNCTION function = new ASTFUNCTION(ATKScriptParserTreeConstants.JJTFUNCTION);
-		function.setValue(action);
-		if(text!=null && text.length()>0){
-			command+=",1"+",string,"+text;
-			ASTSTRING param= new ASTSTRING(ATKScriptParserTreeConstants.JJTSTRING);
-			param.setValue("'"+text+"'");
-			function.jjtAddChild(param, 0);
-			Logger.getLogger(this.getClass() ).debug("Selected Action: " +action+"('"+text+"'"+")");
+		String temp_action = new String(stringArray);
+		if(action.contains("TouchScreenPress")) {
+			String temp = action.substring(action.indexOf("(")+1);
+			function = new ASTFUNCTION(ATKScriptParserTreeConstants.JJTFUNCTION);
+			function.setValue("touchScreenPress");
+			ASTSTRING param1= new ASTSTRING(ATKScriptParserTreeConstants.JJTNUMBER);
+			String x_value=temp.substring(0, temp.indexOf(","));
+			temp=temp.substring(temp.indexOf(",")+2);
+			param1.setValue(x_value);
+			ASTSTRING param2= new ASTSTRING(ATKScriptParserTreeConstants.JJTNUMBER);
+			String y_value=temp.substring(0, temp.indexOf(","));
+			param2.setValue(y_value);
+			ASTSTRING param3= new ASTSTRING(ATKScriptParserTreeConstants.JJTNUMBER);
+			param3.setValue("100");
+			function.jjtAddChild(param1, 0);
+			function.jjtAddChild(param2, 1);
+			function.jjtAddChild(param3, 2);
+			command="clickOnScreen,2"+",float,float,"+x_value+","+y_value;
 		} else {
-			command+=",1"+",int,"+index;
-			ASTNUMBER param = new ASTNUMBER(ATKScriptParserTreeConstants.JJTNUMBER);
-			param.setValue(String.valueOf(index));
-			function.jjtAddChild(param, 0);
-			if(action.equalsIgnoreCase("enterText")){
-				command+=",2"+",int"+",string,"+index+", ";
-				ASTSTRING param1= new ASTSTRING(ATKScriptParserTreeConstants.JJTSTRING);
-				param1.setValue("''");
-				function.jjtAddChild(param1, 1);
+			command=action;
+			function = new ASTFUNCTION(ATKScriptParserTreeConstants.JJTFUNCTION);
+			function.setValue(temp_action);
+			if(text!=null && text.length()>0){
+				command+=",1"+",string,"+text;
+				ASTSTRING param= new ASTSTRING(ATKScriptParserTreeConstants.JJTSTRING);
+				param.setValue("'"+text+"'");
+				function.jjtAddChild(param, 0);
+				Logger.getLogger(this.getClass() ).debug("Selected Action: " +action+"('"+text+"'"+")");
+			} else {
+				command+=",1"+",int,"+index;
+				ASTNUMBER param = new ASTNUMBER(ATKScriptParserTreeConstants.JJTNUMBER);
+				param.setValue(String.valueOf(index));
+				function.jjtAddChild(param, 0);
+				if(action.equalsIgnoreCase("enterText")){
+					command=action+",2"+",int"+",string,"+index+", ";
+					ASTSTRING param1= new ASTSTRING(ATKScriptParserTreeConstants.JJTSTRING);
+					param1.setValue("''");
+					function.jjtAddChild(param1, 1);
+				}
 			}
 		}
 		try {
@@ -587,7 +626,8 @@ public class UiAutomatorViewer extends JFrame {
 			ASTStart ast = ScriptController.getScriptController().getAST();
 			int selectedIndex =recorderFrame.getSelectedNode();
 			if(selectedIndex<0){
-				JOptionPane.showMessageDialog(UiAutomatorViewer.this, "You must select a node in the script panel before adding new action/node","Error",JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(UiAutomatorViewer.this, "You must select a node in the script panel " +
+						" if you want to add new action/node ","Warning",JOptionPane.WARNING_MESSAGE);
 				return;
 			} else {
 				int numberOfchild =ast.jjtGetNumChildren();
@@ -616,6 +656,12 @@ public class UiAutomatorViewer extends JFrame {
 
 		}
 	}
+	
+	/**
+	 * the index of the selected view (node)
+	 * @param node
+	 * @return
+	 */
 	protected int getIndexOfthisNode(BasicTreeNode node){
 		listeOfnodeForThisClass = new ArrayList<BasicTreeNode>();
 		Object [] attibutes=node.getAttributesArray();
@@ -692,7 +738,18 @@ public class UiAutomatorViewer extends JFrame {
 		if(className!=null && className.toLowerCase().contains("edittext")) {
 			methods.add("enterText");
 		}
+		if(className!=null && className.toLowerCase().contains("image")) {
+			methods.add("clickOnImage");
+		}
+		Rectangle rect = mModel.getCurrentDrawingRect();
+		int x= (int) rect.getCenterX();
+		int y= (int) rect.getCenterY();
+		methods.add("TouchScreenPress("+x+", "+y+", 100)");
 		return methods;
+	}
+
+	public void disbaleStopButton(){
+		jbtStop.setEnabled(false);
 	}
 
 }
