@@ -51,6 +51,7 @@ public class WindowsPlatform extends Platform {
 			}
 		}
 		return JATKPath != null ? JATKPath : "C:\\Program Files\\ATK";
+		// return System.getProperty("user.dir");
 	}
 
 	/**
@@ -75,10 +76,12 @@ public class WindowsPlatform extends Platform {
 
 	@Override
 	public String getBuildApk() {
-		String JATKpath=Platform.getInstance().getJATKPath();
-		String path=JATKpath+Platform.FILE_SEPARATOR + "AndroidTools" + Platform.FILE_SEPARATOR+ 
-				Platform.FILE_SEPARATOR + "BuildAndSignApk" + Platform.FILE_SEPARATOR + "buildTools" 
-				+Platform.FILE_SEPARATOR + "buildApk.bat"; 
+		String JATKpath = Platform.getInstance().getJATKPath();
+		String path = JATKpath + Platform.FILE_SEPARATOR + "AndroidTools" + Platform.FILE_SEPARATOR
+				+
+				Platform.FILE_SEPARATOR + "BuildAndSignApk" + Platform.FILE_SEPARATOR
+				+ "buildTools"
+				+ Platform.FILE_SEPARATOR + "buildApk.bat";
 		File f = new File(path);
 		if (f.exists()) {
 			return path;
@@ -89,9 +92,10 @@ public class WindowsPlatform extends Platform {
 
 	@Override
 	public String getRemoveSignature() {
-		String JATKpath=Platform.getInstance().getJATKPath();
-		String path=JATKpath+Platform.FILE_SEPARATOR + "AndroidTools" + Platform.FILE_SEPARATOR+
-				"BuildAndSignApk"+ Platform.FILE_SEPARATOR + "SignTools" +
+		String JATKpath = Platform.getInstance().getJATKPath();
+		String path = JATKpath + Platform.FILE_SEPARATOR + "AndroidTools" + Platform.FILE_SEPARATOR
+				+
+				"BuildAndSignApk" + Platform.FILE_SEPARATOR + "SignTools" +
 				Platform.FILE_SEPARATOR + "removeSignature.bat";
 		File f = new File(path);
 		if (f.exists()) {
@@ -103,9 +107,9 @@ public class WindowsPlatform extends Platform {
 
 	@Override
 	public String getZipalignLocation() {
-		String JATKpath=Platform.getInstance().getJATKPath();
-		String path=JATKpath + Platform.FILE_SEPARATOR + "AndroidTools" + Platform.FILE_SEPARATOR
-				+"zipalign.exe";
+		String JATKpath = Platform.getInstance().getJATKPath();
+		String path = JATKpath + Platform.FILE_SEPARATOR + "AndroidTools" + Platform.FILE_SEPARATOR
+				+ "zipalign.exe";
 		File f = new File(path);
 		if (f.exists()) {
 			return path;
@@ -116,9 +120,9 @@ public class WindowsPlatform extends Platform {
 
 	@Override
 	public String getAtkKeyLocation() {
-		String JATKpath=Platform.getInstance().getJATKPath();
-		String path=JATKpath + Platform.FILE_SEPARATOR + "AndroidTools" + Platform.FILE_SEPARATOR
-				+"ATKKey.keystore";
+		String JATKpath = Platform.getInstance().getJATKPath();
+		String path = JATKpath + Platform.FILE_SEPARATOR + "AndroidTools" + Platform.FILE_SEPARATOR
+				+ "ATKKey.keystore";
 		File f = new File(path);
 		if (f.exists()) {
 			return path;
