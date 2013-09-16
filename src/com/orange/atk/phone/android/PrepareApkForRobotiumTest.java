@@ -19,6 +19,7 @@
  * File Name   : PrepareApkForRobotiumTest.java
  *
  * Created     : 05/06/2013
+ * Author(s)   : D'ALMEIDA Joana
  */
 package com.orange.atk.phone.android;
 
@@ -45,7 +46,8 @@ import com.orange.atk.sign.apk.SignAPK;
 
 public class PrepareApkForRobotiumTest {
 
-	public static void prepareAPKForRobotiumGetViews(IDevice adevice ,String packName, String activityName, String packsourceDir, String TestAPK,int versionCode) throws PhoneException {
+	public static void prepareAPKForRobotiumGetViews(IDevice adevice ,String packName, String activityName,
+			String packsourceDir, String TestAPK,int versionCode) throws PhoneException {
 		Logger.getLogger(PrepareApkForRobotiumTest.class).debug("/****prepare APK For Robotium test ***/ ");
 		String adbLocation = Platform.getInstance().getDefaultADBLocation();
 		String AndroidToolsDir = Platform.getInstance().getJATKPath() + Platform.FILE_SEPARATOR

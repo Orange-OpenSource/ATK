@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2012 The Android Open Source Project
+ * Software Name : ATK - UIautomatorViewer Robotium Version
+ *
+ * Copyright (C) 2007 - 2012 France Télécom
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +14,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * 
+ * ------------------------------------------------------------------
+ * File Name   : UiAutomatorHelper.java
+ *
+ * Created     : 05/06/2013
+ * Author(s)   : D'ALMEIDA Joana
  */
 
 package com.android.uiautomator;
@@ -22,8 +30,10 @@ import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.RawImage;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.SyncException;
 import com.android.ddmlib.SyncService;
 import com.android.ddmlib.TimeoutException;
+import com.android.uiautomator.actions.ScreenshotAction;
 import com.android.uiautomator.robotiumTask.RobotiumTaskForViewer;
 import com.android.uiautomator.tree.BasicTreeNode;
 import com.android.uiautomator.tree.RootWindowNode;
@@ -41,6 +51,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 
@@ -80,19 +91,19 @@ public class UiAutomatorHelper {
 					pw.print(RobotiumTaskForViewer.XmlViews);
 					pw.close();
 				} catch(IOException e){
-					String msg = "exception while getUiHierarchyFile : " + e.getMessage();
+					String msg = "Exception while getUiHierarchyFile : " + e.getMessage();
 					Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper. exception while getUiHierarchyFile***/");
 					throw new UiAutomatorException(msg, e);
 				}
 			} else {
 				dst=null;
-				throw new UiAutomatorException("cann't get view", null);
+				throw new UiAutomatorException("can't get views", null);
 
 			}
 
 		} catch (PhoneException e1) {
 			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper. exception while getUiHierarchyFile***/");
-			String msg = "exception while getUiHierarchyFile from Robotium : " + e1.getMessage();
+			String msg = "Exception while getUiHierarchyFile from Robotium : " + e1.getMessage();
 			throw new UiAutomatorException(msg, e1);
 		}
 	}
@@ -125,7 +136,7 @@ public class UiAutomatorHelper {
 		try {
 			UiAutomatorHelper.getUiHierarchyFile(device, xmlDumpFile,cmd);
 		} catch (UiAutomatorException e) {
-			String msg = "Error while obtaining UI hierarchy XML file: " + e.getMessage();
+			String msg = e.getMessage();
 			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper.Error while obtaining UI hierarchy XML file:***/"+ e.getMessage());
 			throw new UiAutomatorException(msg, e);
 		}
@@ -135,17 +146,25 @@ public class UiAutomatorHelper {
 			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper.load UiAutomatorModel ***/");
 			model = new UiAutomatorModel(xmlDumpFile);
 		} catch (Exception e) {
-			String msg = "Error while parsing UI hierarchy XML file: " + e.getMessage();
+			String msg = "Error while parsing UI hierarchy XML file: \n" + e.getMessage();
 			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper.Error while parsing UI hierarchy XML file:***/"+ e.getMessage());
 			throw new UiAutomatorException(msg, e);
 		}
 
-
+		UiAutomatorHelper.mViewer.glassPane.setText("Taking Screenshot");
 		Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper.getScreenshot***/");
-		RawImage rawImage;
+		RawImage rawImage=null;
 		try {
 			rawImage = device.getScreenshot();
-		} catch (Exception e) {
+		} catch (TimeoutException e) {
+			String msg = "Error taking device screenshot: " + e.getMessage();
+			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper.Error taking device screenshot:***/"+ e.getMessage());
+			throw new UiAutomatorException(msg, e);
+		}catch (IOException e) {
+			String msg = "Error taking device screenshot: " + e.getMessage();
+			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper.Error taking device screenshot:***/"+ e.getMessage());
+			throw new UiAutomatorException(msg, e);
+		}catch (AdbCommandRejectedException e) {
 			String msg = "Error taking device screenshot: " + e.getMessage();
 			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper.Error taking device screenshot:***/"+ e.getMessage());
 			throw new UiAutomatorException(msg, e);
@@ -215,12 +234,26 @@ public class UiAutomatorHelper {
 		CountDownLatch commandCompleteLatch = new CountDownLatch(1);
 		try {
 			device.executeShellCommand(command, new CollectingOutputReceiver(commandCompleteLatch), 40000);
-
 			commandCompleteLatch.await(40L, TimeUnit.SECONDS);
-
 			device.getSyncService().pullFile("/data/local/tmp/uidump.xml", dst.getAbsolutePath(), SyncService.getNullProgressMonitor());
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		}catch (TimeoutException e) {
+			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper.Error getviews from uiautomator:***/"+ e.getMessage());
+			throw new UiAutomatorException(e.getMessage(),e);
+		} catch (AdbCommandRejectedException e) {
+			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper.Error getviews from uiautomator:***/"+ e.getMessage());
+			throw new UiAutomatorException(e.getMessage(),e);
+		} catch (ShellCommandUnresponsiveException e) {
+			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper.Error getviews from uiautomator:***/"+ e.getMessage());
+			throw new UiAutomatorException(e.getMessage(),e);
+		} catch (IOException e) {
+			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper.Error getviews from uiautomator:***/"+ e.getMessage());
+			throw new UiAutomatorException(e.getMessage(),e);
+		} catch (InterruptedException e) {
+			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper.Error getviews from uiautomator:***/"+ e.getMessage());
+			throw new UiAutomatorException(e.getMessage(),e);
+		}	catch (SyncException e) {
+			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper.Error getviews from uiautomator:***/"+ e.getMessage());
+			throw new UiAutomatorException(e.getMessage(),e);
 		}
 	}
 
@@ -246,7 +279,6 @@ public class UiAutomatorHelper {
 	public static void executeRobotiumCommand(String cmd) throws UiAutomatorException{
 		try {
 			robotiumTask.getViewFromRobotium(cmd);
-
 		} catch (PhoneException e1) {
 			Logger.getLogger(UiAutomatorHelper.class).debug("/****UiAutomatorHelper. exception while executing command***/ : "+cmd);
 			String msg = "exception while executing command : " +cmd +" exception "+ e1.getMessage();

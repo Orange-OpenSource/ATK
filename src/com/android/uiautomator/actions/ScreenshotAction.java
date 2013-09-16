@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2012 The Android Open Source Project
+ * Software Name : ATK - UIautomatorViewer Robotium Version
+ *
+ * Copyright (C) 2007 - 2012 France Télécom
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,11 +14,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * 
+ * ------------------------------------------------------------------
+ * File Name   : ScreenshotAction.java
+ *
+ * Created     : 05/06/2013
+ * Author(s)   : D'ALMEIDA Joana
  */
 
 package com.android.uiautomator.actions;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,6 +38,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import org.apache.log4j.Logger;
 
@@ -42,6 +53,7 @@ import com.android.uiautomator.UiAutomatorViewer;
 public class ScreenshotAction {
 	private UiAutomatorViewer mViewer;
 	private static IDevice adevice = null;
+	private static boolean cancelClicked = false;
 
 	public ScreenshotAction(UiAutomatorViewer viewer) {
 		mViewer = viewer;
@@ -70,11 +82,10 @@ public class ScreenshotAction {
 		private final List<IDevice> mDevices;
 		private final String[] mDeviceNames;
 		private static int sSelectedDeviceIndex;
-		private boolean cancelClicked = false;
 
 		public DevicePickerDialog(JFrame parentShell, List<IDevice> devices) {
 			super(parentShell, ModalityType.APPLICATION_MODAL);
-
+			cancelClicked=false;
 			mDevices = devices;
 			mDeviceNames = new String[mDevices.size()];
 			for (int i = 0; i < devices.size(); i++) {
@@ -144,10 +155,16 @@ public class ScreenshotAction {
 			adevice = pickDevice();
 		}
 		if (adevice == null) {
-			JOptionPane.showMessageDialog(mViewer, "no device detected ", "Error",
-					JOptionPane.ERROR_MESSAGE);
+			if(cancelClicked) {
+				JOptionPane.showMessageDialog(mViewer, "no device selected ", "Error",
+						JOptionPane.ERROR_MESSAGE);
+			} else {
+				JOptionPane.showMessageDialog(mViewer, "no device detected ", "Error",
+						JOptionPane.ERROR_MESSAGE);
+			}
 			return;
 		}
+
 		Thread thread = new Thread() {
 			@Override
 			public void run() {
@@ -164,13 +181,19 @@ public class ScreenshotAction {
 										result.screenshot);
 							} else {
 								UiAutomatorHelper.executeRobotiumCommand(command);
+								if(command.equals("exit")){
+									UiAutomatorViewer.dumpXMLFirstTime=true;
+									adevice = null;
+								}
 							}
 						} catch (UiAutomatorException e) {
-							JOptionPane.showMessageDialog(mViewer,
-									"Error while executing " + e.getMessage(), "Error",
+							JOptionPane.showMessageDialog(mViewer,e.getMessage(), "Error",
 									JOptionPane.ERROR_MESSAGE);
 							Logger.getLogger(this.getClass()).debug(
 									"/**** Error while taking snapshot ***/" + e.getMessage());
+							UiAutomatorViewer.dumpXMLFirstTime=true;
+							adevice = null;
+							mViewer.disbaleStopButton();
 							mViewer.glassPane.stop();
 							return;
 						}

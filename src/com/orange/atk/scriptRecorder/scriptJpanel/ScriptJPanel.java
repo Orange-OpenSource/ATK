@@ -30,6 +30,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
@@ -480,4 +481,16 @@ public class ScriptJPanel extends JScrollPane {
 		}
 		return -1;
 	}
+	
+	public String searchNode(String nodeStr) {
+	    DefaultMutableTreeNode node = null;
+	    Enumeration e = root.breadthFirstEnumeration();
+	    while (e.hasMoreElements()) {
+	      node = (DefaultMutableTreeNode) e.nextElement();
+	      if ((node.getUserObject().toString()).contains(nodeStr)) {
+	        return node.getUserObject().toString();
+	      }
+	    }
+	    return null;
+	  }
 }

@@ -63,6 +63,7 @@ import org.apache.log4j.Logger;
 
 import com.android.uiautomator.DebugBridge;
 import com.android.uiautomator.UiAutomatorViewer;
+import com.android.uiautomator.robotiumTask.RobotiumTaskForViewer;
 import com.orange.atk.atkUI.corecli.Configuration;
 import com.orange.atk.atkUI.corecli.utils.FileUtilities;
 import com.orange.atk.atkUI.coregui.CoreGUIPlugin;
@@ -84,6 +85,7 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 	public static String MainActivityName="";
 	public static String PackageSourceDir="";
 	public static int Versioncode=-1;
+	public static boolean UiautomatorViewerLaunched= false;
 	public InfiniteProgressPanel glassPane= new InfiniteProgressPanel();
 
 	public static ImageIcon icon = null;
@@ -811,12 +813,28 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 	}
 
 	protected void  startUiAtomatorViewer(){
-		new AndroidPlugin().getAdb();
-		DebugBridge.setInitialised(new AndroidPlugin().getAdb());
-		UiAutomatorViewer window = new UiAutomatorViewer();
-		window.setRecorderFrame(this);
-		window.setVisible(true);
-
+		if (!RecorderFrame.UiautomatorViewerLaunched){
+			new AndroidPlugin().getAdb();
+			DebugBridge.setInitialised(new AndroidPlugin().getAdb());
+			UiAutomatorViewer window = new UiAutomatorViewer();
+			window.setRecorderFrame(this);
+			window.setVisible(true);
+			RecorderFrame.UiautomatorViewerLaunched=true;
+			String node_text=jsPanel.searchNode("StartRobotiumTestOn");
+			if(node_text!=null){
+				node_text=node_text.substring(node_text.indexOf("(")+1);
+				node_text=node_text.replace("'", "");
+				node_text=node_text.replace(" ", "");
+				node_text=node_text.replace(")", "");
+				RobotiumTaskForViewer.PackageName=node_text.substring(0,node_text.indexOf(","));
+				node_text=node_text.substring(node_text.indexOf(",")+1);
+				RobotiumTaskForViewer.MainActivityName=node_text.substring(0,node_text.indexOf(","));
+				node_text=node_text.substring(node_text.indexOf(",")+1);
+				RobotiumTaskForViewer.PackageSourceDir=node_text.substring(0,node_text.indexOf(","));
+				node_text=node_text.substring(node_text.indexOf(",")+1);
+				RobotiumTaskForViewer.VersionCode=Integer.parseInt(node_text);
+			}
+		}
 	}
 
 	protected ArrayList<String> getForegroundApp() {
@@ -828,20 +846,27 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 		ArrayList <String> apk = controller.getForegroundApp();
 		if(allApk!=null) { 
 			glassPane.stop();
-			new SelectAPKDialog(this,allApk).show();
-			if(RecorderFrame.PackageName.equalsIgnoreCase("NONE")&&RecorderFrame.MainActivityName.equalsIgnoreCase("NONE")&&
-					RecorderFrame.PackageSourceDir.equalsIgnoreCase("NONE")) {
-				RecorderFrame.MainActivityName="";
-				RecorderFrame.PackageName="";
-				RecorderFrame.PackageSourceDir="";
-				RecorderFrame.Versioncode=-1;
-			} else if (RecorderFrame.PackageName.equalsIgnoreCase("CurrentApp")&&RecorderFrame.MainActivityName.equalsIgnoreCase("CurrentApp")
-					&&RecorderFrame.PackageSourceDir.equalsIgnoreCase("CurrentApp")) {
-				RecorderFrame.PackageName=apk.get(0);
-				RecorderFrame.MainActivityName=apk.get(1);
-				RecorderFrame.PackageSourceDir=apk.get(2);
-				RecorderFrame.Versioncode=Integer.parseInt(apk.get(3));
-			}
+			SelectAPKDialog selectAPKDialog =null;
+			do {
+				selectAPKDialog= new SelectAPKDialog(this,allApk);
+				selectAPKDialog.show();
+				if(RecorderFrame.PackageName.equalsIgnoreCase("NONE")&&RecorderFrame.MainActivityName.equalsIgnoreCase("NONE")&&
+						RecorderFrame.PackageSourceDir.equalsIgnoreCase("NONE")) {
+					RecorderFrame.MainActivityName="";
+					RecorderFrame.PackageName="";
+					RecorderFrame.PackageSourceDir="";
+					RecorderFrame.Versioncode=-1;
+				} else if (RecorderFrame.PackageName.equalsIgnoreCase("CurrentApp")&&RecorderFrame.MainActivityName.equalsIgnoreCase("CurrentApp")
+						&&RecorderFrame.PackageSourceDir.equalsIgnoreCase("CurrentApp")) {
+					RecorderFrame.PackageName=apk.get(0);
+					RecorderFrame.MainActivityName=apk.get(1);
+					RecorderFrame.PackageSourceDir=apk.get(2);
+					RecorderFrame.Versioncode=Integer.parseInt(apk.get(3));
+				}
+				if(RecorderFrame.PackageSourceDir.startsWith("/system")) {
+					JOptionPane.showMessageDialog(this, "Can't perform Robotium Test On System Apps","ERROR",JOptionPane.ERROR_MESSAGE);
+				}
+			} while (!RecorderFrame.PackageSourceDir.equalsIgnoreCase("") && RecorderFrame.PackageSourceDir.startsWith("/system"));
 		} else {
 			glassPane.stop();
 			JOptionPane.showMessageDialog(this, "Empty List of installed apks","Warning",JOptionPane.WARNING_MESSAGE);
@@ -865,7 +890,8 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 				selectAPK();
 				if(!RecorderFrame.PackageName.equalsIgnoreCase("")&& !RecorderFrame.MainActivityName.equalsIgnoreCase("")&&
 						!RecorderFrame.PackageSourceDir.equalsIgnoreCase("")) {
-					controller.setTestAPKWithRobotiumParam(RecorderFrame.PackageName,RecorderFrame.MainActivityName,RecorderFrame.PackageSourceDir,RecorderFrame.Versioncode);
+					controller.setTestAPKWithRobotiumParam(RecorderFrame.PackageName,RecorderFrame.MainActivityName,
+							RecorderFrame.PackageSourceDir,RecorderFrame.Versioncode);
 					controller.newFileForRobotium();
 					jbtStop.setEnabled(false);
 					jbtPlay.setEnabled(true);
