@@ -595,6 +595,7 @@ public class LaunchJATK implements ErrorListener {
 							for(int j=0; j< devices.size();j++){
 								if(devices.get(j).getSerialNumber().equalsIgnoreCase(device_serial)){
 									AutomaticPhoneDetection.getInstance().setSelectedDevice(devices.get(j));
+									break;
 								}
 							}
 						}

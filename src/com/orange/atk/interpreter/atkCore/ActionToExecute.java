@@ -1617,6 +1617,12 @@ public class ActionToExecute {
 		if(node.getValue().toLowerCase().contains("StartRobotiumTestOn".toLowerCase())) {
 			actionStartRobotiumTestOn(node, args);
 		} else {
+			/* command to send to the intermediate service. the command is a table.
+			 * command format : functionName  NumberOfParam allsParamsTypes allsParams
+			 * Example if the action is : clickOnButton ('Ok') 
+			 * the command to send is the table  {"clickOnbutton","1","string","Ok"}
+			 */
+			
 			String [] commands=null;
 			if(args!=null&& args.length > 0) {
 				commands=new String[(2+(2*args.length))];
