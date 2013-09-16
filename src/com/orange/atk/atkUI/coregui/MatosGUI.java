@@ -708,4 +708,9 @@ public class MatosGUI extends AROEnabledFrame {
 
 	}
 
+	@Override
+	public void dataCollectorStatusCallBack(boolean arg0, boolean arg1) {
+		// TODO Auto-generated method stub
+
+	}
 }
