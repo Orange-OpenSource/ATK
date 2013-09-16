@@ -99,7 +99,10 @@ public class FunctionDictionnary {
 		//functionDictionnary.add( new String[]{"WaitWindow"} );
 		//functionDictionnary.add( new String[]{"WaitWindow","STRING","INTEGER"} );
 
-		//TODO implement these features in at least one phone like solo
+		//TODO implement these features in at least one phone 
+		/**
+		 * solo methods
+		 */
 		functionDictionnary.add( new String[]{"ExitSolo"} );
 		functionDictionnary.add( new String[]{"AssertCurrentActivity","STRING","Class"} );
 		functionDictionnary.add( new String[]{"AssertCurrentActivity","STRING","Class","BOOLEAN"} );
