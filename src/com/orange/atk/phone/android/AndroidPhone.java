@@ -1263,6 +1263,10 @@ public class AndroidPhone implements PhoneInterface {
 
 	public void stopTestingMode() {
 		isStarted = false;
+		if (aroDataCollectorBridge != null) {
+			aroDataCollectorBridge.stopARODataCollector();
+			aroDataCollectorBridge=null;
+		}
 		try {
 			if (inMonitor != null)
 				inMonitor.close();
