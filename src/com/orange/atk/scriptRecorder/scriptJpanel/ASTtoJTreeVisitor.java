@@ -29,7 +29,9 @@ import java.util.List;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import com.orange.atk.interpreter.ast.ASTBOOLEAN;
 import com.orange.atk.interpreter.ast.ASTCOMMENT;
+import com.orange.atk.interpreter.ast.ASTFLOAT;
 import com.orange.atk.interpreter.ast.ASTFUNCTION;
 import com.orange.atk.interpreter.ast.ASTINCLUDE;
 import com.orange.atk.interpreter.ast.ASTLOOP;
@@ -160,6 +162,14 @@ public class ASTtoJTreeVisitor implements ATKScriptParserVisitor {
 			loopnode.add( (DefaultMutableTreeNode) 
 								node.jjtGetChild(i).jjtAccept(this, data) );
 		return loopnode;
+	}
+
+	public Object visit(ASTBOOLEAN node, Object data) {
+		return null;
+	}
+
+	public Object visit(ASTFLOAT node, Object data) {
+		return null;
 	}
 
 }

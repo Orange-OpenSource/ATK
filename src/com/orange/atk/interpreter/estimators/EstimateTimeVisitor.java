@@ -26,7 +26,9 @@ package com.orange.atk.interpreter.estimators;
 
 import org.apache.log4j.Logger;
 
+import com.orange.atk.interpreter.ast.ASTBOOLEAN;
 import com.orange.atk.interpreter.ast.ASTCOMMENT;
+import com.orange.atk.interpreter.ast.ASTFLOAT;
 import com.orange.atk.interpreter.ast.ASTFUNCTION;
 import com.orange.atk.interpreter.ast.ASTINCLUDE;
 import com.orange.atk.interpreter.ast.ASTLOOP;
@@ -182,6 +184,14 @@ public class EstimateTimeVisitor implements ATKScriptParserVisitor {
 		for( int i=1; i<node.jjtGetNumChildren() ; i++ ) 
 			sleepNumber += (Integer) node.jjtGetChild(i).jjtAccept(this, data);
 		return sleepNumber;
+	}
+
+	public Object visit(ASTBOOLEAN node, Object data) {
+		return 0;
+	}
+
+	public Object visit(ASTFLOAT node, Object data) {
+		return 0;
 	}
 
 }

@@ -35,6 +35,7 @@ import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.Box;
@@ -60,12 +61,16 @@ import javax.swing.event.ChangeListener;
 
 import org.apache.log4j.Logger;
 
+import com.android.uiautomator.DebugBridge;
+import com.android.uiautomator.UiAutomatorViewer;
+import com.android.uiautomator.robotiumTask.RobotiumTaskForViewer;
 import com.orange.atk.atkUI.corecli.Configuration;
 import com.orange.atk.atkUI.corecli.utils.FileUtilities;
 import com.orange.atk.atkUI.coregui.CoreGUIPlugin;
 import com.orange.atk.error.ErrorListener;
 import com.orange.atk.error.ErrorManager;
 import com.orange.atk.internationalization.ResourceManager;
+import com.orange.atk.phone.android.AndroidPlugin;
 import com.orange.atk.phone.detection.AutomaticPhoneDetection;
 import com.orange.atk.scriptRecorder.scriptJpanel.ScriptJPanel;
 
@@ -75,7 +80,14 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 	 * 
 	 */
 	private static final long serialVersionUID = -6201081729876731517L;
-	
+
+	public static String PackageName="";
+	public static String MainActivityName="";
+	public static String PackageSourceDir="";
+	public static int Versioncode=-1;
+	public static boolean UiautomatorViewerLaunched= false;
+	public InfiniteProgressPanel glassPane= new InfiniteProgressPanel();
+
 	public static ImageIcon icon = null;
 	private static final String icondescr = "ATK";
 	private JMenuItem jmiRecord;
@@ -109,10 +121,12 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 	private static final String VERSION= "Script Recorder v1.0";
 	private String inputdir;
 
+	private JButton jbtGetViewsFromRobotium;
+
 	public RecorderFrame(ScriptController sc) throws HeadlessException {
 		super(VERSION);
 		this.controller=sc;
-		
+
 		URL iconURL = CoreGUIPlugin.getMainIcon();
 		icon = new ImageIcon(iconURL, icondescr);
 		setIconImage(icon.getImage());
@@ -120,14 +134,32 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 		/* MenuBar Creation */
 		JMenuBar jmb = new JMenuBar();
 		JMenu jmFile= new JMenu("File");
-		JMenuItem jmiNew= new JMenuItem("New");
+		/*JMenuItem jmiNew= new JMenuItem("New");
 		jmiNew.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent arg0) {
 				newFile();
 			}
 
+		});*/
+		JMenuItem jmiNew= new JMenuItem("Phone Test");
+		jmiNew.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				newFile();
+			}
 		});
+
+		JMenuItem jmiRobotiumTest= new JMenuItem("Robotium Test");
+		jmiRobotiumTest.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				newRobotiumTest();
+			}
+		});
+
+
+		JMenu jmNewFile= new JMenu("New");
+		jmNewFile.add(jmiNew);
+		jmNewFile.add(jmiRobotiumTest);
 
 		JMenuItem jmiOpen=new JMenuItem("Open...");
 		jmiOpen.addActionListener(new ActionListener(){
@@ -172,7 +204,8 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 
 		});
 
-		jmFile.add(jmiNew);
+		//jmFile.add(jmiNew);
+		jmFile.add(jmNewFile);
 		jmFile.add(jmiOpen);
 		jmFile.add(jmiSave);
 		jmFile.add(jmiSaveas);
@@ -304,6 +337,16 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 		});
 
 
+		jbtGetViewsFromRobotium = new JButton(new ImageIcon(this.getClass().getResource("screenshot.png")));
+		jbtGetViewsFromRobotium.setToolTipText("Displays current views");
+		jbtGetViewsFromRobotium.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				startUiAtomatorViewer();
+			}
+		});
+
+
+
 
 		String[] arg2 ={"-No Mode-"};
 		jcbPhonemode=new JComboBox(arg2);
@@ -338,6 +381,9 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 		jtb.add(jbtPlay);
 		jtb.addSeparator();
 		jtb.add(jbtscreenshot);
+
+		jtb.add(jbtGetViewsFromRobotium);
+
 		this.add(jtb, BorderLayout.NORTH);
 		jbtStop.setEnabled(false);
 		//	jcbPhone.setEnabled(true);
@@ -422,6 +468,7 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 		});
 
 		ErrorManager.getInstance().addErrorListener(this);
+		this.setGlassPane(glassPane);
 		pack();
 	}
 
@@ -497,9 +544,14 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 	}
 
 	protected void runScript() {
+
 		String sp =controller.getScriptPath();
 		if(sp==null)
 			save();
+		if(!UiAutomatorViewer.dumpXMLFirstTime){
+			JOptionPane.showMessageDialog(this, "Error : You must Stop UiautomatorViewer.getViews before running script","Error",JOptionPane.ERROR_MESSAGE);
+			return;
+		}
 		if(!(jcbPhonemode.getSelectedItem().equals("-No Mode-"))){
 			//stop automatic detection
 			AutomaticPhoneDetection.getInstance().pauseDetection();
@@ -628,7 +680,7 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 			jmiStop.setEnabled(false);
 		}
 	}
-	
+
 	protected void save() {
 		//		Logger.getLogger(this.getClass() ).debug("/****RecorderFrame.save****/");
 		String scriptPath = controller.getScriptPath();
@@ -685,7 +737,7 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 	}
 
 
-	
+
 	private String getDefaultPath(){
 		try {
 			String path = Configuration.getProperty(Configuration.INPUTDIRECTORY);
@@ -760,5 +812,108 @@ public class RecorderFrame extends JFrame implements ErrorListener  {
 		statusLabel.setForeground(Color.BLACK);
 	}
 
+	protected void  startUiAtomatorViewer(){
+		if (!RecorderFrame.UiautomatorViewerLaunched){
+			new AndroidPlugin().getAdb();
+			DebugBridge.setInitialised(new AndroidPlugin().getAdb());
+			UiAutomatorViewer window = new UiAutomatorViewer();
+			window.setRecorderFrame(this);
+			window.setVisible(true);
+			RecorderFrame.UiautomatorViewerLaunched=true;
+			String node_text=jsPanel.searchNode("StartRobotiumTestOn");
+			if(node_text!=null){
+				node_text=node_text.substring(node_text.indexOf("(")+1);
+				node_text=node_text.replace("'", "");
+				node_text=node_text.replace(" ", "");
+				node_text=node_text.replace(")", "");
+				RobotiumTaskForViewer.PackageName=node_text.substring(0,node_text.indexOf(","));
+				node_text=node_text.substring(node_text.indexOf(",")+1);
+				RobotiumTaskForViewer.MainActivityName=node_text.substring(0,node_text.indexOf(","));
+				node_text=node_text.substring(node_text.indexOf(",")+1);
+				RobotiumTaskForViewer.PackageSourceDir=node_text.substring(0,node_text.indexOf(","));
+				node_text=node_text.substring(node_text.indexOf(",")+1);
+				RobotiumTaskForViewer.VersionCode=Integer.parseInt(node_text);
+			}
+		}
+	}
+
+	protected ArrayList<String> getForegroundApp() {
+		return controller.getForegroundApp();
+	}
+
+	public void selectAPK() {
+		ArrayList <String> allApk = controller.getAllInstalledAPK();
+		ArrayList <String> apk = controller.getForegroundApp();
+		if(allApk!=null) { 
+			glassPane.stop();
+			SelectAPKDialog selectAPKDialog =null;
+			do {
+				selectAPKDialog= new SelectAPKDialog(this,allApk);
+				selectAPKDialog.show();
+				if(RecorderFrame.PackageName.equalsIgnoreCase("NONE")&&RecorderFrame.MainActivityName.equalsIgnoreCase("NONE")&&
+						RecorderFrame.PackageSourceDir.equalsIgnoreCase("NONE")) {
+					RecorderFrame.MainActivityName="";
+					RecorderFrame.PackageName="";
+					RecorderFrame.PackageSourceDir="";
+					RecorderFrame.Versioncode=-1;
+				} else if (RecorderFrame.PackageName.equalsIgnoreCase("CurrentApp")&&RecorderFrame.MainActivityName.equalsIgnoreCase("CurrentApp")
+						&&RecorderFrame.PackageSourceDir.equalsIgnoreCase("CurrentApp")) {
+					RecorderFrame.PackageName=apk.get(0);
+					RecorderFrame.MainActivityName=apk.get(1);
+					RecorderFrame.PackageSourceDir=apk.get(2);
+					RecorderFrame.Versioncode=Integer.parseInt(apk.get(3));
+				}
+				if(RecorderFrame.PackageSourceDir.startsWith("/system")) {
+					JOptionPane.showMessageDialog(this, "Can't perform Robotium Test On System Apps","ERROR",JOptionPane.ERROR_MESSAGE);
+				}
+			} while (!RecorderFrame.PackageSourceDir.equalsIgnoreCase("") && RecorderFrame.PackageSourceDir.startsWith("/system"));
+		} else {
+			glassPane.stop();
+			JOptionPane.showMessageDialog(this, "Empty List of installed apks","Warning",JOptionPane.WARNING_MESSAGE);
+		}
+	}
+
+	protected void newRobotiumTest() {
+		if (isModified) {
+			int r=JOptionPane.showConfirmDialog(this, "The script has been modified. Do you want to save this modifications?");
+			if (r==JOptionPane.OK_OPTION){
+				save();
+			}else if(r==JOptionPane.CANCEL_OPTION){
+				return;
+			}
+		}
+		Thread progress = new Thread(){
+			@Override
+			public void run() {
+				glassPane.setText("Getting all installed APK");
+				glassPane.start();
+				selectAPK();
+				if(!RecorderFrame.PackageName.equalsIgnoreCase("")&& !RecorderFrame.MainActivityName.equalsIgnoreCase("")&&
+						!RecorderFrame.PackageSourceDir.equalsIgnoreCase("")) {
+					controller.setTestAPKWithRobotiumParam(RecorderFrame.PackageName,RecorderFrame.MainActivityName,
+							RecorderFrame.PackageSourceDir,RecorderFrame.Versioncode);
+					controller.newFileForRobotium();
+					jbtStop.setEnabled(false);
+					jbtPlay.setEnabled(true);
+					jbtRecord.setEnabled(true);
+					jbtscreenshot.setEnabled(false);
+					jmiTakeSS.setEnabled(false);
+					jcbPhonemode.setEnabled(true);
+					jmiRecord.setEnabled(true);
+					jmiStop.setEnabled(false);
+					updateScript();
+					setModified(false);
+				}
+			}
+		};
+		progress.start();
+	}
+
+	public void updateAST () {
+		jsPanel.update();
+	}
+	public int getSelectedNode(){
+		return jsPanel.getSelectedNode();
+	}
 
 }
