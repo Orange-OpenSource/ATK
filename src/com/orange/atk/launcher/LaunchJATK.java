@@ -601,11 +601,13 @@ public class LaunchJATK implements ErrorListener {
 					for (int j = 0; j < devices.size(); j++) {
 						if (devices.get(j).getSerialNumber().equalsIgnoreCase(device_serial)) {
 							AutomaticPhoneDetection.getInstance().setSelectedDevice(devices.get(j));
+							break;
 						}
 					}
 				}
 			}
 		}
+
 		if (result_dir == null)
 			return ("FAILED: -rd <result_directory> option must be specified.");
 		if (test_files.size() == 0)
@@ -630,7 +632,6 @@ public class LaunchJATK implements ErrorListener {
 		}
 		return null;
 	}
-
 	public class SuffixFilter implements FilenameFilter {
 		private String suffix;
 		public SuffixFilter(String suffix) {

@@ -1,5 +1,5 @@
 /*
- * Software Name : ATK
+ * Software Name : ATK - UIautomatorViewer Robotium Version
  *
  * Copyright (C) 2007 - 2012 France Télécom
  *
@@ -18,17 +18,10 @@
  * ------------------------------------------------------------------
  * File Name   : PrepareApkForRobotiumTest.java
  *
-<<<<<<< HEAD
  * Created     : 05/06/2013
  * Author(s)   : D'ALMEIDA Joana
-=======
- * Created     : 05/06/2013
-<<<<<<< HEAD
-=======
- * Author(s)   : D'ALMEIDA Joana
->>>>>>> addingUiAutomatorViewerRobotiumVersion
->>>>>>> upstream/experimental
  */
+
 package com.android.uiautomator.robotiumTask;
 
 import java.io.BufferedReader;
@@ -54,7 +47,8 @@ import com.orange.atk.sign.apk.SignAPK;
 
 public class PrepareApkForRobotiumTest {
 
-	public static void prepareAPKForRobotiumGetViews(IDevice adevice ,String packName, String activityName, String packsourceDir, String TestAPK,int versionCode) throws PhoneException {
+	public static void prepareAPKForRobotiumGetViews(IDevice adevice ,String packName, String activityName, 
+			String packsourceDir, String TestAPK,int versionCode) throws PhoneException {
 		Logger.getLogger(PrepareApkForRobotiumTest.class).debug("/****prepare APK For RobotiumGetViews ***/ ");
 
 		String adbLocation = Platform.getInstance().getDefaultADBLocation();
@@ -136,7 +130,7 @@ public class PrepareApkForRobotiumTest {
 					"/****error : " + e1.getMessage());
 			throw new PhoneException(e1.getMessage());
 		}
-		
+
 		SignAPK.signApk(
 				TempTestApkDir+ Platform.FILE_SEPARATOR+"bin"+Platform.FILE_SEPARATOR+"AtkTestRobotium.apk",
 				TempTestApkDir + Platform.FILE_SEPARATOR + "bin" + Platform.FILE_SEPARATOR
@@ -146,7 +140,7 @@ public class PrepareApkForRobotiumTest {
 				+ "NonAlignAtkTestRobotium.apk",
 				TestDir + Platform.FILE_SEPARATOR + "TempAPK" + Platform.FILE_SEPARATOR
 				+ TestAPK);
-		
+
 		if (!packageExistInCache) {
 
 			String appapk = packsourceDir.substring(packsourceDir.lastIndexOf("/") + 1);
@@ -177,7 +171,7 @@ public class PrepareApkForRobotiumTest {
 					+ "NonAlign"+appapk,
 					TestDir + Platform.FILE_SEPARATOR + "TempAPK" + Platform.FILE_SEPARATOR
 					+ appapk);
-			
+
 			pushPackage(adevice, packName, TestDir + Platform.FILE_SEPARATOR + "TempAPK"
 					+ Platform.FILE_SEPARATOR + appapk);
 			File cacheDir = new File(TestDir + Platform.FILE_SEPARATOR + "Cache"
@@ -326,7 +320,7 @@ public class PrepareApkForRobotiumTest {
 
 	private static void pushPackage(IDevice adevice, String PackageName, String apkDir)
 			throws PhoneException {
-		Logger.getLogger(PrepareApkForRobotiumTest.class).debug("reinstalling pack " + PackageName);
+		Logger.getLogger(PrepareApkForRobotiumTest.class).debug("reinstalling package " + PackageName);
 		try {
 			String result = null;
 			if (new File(apkDir).exists()) {

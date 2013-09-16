@@ -1,5 +1,5 @@
 /*
- * Software Name : ATK
+ * Software Name : ATK - UIautomatorViewer Robotium Version
  *
  * Copyright (C) 2007 - 2012 France Télécom
  *
@@ -19,7 +19,9 @@
  * File Name   : RobotiumTaskForViewer.java
  *
  * Created     : 05/06/2013
+ * Author(s)   : D'ALMEIDA Joana
  */
+
 
 package com.android.uiautomator.robotiumTask;
 import java.io.BufferedReader;
@@ -54,16 +56,13 @@ public class RobotiumTaskForViewer {
 	public static String PackageName = "";
 	public static String MainActivityName = "";
 	public static String PackageSourceDir = "";
-	public static String[] packinfo = new String[2];
 	public static int VersionCode = -1;
 	protected IDevice adevice = null;
 	private Socket socketg = null;
 	private PrintWriter out = null;
 	private BufferedReader br = null;
 	private ArrayList<String> list;
-	public static int windowOrientation = 0;
 	public static String XmlViews = "";
-
 	private IShellOutputReceiver multiLineReceiver = new MultiLineReceiver() {
 		@Override
 		public void processNewLines(String[] lines) {
@@ -84,7 +83,6 @@ public class RobotiumTaskForViewer {
 		IShellOutputReceiver receiver;
 		list = new ArrayList<String>();
 		receiver = multiLineReceiver;
-
 		try {
 			adevice.executeShellCommand(cmd, receiver);
 		} catch (TimeoutException e) {
@@ -114,20 +112,27 @@ public class RobotiumTaskForViewer {
 		if(UiAutomatorViewer.dumpXMLFirstTime) {
 			Logger.getLogger(this.getClass() ).debug("/****Robotium Prepares XMl DUMP FILE ***/ ");
 			if(checkRobotium("com.orange.atk.serviceSendEventToSolo")!=0){
+				UiAutomatorHelper.mViewer.glassPane.setText("Pushing Intermediate Service APK");
 				pushSendEventService();
 			}
-
-			getForegroundApp();
-			PrepareApkForRobotiumTest.prepareAPKForRobotiumGetViews(adevice,PackageName,MainActivityName,PackageSourceDir, "ATKGetViewAPKWithRobotium.apk",VersionCode);
+			if(PackageName.equalsIgnoreCase("") && MainActivityName.equalsIgnoreCase("") && PackageSourceDir.equalsIgnoreCase("")
+					&& VersionCode==-1) {
+				UiAutomatorHelper.mViewer.glassPane.setText("getting Foreground App Info");
+				getForegroundApp();
+			}
+			UiAutomatorHelper.mViewer.glassPane.setText("Preparing Foreground App");
+			PrepareApkForRobotiumTest.prepareAPKForRobotiumGetViews(adevice,PackageName,MainActivityName,PackageSourceDir,
+					"ATKGetViewAPKWithRobotium.apk",VersionCode);
+			PackageName = "";
+			MainActivityName = "";
+			PackageSourceDir = "";
+			VersionCode = -1;
 			pushATKGetViewsSolo();
 
 			String Scommand="am instrument -w com.orange.atk.soloGetViews/android.test.InstrumentationTestRunner";
 			float version=Float.valueOf(adevice.getProperty("ro.build.version.release").substring(0,3));
 			if (version >= 3.1) {Scommand += " -f 32";}
-
 			executeShellCommand(Scommand,false);
-
-
 			try {
 				adevice.createForward(PORT_ATK_SOLO_GET_VIEWS,PORT_ATK_SOLO_GET_VIEWS);
 			} catch (TimeoutException e) {
@@ -140,6 +145,8 @@ public class RobotiumTaskForViewer {
 				Logger.getLogger(this.getClass() ).debug("/****error : " + e.getMessage());
 				throw new PhoneException(e.getMessage());
 			}
+
+			UiAutomatorHelper.mViewer.glassPane.setText("getting UI Views");
 
 			try {
 				socketg = new Socket("127.0.0.1", PORT_ATK_SOLO_GET_VIEWS);
@@ -154,8 +161,7 @@ public class RobotiumTaskForViewer {
 				out.println(cmd);
 				out.flush();
 				XmlViews = br.readLine();
-				Logger.getLogger(this.getClass()).debug(
-						"/**** views ***/  " + XmlViews);
+				Logger.getLogger(this.getClass()).debug("/**** views ***/  " + XmlViews);
 
 			} catch (UnknownHostException e) {
 				Logger.getLogger(this.getClass()).debug("/****error : " + e.getMessage());
@@ -216,13 +222,16 @@ public class RobotiumTaskForViewer {
 	}
 
 	private void pushATKGetViewsSolo() throws PhoneException {
+		UiAutomatorHelper.mViewer.glassPane.setText("Pushing the test Package (ATKGetView)");
 		Logger.getLogger(this.getClass()).debug("/****Pushing ATKGetView APK***/ ");
 		try {
-			String result = adevice.uninstallPackage("com.orange.atk.soloGetViews");
-			if (result != null) {
-				Logger.getLogger(this.getClass()).debug("/****resul of uninstall : " + result);
+			if(checkRobotium("com.orange.atk.soloGetViews")==0) {
+				String result = adevice.uninstallPackage("com.orange.atk.soloGetViews");
+				if (result != null) {
+					Logger.getLogger(this.getClass()).debug("/****resul of uninstall : " + result);
+				}
 			}
-			result = adevice.installPackage(Platform.getInstance().getJATKPath()
+			String result = adevice.installPackage(Platform.getInstance().getJATKPath()
 					+ Platform.FILE_SEPARATOR + "AndroidTools" + Platform.FILE_SEPARATOR +
 					"UiautomatorViewerTask" + Platform.FILE_SEPARATOR + "TempAPK"
 					+ Platform.FILE_SEPARATOR + "ATKGetViewAPKWithRobotium.apk", true);
@@ -233,6 +242,7 @@ public class RobotiumTaskForViewer {
 			Logger.getLogger(this.getClass()).debug("/****error : " + e.getMessage());
 			throw new PhoneException(e.getMessage());
 		}
+		Logger.getLogger(this.getClass()).debug("/****finish Pushing ATKGetView APK***/ ");	
 	}
 
 	private void pushSendEventService() throws PhoneException {
@@ -260,7 +270,8 @@ public class RobotiumTaskForViewer {
 		}
 		ArrayList<String> Apk;
 		//String Scommand = "am startservice -n com.orange.atk.serviceSendEventToSolo/.ServiceGetForegroundApp";
-		String Scommand = "am broadcast -a com.orange.atk.serviceSendEventToSolo.FOREGROUNDAPP -n com.orange.atk.serviceSendEventToSolo/.BReceiverForGetForeGroundApp";
+		String Scommand = "am broadcast -a com.orange.atk.serviceSendEventToSolo.FOREGROUNDAPP -n " +
+				"com.orange.atk.serviceSendEventToSolo/.BReceiverForGetForeGroundApp";
 		float version = Float.valueOf(adevice.getProperty("ro.build.version.release").substring(0,
 				3));
 		if (version >= 3.1)
@@ -310,10 +321,15 @@ public class RobotiumTaskForViewer {
 				Logger.getLogger(this.getClass() ).debug(" " +PackageSourceDir);
 			} else {
 				Logger.getLogger(this.getClass() ).debug("/**** Can get apk to test :***/ ");
-				JOptionPane.showMessageDialog(UiAutomatorHelper.mViewer, "Can't get all needed informations about apk from device","Warning",JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(UiAutomatorHelper.mViewer, "Can't get all needed informations about " +
+						"apk from device","Warning",JOptionPane.WARNING_MESSAGE);
 				throw new PhoneException("Can't get all needed informations about apk from device");
 			}
 			if(PackageSourceDir.toLowerCase().startsWith("/system/")) {
+				PackageName="";
+				MainActivityName="";
+				PackageSourceDir="";
+				VersionCode=-1;
 				Logger.getLogger(this.getClass() ).debug("/**** Can not perform robotium test on system app :***/ ");
 				throw new PhoneException("Can perform robotium test on system app");
 			}

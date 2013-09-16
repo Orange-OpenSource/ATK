@@ -66,4 +66,10 @@ public class LinuxPlatform extends Platform {
 		return "ATKKey.keystore";
 	}
 
+	@Override
+	public String getUserConfigDirPath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

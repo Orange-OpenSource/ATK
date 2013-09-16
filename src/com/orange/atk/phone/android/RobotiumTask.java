@@ -19,6 +19,7 @@
  * File Name   : RobotiumTask.java
  *
  * Created     : 05/06/2013
+ * Author(s)   : D'ALMEIDA Joana
  */
 package com.orange.atk.phone.android;
 
@@ -87,7 +88,8 @@ public class RobotiumTask {
 			if(checkRobotium("com.orange.atk.serviceSendEventToSolo")!=0){
 				pushSendEventService();
 			} 
-			PrepareApkForRobotiumTest.prepareAPKForRobotiumGetViews(adevice,PackageName,MainActivityName,PackageSourceDir, "ATKTestingAPKWithRobotium.apk",VersionCode);
+			PrepareApkForRobotiumTest.prepareAPKForRobotiumGetViews(adevice,PackageName,MainActivityName,PackageSourceDir, 
+					"ATKTestingAPKWithRobotium.apk",VersionCode);
 
 			pushATKSoloTest();
 
@@ -246,12 +248,16 @@ public class RobotiumTask {
 	private void pushATKSoloTest() throws PhoneException {
 		Logger.getLogger(this.getClass()).debug("Pushing ATK Solo Test on phone");
 		try {
-			String result = adevice.uninstallPackage("com.orange.atk.soloTest");
-			if(result!=null){
-				Logger.getLogger(this.getClass()).debug("Result of the uninstall: "+result);
+			if(checkRobotium("com.orange.atk.soloTest")==0) {
+				String result = adevice.uninstallPackage("com.orange.atk.soloTest");
+				if(result!=null){
+					Logger.getLogger(this.getClass()).debug("Result of the uninstall: "+result);
+				}
 			}
-			result = adevice.installPackage(Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"AndroidTools"+Platform.FILE_SEPARATOR+
-					"UiautomatorViewerTask" +Platform.FILE_SEPARATOR+"TempAPK" +Platform.FILE_SEPARATOR+"ATKTestingAPKWithRobotium.apk", true);
+			String result = adevice.installPackage(Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+
+					"AndroidTools"+Platform.FILE_SEPARATOR+
+					"UiautomatorViewerTask" +Platform.FILE_SEPARATOR+"TempAPK" +Platform.FILE_SEPARATOR+"" +
+							"ATKTestingAPKWithRobotium.apk", true);
 			if(result!=null){
 				Logger.getLogger(this.getClass()).debug("Result of the push: "+result);
 			}
@@ -288,7 +294,8 @@ public class RobotiumTask {
 		}
 		ArrayList<String> Apk=null;
 		//String Scommand="am startservice -n com.orange.atk.serviceSendEventToSolo/.ServiceGetForegroundApp";
-		String Scommand = "am broadcast -a com.orange.atk.serviceSendEventToSolo.FOREGROUNDAPP -n com.orange.atk.serviceSendEventToSolo/.BReceiverForGetForeGroundApp";
+		String Scommand = "am broadcast -a com.orange.atk.serviceSendEventToSolo.FOREGROUNDAPP -n " +
+				"com.orange.atk.serviceSendEventToSolo/.BReceiverForGetForeGroundApp";
 		float version = Float.valueOf(adevice.getProperty("ro.build.version.release").substring(0,3));
 		if (version >= 3.1) Scommand += " -f 32";
 		androidPhone.executeShellCommand(Scommand);

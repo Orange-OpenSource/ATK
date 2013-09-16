@@ -1,3 +1,27 @@
+/*
+ * Software Name : ATK
+ *
+ * Copyright (C) 2007 - 2012 France Télécom
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * ------------------------------------------------------------------
+ * File Name   : SoloMethods.java
+ *
+ * Created     : 05/06/2013
+ * Author(s)   : D'ALMEIDA Joana
+ */
+
 package com.orange.atk.interpreter.ast;
 
 import java.util.ArrayList;
@@ -10,7 +34,7 @@ public class SoloMethods {
 
 	public SoloMethods() {
 		soloMethods =  new ArrayList<String[]>();
-		
+
 		soloMethods.add( new String[]{"ExitSolo"} );
 		soloMethods.add( new String[]{"AssertCurrentActivity","STRING","STRING","STRING"} );
 		soloMethods.add( new String[]{"AssertCurrentActivity","STRING","STRING","STRING","BOOLEAN"} );
@@ -130,17 +154,17 @@ public class SoloMethods {
 		soloMethods.add( new String[]{"WaitForView","STRING","INTEGER","STRING"} );
 		soloMethods.add( new String[]{"StartRobotiumTestOn","STRING","STRING","STRING","INTEGER"} );
 	}
-	
-	
+
+
 	public  boolean isSoloMethod(String Methodname) {
 		for(String[] signature : soloMethods) {
-			 if( signature[0].toLowerCase().equals(Methodname.toLowerCase()) ) {
+			if( signature[0].toLowerCase().equals(Methodname.toLowerCase()) ) {
 				return true;
-			 }
+			}
 		} 
 		return false;
 	}
-	
+
 
 
 }
