@@ -58,10 +58,8 @@ import com.android.ddmlib.MultiLineReceiver;
 import com.android.ddmlib.RawImage;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
-import com.att.aro.main.DatacollectorBridge;
 import com.orange.atk.atkUI.anaHopper.HopperStep;
 import com.orange.atk.atkUI.corecli.Configuration;
-import com.orange.atk.atkUI.coregui.CoreGUIPlugin;
 import com.orange.atk.error.ErrorManager;
 import com.orange.atk.internationalization.ResourceManager;
 import com.orange.atk.manageListener.IMeasureListener;
@@ -133,8 +131,6 @@ public class AndroidPhone implements PhoneInterface {
 		}
 
 	};
-
-	private DatacollectorBridge aroDataCollectorBridge;
 
 	// duplet for Key Value
 	class KeyValue {
@@ -1075,10 +1071,6 @@ public class AndroidPhone implements PhoneInterface {
 						Logger.getLogger(this.getClass()).error(e);
 					}
 				}
-				aroDataCollectorBridge = new DatacollectorBridge(
-						CoreGUIPlugin.mainFrame);
-				Logger.getLogger(this.getClass()).info("starting ARO");
-				aroDataCollectorBridge.startARODataCollector(resultDirectory, false);
 			}
 
 		} catch (IOException e) {
@@ -1263,10 +1255,6 @@ public class AndroidPhone implements PhoneInterface {
 
 	public void stopTestingMode() {
 		isStarted = false;
-		if (aroDataCollectorBridge != null) {
-			aroDataCollectorBridge.stopARODataCollector();
-			aroDataCollectorBridge=null;
-		}
 		try {
 			if (inMonitor != null)
 				inMonitor.close();
