@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN" "http://castor.org/mapping.dtd" [
+	<!ENTITY setExprMap "union inter diff var results properties">
+	<!ENTITY boolExprMap "equal boolAnd boolOr not isempty provides matches member exists forall ispseudoconstant isImplemented var">
+	<!ENTITY resultvalueMap "and or binop unop unopref noderef unknown literal">
+	<!ENTITY exprMap "&setExprMap; &boolExprMap; &resultvalueMap;">
+	]>
+<mapping>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Do">
+		<map-to xml="do"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="let foreach if report" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Let">
+		<map-to xml="let"/>
+		<field name="expr" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Expr">
+			<bind-xml matches="union inter diff var results properties equal boolAnd boolOr not isempty provides matches member exists forall ispseudoconstant isImplemented var and or binop unop unopref noderef unknown literal" node="element"/>
+		</field>
+		<field name="id" type="java.lang.String">
+			<bind-xml name="id" node="attribute"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.SetExprUnion">
+		<map-to xml="union"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="union inter diff var results properties" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.SetExprInter">
+		<map-to xml="inter"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="union inter diff var results properties" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.SetExprDiff">
+		<map-to xml="diff"/>
+		<field name="twoSetExpr" type="java.util.Vector" collection="vector">
+			<bind-xml matches="union inter diff var results properties" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.SetExprResults">
+		<map-to xml="results"/>
+		<field name="rule" type="java.lang.String">
+			<bind-xml name="rule" node="attribute"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.SetExprProperties">
+		<map-to xml="properties"/>
+		<field name="prefix" type="java.lang.String">
+			<bind-xml name="prefix" node="attribute"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.BoolExprEqual">
+		<map-to xml="equal"/>
+		<field name="twoExpr" type="java.util.Vector" collection="vector">
+			<bind-xml matches="union inter diff var results properties equal boolAnd boolOr not isempty provides matches member exists forall ispseudoconstant isImplemented var and or binop unop unopref noderef unknown literal" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.BoolExprAnd">
+		<map-to xml="boolAnd"/>
+		<field name="twoExpr" type="java.util.Vector" collection="vector">
+			<bind-xml matches="union inter diff var results properties equal boolAnd boolOr not isempty provides matches member exists forall ispseudoconstant isImplemented var and or binop unop unopref noderef unknown literal" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.BoolExprOr">
+		<map-to xml="boolOr"/>
+		<field name="twoExpr" type="java.util.Vector" collection="vector">
+			<bind-xml matches="union inter diff var results properties equal boolAnd boolOr not isempty provides matches member exists forall ispseudoconstant isImplemented var and or binop unop unopref noderef unknown literal" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.BoolExprNot">
+		<map-to xml="not"/>
+		<field name="expr" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Expr">
+			<bind-xml matches="union inter diff var results properties equal boolAnd boolOr not isempty provides matches member exists forall ispseudoconstant isImplemented var and or binop unop unopref noderef unknown literal" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.BoolExprIsempty">
+		<map-to xml="isempty"/>
+		<field name="setExpr" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.SetExpr">
+			<bind-xml matches="not(var)" node="element"/>
+		</field>
+		<field name="var" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Var">
+			<bind-xml name="var" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.BoolExprMember">
+		<map-to xml="member"/>
+		<field name="exprPlusSetExpr" type="java.util.Vector" collection="vector">
+			<bind-xml matches="union inter diff var results properties equal boolAnd boolOr not isempty provides matches member exists forall ispseudoconstant isImplemented var and or binop unop unopref noderef unknown literal" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.BoolExprExists">
+		<map-to xml="exists"/>
+		<field name="in" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.In">
+			<bind-xml name="in" node="element"/>
+		</field>
+		<field name="expr" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Expr">
+			<bind-xml matches="not(in)" node="element"/>
+		</field>
+		<field name="var" type="java.lang.String">
+			<bind-xml name="var" node="attribute"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.BoolExprForall">
+		<map-to xml="forall"/>
+		<field name="in" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.In">
+			<bind-xml name="in" node="element"/>
+		</field>
+		<field name="expr" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Expr">
+			<bind-xml matches="not(in)" node="element"/>
+		</field>
+		<field name="var" type="java.lang.String">
+			<bind-xml name="var" node="attribute"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.BoolExprIsImplemented">
+		<map-to xml="isImplemented"/>
+		<field name="itf" type="java.lang.String">
+			<bind-xml name="interface" node="attribute"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.BoolExprProvides">
+		<map-to xml="provides"/>
+		<field name="resultvalue" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Resultvalue">
+			<bind-xml matches="and or binop unop unopref noderef unknown literal" node="element"/>
+		</field>
+		<field name="pattern" type="java.lang.String">
+			<bind-xml name="pattern" node="attribute"/>
+		</field>
+		<field name="var" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Var">
+			<bind-xml name="var" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.BoolExprMatches">
+		<map-to xml="matches"/>
+		<field name="resultvalue" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Resultvalue">
+			<bind-xml matches="and or binop unop unopref noderef unknown literal" node="element"/>
+		</field>
+		<field name="profile" type="java.lang.String">
+			<bind-xml name="profile" node="attribute"/>
+		</field>
+		<field name="pattern" type="java.lang.String">
+			<bind-xml name="pattern" node="attribute"/>
+		</field>
+		<field name="var" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Var">
+			<bind-xml name="var" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.BoolExprIspseudoconstant">
+		<map-to xml="ispseudoconstant"/>
+		<field name="resultvalue" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Resultvalue">
+			<bind-xml matches="and or binop unop unopref noderef unknown literal" node="element"/>
+		</field>
+		<field name="var" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Var">
+			<bind-xml name="var" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Var">
+		<map-to xml="var"/>
+		<field name="name" type="java.lang.String">
+			<bind-xml name="name" node="attribute"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.In">
+		<map-to xml="in"/>
+		<field name="expr" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Expr"><!-- var n'est pas dans setExpr mais dans Expr-->
+			<bind-xml matches="union inter diff var results properties equal boolAnd boolOr not isempty provides matches member exists forall ispseudoconstant isImplemented var and or binop unop unopref noderef unknown literal" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Foreach">
+		<map-to xml="foreach"/>
+		<field name="in" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.In">
+			<bind-xml name="in" node="element"/>
+		</field>
+		<field name="doo" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Do">
+			<bind-xml name="do" node="element"/>
+		</field>
+		<field name="separator" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Separator">
+			<bind-xml name="separator" node="element"/>
+		</field>
+		<field name="var" type="java.lang.String">
+			<bind-xml name="var" node="attribute"/>
+		</field>
+		<field name="count" type="java.lang.String">
+			<bind-xml name="count" node="attribute"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Separator">
+		<map-to xml="separator"/>
+		<field name="contentOrInline" type="java.util.Vector" collection="vector">
+			<bind-xml matches="*" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.If">
+		<map-to xml="if"/>
+		<field name="expr" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Expr">
+			<bind-xml matches="equal boolAnd boolOr not isempty provides matches member exists forall ispseudoconstant isImplemented var" node="element"/>
+		</field>
+		<field name="var" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Var">
+			<bind-xml name="var" node="element"/>
+		</field>
+		<field name="then" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Then">
+			<bind-xml name="then" node="element"/>
+		</field>
+		<field name="else1" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Else">
+			<bind-xml name="else" node="element"/>
+		</field>
+		<field name="elseif" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Elseif">
+			<bind-xml name="elseif" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Then">
+		<map-to xml="then"/>
+		<field name="actions" type="java.util.Vector" collection="vector">
+			<bind-xml matches="if let foreach report" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Elseif">
+		<map-to xml="else"/>
+		<field name="expr" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Expr">
+			<bind-xml matches="equal boolAnd boolOr not isempty provides matches member exists forall ispseudoconstant isImplemented var" node="element"/>
+		</field>
+		<field name="then" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Then">
+			<bind-xml name="then" node="element"/>
+		</field>
+		<field name="else1" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Else">
+			<bind-xml name="else" node="element"/>
+		</field>
+		<field name="elseif" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Elseif">
+			<bind-xml name="elseif" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Else">
+		<map-to xml="else"/>
+		<field name="actions" type="java.util.Vector" collection="vector">
+			<bind-xml matches="if let foreach report" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Report">
+		<map-to xml="report"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="*" node="element"/>
+		</field>
+		<field name="verdict" type="java.lang.String">
+			<bind-xml name="verdict" node="attribute"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.HTMLValue">
+		<map-to xml="htmlValue"/>
+		<field name="resultvalue" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Resultvalue">
+			<bind-xml matches="not(var)" node="element"/>
+		</field>
+		<field name="var" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Var">
+			<bind-xml name="var" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.UsedJSRs">
+		<map-to xml="usedJSRs"/>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Em">
+		<map-to xml="em"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="text a b img br" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.A">
+		<map-to xml="a"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="text b em img br let foreach if report" node="element"/>
+		</field>
+		<field name="href" type="java.lang.String">
+			<bind-xml name="href" node="attribute"/>
+		</field>
+		<field name="name" type="java.lang.String">
+			<bind-xml name="name" node="attribute"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.B">
+		<map-to xml="b"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="text a em img br let foreach if report code" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Br">
+		<map-to xml="br"/>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Font">
+		<map-to xml="font"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="*" node="element"/>
+		</field>
+		<field name="color" type="java.lang.String">
+			<bind-xml name="color" node="attribute"/>
+		</field>
+		<field name="face" type="java.lang.String">
+			<bind-xml name="face" node="attribute"/>
+		</field>
+		<field name="size" type="java.lang.String">
+			<bind-xml name="size" node="attribute"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Img">
+		<map-to xml="img"/>
+		<field name="alt" type="java.lang.String">
+			<bind-xml name="alt" node="attribute"/>
+		</field>
+		<field name="border" type="java.lang.String">
+			<bind-xml name="border" node="attribute"/>
+		</field>
+		<field name="height" type="java.lang.String">
+			<bind-xml name="height" node="attribute"/>
+		</field>
+		<field name="src" type="java.lang.String">
+			<bind-xml name="src" node="attribute"/>
+		</field>
+		<field name="width" type="java.lang.String">
+			<bind-xml name="width" node="attribute"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.P">
+		<map-to xml="p"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="*" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Code">
+		<map-to xml="code"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="*" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.H1">
+		<map-to xml="h1"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="*" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.H2">
+		<map-to xml="h2"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="*" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.H3">
+		<map-to xml="h3"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="*" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.H4">
+		<map-to xml="h4"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="*" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.H5">
+		<map-to xml="h5"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="*" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.H6">
+		<map-to xml="h6"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="*" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Ul">
+		<map-to xml="ul"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="li let foreach if report" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Ol">
+		<map-to xml="ol"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="li let foreach if report" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Li">
+		<map-to xml="li"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="*" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Table">
+		<map-to xml="table"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="tr" node="element"/>
+		</field>
+		<field name="height" type="java.lang.String">
+			<bind-xml name="height" node="attribute"/>
+		</field>
+		<field name="width" type="java.lang.String">
+			<bind-xml name="width" node="attribute"/>
+		</field>
+		<field name="align" type="java.lang.String">
+			<bind-xml name="align" node="attribute"/>
+		</field>
+		<field name="cellspacing" type="java.lang.String">
+			<bind-xml name="cellspacing" node="attribute"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Tr">
+		<map-to xml="tr"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="td" node="element"/>
+		</field>
+		<field name="align" type="java.lang.String">
+			<bind-xml name="align" node="attribute"/>
+		</field>
+		<field name="valign" type="java.lang.String">
+			<bind-xml name="valign" node="attribute"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Td">
+		<map-to xml="td"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="*" node="element"/>
+		</field>
+		<field name="height" type="java.lang.String">
+			<bind-xml name="height" node="attribute"/>
+		</field>
+		<field name="width" type="java.lang.String">
+			<bind-xml name="width" node="attribute"/>
+		</field>
+		<field name="align" type="java.lang.String">
+			<bind-xml name="align" node="attribute"/>
+		</field>
+		<field name="valign" type="java.lang.String">
+			<bind-xml name="valign" node="attribute"/>
+		</field>
+		<field name="rowspan" type="java.lang.String">
+			<bind-xml name="rowspan" node="attribute"/>
+		</field>
+		<field name="colspan" type="java.lang.String">
+			<bind-xml name="colspan" node="attribute"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Center">
+		<map-to xml="center"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="*" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Text">
+		<map-to xml="text"/>
+		<field name="content" type="java.lang.String">
+			<bind-xml node="text"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.ResultvalueAnd">
+		<map-to xml="and"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="and or binop unop unopref noderef unknown literal" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.ResultvalueOr">
+		<map-to xml="or"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="and or binop unop unopref noderef unknown literal" node="element"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.ResultvalueBinop">
+		<map-to xml="binop"/>
+		<field name="content" type="java.util.Vector" collection="vector">
+			<bind-xml matches="and or binop unop unopref noderef unknown literal" node="element"/>
+		</field>
+		<field name="operator" type="java.lang.String">
+			<bind-xml matches="operator" node="attribute"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.ResultvalueUnop">
+		<map-to xml="unop"/>
+		<field name="resultvalue" type="com.francetelecom.rd.matos.corecli.reportGenerator.bind.Resultvalue">
+			<bind-xml matches="and or binop unop unopref noderef unknown literal" node="element"/>
+		</field>
+		<field name="operator" type="java.lang.String">
+			<bind-xml matches="operator" node="attribute"/>
+		</field>
+		<field name="id" type="java.lang.String">
+			<bind-xml matches="id" node="attribute"/>
+		</field>
+		<field name="use" type="java.lang.String">
+			<bind-xml matches="use" node="attribute"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.ResultvalueLiteral">
+		<map-to xml="literal"/>
+		<field name="value" type="java.lang.String">
+			<bind-xml matches="value" node="attribute"/>
+		</field>
+		<field name="type" type="java.lang.String">
+			<bind-xml matches="type" node="attribute"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.ResultvalueUnopref">
+		<map-to xml="unopref"/>
+		<field name="ref" type="java.lang.String">
+			<bind-xml matches="ref" node="attribute"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.ResultvalueNoderef">
+		<map-to xml="noderef"/>
+		<field name="value" type="java.lang.String">
+			<bind-xml matches="value" node="attribute"/>
+		</field>
+	</class>
+	<class name="com.francetelecom.rd.matos.corecli.reportGenerator.bind.ResultvalueUnknown">
+		<map-to xml="unknown"/>
+	</class>
+</mapping>

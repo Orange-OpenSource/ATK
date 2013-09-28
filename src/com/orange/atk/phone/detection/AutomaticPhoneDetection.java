@@ -24,31 +24,19 @@
 package com.orange.atk.phone.detection;
 
 
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-
-import com.android.ddmlib.AndroidDebugBridge;
-import com.android.ddmlib.IDevice;
-import com.orange.atk.atkUI.corecli.Configuration;
-import com.orange.atk.error.ErrorManager;
-import com.orange.atk.internationalization.ResourceManager;
 import com.orange.atk.phone.DefaultPhone;
-import com.orange.atk.phone.PhoneException;
 import com.orange.atk.phone.PhoneInterface;
 import com.orange.atk.phone.Plugin;
 import com.orange.atk.phone.PluginManager;
-import com.orange.atk.phone.android.AndroidDriver;
-import com.orange.atk.phone.android.AndroidICSDriver;
-import com.orange.atk.phone.android.AndroidJBDriver;
-import com.orange.atk.phone.android.AndroidMonkeyDriver;
 import com.orange.atk.phone.android.AndroidPhone;
 import com.orange.atk.platform.Platform;
+import org.apache.log4j.Logger;
+
+import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 
 
 
@@ -71,14 +59,18 @@ public class AutomaticPhoneDetection {
 		if(instance ==null) {
 			instance = new AutomaticPhoneDetection(launchThread);
 			try {
+                ClassLoader cl = ClassLoader.getSystemClassLoader();
+
+                URL[] urls = ((URLClassLoader)cl).getURLs();
+
+                for(URL url: urls){
+                    Logger.getLogger("AutomaticPhoneDetection").info(url.getFile());
+                }
 				String currentDir = new File(".").getAbsolutePath();
 				Logger.getLogger("AutomaticPhoneDetection").info("currentDir="+currentDir);
-				File folder = new File("./install/jar/plugins");//here to ease launching via eclipse
+				File folder = new File("./plugin");//here to ease launching via eclipse
 				File[] listOfFiles = folder.listFiles();
-				if (listOfFiles == null){
-					folder = new File("./jar/plugins");
-					listOfFiles = folder.listFiles();
-				}
+
 				for (int i = 0; i < listOfFiles.length; i++) {
 					if (listOfFiles[i].isFile()) {
 						String filename=listOfFiles[i].getName();

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
+
+<appender name="files" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="log/logJATK.log" />
+    <param name="MaxFileSize" value="10MB" />
+    <param name="MaxBackupIndex" value="5" />
+    <param name="Append" value="true" />
+    <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d %p: %c.%t(%L): %m%n"/>
+    </layout>
+</appender>
+
+<!-- logger sysOUT -->
+<logger name="System.out.log" additivity="false">
+
+    <level value="DEBUG"/>
+    <appender-ref ref="files"/>
+</logger>
+
+<!-- logger sysOUT -->
+<logger name="System.err.log" additivity="false">
+
+    <level value="DEBUG"/>
+    <appender-ref ref="files"/>
+</logger>
+
+<root>
+    <level value="DEBUG"/>
+    <appender-ref ref="files"/>
+
+</root>
+</log4j:configuration>

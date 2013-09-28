@@ -1,0 +1,129 @@
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="styles.css"/>
+  <script type="text/javascript" src="menu.js"></script>
+  <title>ATK User Guide</title>
+</head>
+<body>
+<div id="leftpane">
+<script type="text/javascript" src="menu.js"></script>
+</div>
+<div id="content">
+
+<h1>ATK Script tests</h1>
+
+The ATK Test Manager "Script Test" tab enables you to load different script tests and launch them 
+sequentially on the device.
+
+<p>Launch ATK Test Manager</p>
+
+Connect the device you want to test with USB cable. Then launch ATK Test Manager : 
+select Start > Programs > ATK > ATK. You may have to click on the "<b><a href="ATK_device_detection.html">Device detection</a></b>" button to select 
+the correct device. Select the "Script Test" tab.<br/>
+
+<br><br>
+<center><img src="images/ATK_script_test_tab.png" width="720px" alt="ATK Script Test tab" /></center>
+<br><br>
+	
+<p>Adding scripts to the check-list</p>
+
+A <b>check-list</b> is a set of test scripts files that is managed by the ATK Test Manager. This list is 
+displayed in the tab window.<br/>
+
+There are different ways to add scripts into the current check-list :
+<ul>
+	<li></li>Drag and drop your test script files from your explorer to the ATK tab window.
+	
+	<li></li>Click on the <img src="images/ATK_add_button.png" align="bottom"></img> button and indicate the path
+	to the test script you want to add (the script file can be either on your computer or on a web server).
+	
+	<li></li>Open the File > Add directory... menu or click on the <img src="images/ATK_add_dir_button.png" 
+		align="bottom"></img> button. Indicate the path to a directory containing tests scripts files. 
+		All the tests files under this directory will be added to the current check-list.<br/><br/>
+	
+	<li></li>Open the File > Add check-list... menu. Indicate the path to an already saved .mcl check-list file. 
+		All the files defined in the check-list will be added to the current check-list.
+</ul>
+
+<p>Saving and loading a check-list</p>
+In order to <b>save</b> the current check-list open the File > Save (or Save as...) menu or click on the <img src="images/ATK_save_button.png" 
+        align="bottom"></img> (or <img src="images/ATK_saveas_button.png" align="bottom"></img>) button. Indicate the path and name
+		of the .mcl file where will be saved the current check-list description.<br/><br/>
+
+In order to <b>load</b> a check-list, open the File > Open... menu or click on the <img src="images/ATK_open_checklist_button.png" 
+	align="bottom"></img> button. Indicate the path to an already saved .mcl check-list file. All the files defined in the check-list will replace the current check-list.
+
+<p>Phone monitoring configuration</p>
+
+Once your check-list is ready, you must select a configuration for each test script. This will define which
+resources (cpu, memory, storage ...) or process will be measured during the test, and what will be displayed
+ in the resulting graphs.<br/>
+
+<br><br>
+<center><img src="images/ATK_checklist_config.png" width="720px" alt="Monitoring configuration" /></center>
+<br><br>
+    
+In the "Monitoring Config" column, click on a case to make the selection list appear, and select the good 
+configuration for your test. Some default configuration files are proposed for specific phone platforms (android,
+se, nokia, samsung), they might suits for most of the tests. But you can create your own configuration by selecting
+"Create a new config file ..." in the list. The configurations are saved into XML files.<br/><br/>
+
+At any time, you can double-click on a .xml file name to make the configuration wizard appear. It will enable you
+to modify the selected configuration. <br/><br/>
+
+See <b><a href="ATK_test_configuration.html">Monitoring configuration</a></b> section to understand how to configure your tests with the wizard.<br/>
+
+<p>Running tests</p>
+
+In order to run the tests of the check-list, click on the <img src="images/ATK_play_button.png" 
+    align="bottom"></img> button. All the tests of the check-list will be played on the connected phone, in
+		the same order as they appear in the list.<br/>
+
+If you want to run only a subset of the tests, select one ore more tests in the check-list and click on the 
+<img src="images/ATK_play_sel_button.png" align="bottom"></img> button.<br/><br/>
+
+While a test is running, you can click on the <img src="images/ATK_stop_button.png" align="bottom"></img> button, to stop the 
+current test session.<br/><br/>
+
+If you want to see the resulting resources measurement graphs appear in real-time during the tests, open
+the Edit > Configuration... menu and select the "Real Time Graph" radio button.<br/>
+
+<br><br>
+<center><img src="images/ATK_script_test_passed.png" width="720px" alt="ATK script test passed" /></center>
+<br><br>
+
+You can see in the "Verdict" column a label "Passed" appear once the test has been passed.
+
+<p>Viewing Tests results</p>
+
+The first time you'll run tests, ATK will ask you to indicate the path &lt;ATK_results_path&gt; where the results will be stored. For 
+each &lt;my_test_name&gt;.tst test run, a new folder &lt;ATK_results_path&gt;/&lt;my_test_name&gt;, containing
+the test results, will be created by ATK. <br/><br/>
+
+If you want to change the path where ATK will store the tests results, open the Edit > Configuration... menu and change the
+reports default directory path. <br/><br/>
+
+The resulting folder of a test contains :
+<ul>
+	<li>The summary report of the test in pdf (report.pdf) and html (report.html) format.</li>
+	<li>The various resources measurement graph images (Cpu.png, Memory.png, etc ...).</li>
+	<li>The various resources measurement values in excel files (.csv), the actions logged (actions.xml) and
+		the graph configuration file (confile.xml). All these files are used by the Graph Analyzer tool.</li>
+	<li>A "screenshots" folder containing all the screenshots taken during the test (if any). </li>
+</ul>
+
+In order to view the results of a test, double-click on its "Verdict" case, or select the test line and 
+click on the <img src="images/ATK_report_button.png" align="bottom"></img> button. This will open the summary
+report in a window :
+
+<br><br>
+<center><img src="images/ATK_report.png" width="600px" alt="ATK summary report window" /></center>
+<br><br>
+
+You can launch the "Screenshot comparator" tool by double-click on the camera image of a test. This will enable
+you to automatically compare the screenshots taken during this test, with a set of reference screenshots.<br/><br/>
+
+You can launch the "<a href="tool_graph_analyzer.html">Graph Analyzer</a>" tool by double-clicking on the graph image of a test. This will enable
+you to compare and the various resources measurement graphs, together with the actions performed.<br/><br/>
+</body>
+</html>

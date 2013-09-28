@@ -1,0 +1,5 @@
+To build the installer with NSIS, you need the following additional plugins:
+- GetVersion (http://nsis.sourceforge.net/GetVersion_(Windows)_plug-in)
+- IEFunctions (http://nsis.sourceforge.net/IEFunctions_plug-in)
+- Inetc (http://nsis.sourceforge.net/Inetc_plug-in)
+- ZipDLL (http://nsis.sourceforge.net/ZipDLL_plug-in)
