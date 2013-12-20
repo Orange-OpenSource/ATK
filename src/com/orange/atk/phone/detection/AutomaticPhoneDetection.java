@@ -70,24 +70,27 @@ public class AutomaticPhoneDetection {
 				Logger.getLogger("AutomaticPhoneDetection").info("currentDir="+currentDir);
 				File folder = new File("./plugin");//here to ease launching via eclipse
 				File[] listOfFiles = folder.listFiles();
-
-				for (int i = 0; i < listOfFiles.length; i++) {
-					if (listOfFiles[i].isFile()) {
-						String filename=listOfFiles[i].getName();
-						if(filename.endsWith(".jar")){
-							Logger.getLogger("AutomaticPhoneDetection").info(("Filename " + filename));
-							String name = filename.substring(0, filename.lastIndexOf('.'));
-							Logger.getLogger("AutomaticPhoneDetection").info(("File " + name));
-							String classname="com.orange.atk.phone."+name+"."+name.substring(0,1).toUpperCase()+name.substring(1).toLowerCase()+"Plugin";
-							Logger.getLogger("AutomaticPhoneDetection").info(("Loading " + classname));
-							Class.forName(classname);
-						}else{
-							Logger.getLogger("AutomaticPhoneDetection").info(("skipping " + filename));
-						}
-					} else if (listOfFiles[i].isDirectory()) {
-						Logger.getLogger("AutomaticPhoneDetection").info(("Directory " + listOfFiles[i].getName()));
-					}				
-				}
+                if(listOfFiles!=null){
+                    for (int i = 0; i < listOfFiles.length; i++) {
+                        if (listOfFiles[i].isFile()) {
+                            String filename=listOfFiles[i].getName();
+                            if(filename.endsWith(".jar")){
+                                Logger.getLogger("AutomaticPhoneDetection").info(("Filename " + filename));
+                                String name = filename.substring(0, filename.lastIndexOf('.'));
+                                Logger.getLogger("AutomaticPhoneDetection").info(("File " + name));
+                                String classname="com.orange.atk.phone."+name+"."+name.substring(0,1).toUpperCase()+name.substring(1).toLowerCase()+"Plugin";
+                                Logger.getLogger("AutomaticPhoneDetection").info(("Loading " + classname));
+                                Class.forName(classname);
+                            }else{
+                                Logger.getLogger("AutomaticPhoneDetection").info(("skipping " + filename));
+                            }
+                        } else if (listOfFiles[i].isDirectory()) {
+                            Logger.getLogger("AutomaticPhoneDetection").info(("Directory " + listOfFiles[i].getName()));
+                        }
+                    }
+                }  else {
+                    Class.forName("com.orange.atk.phone.android.AndroidPlugin");
+                }
 			} catch (ClassNotFoundException e) {
 				Logger.getLogger("AutomaticPhoneDetection").error("Unable to load plugin");
 			}
@@ -224,8 +227,7 @@ public class AutomaticPhoneDetection {
 	/**
 	 * Search the config file path of the phone in parameters.
 	 * prefer use {@link #getxmlfilepath()}.
-	 * 
-	 * @param phoneDefault the phone to find the config file
+	 *
 	 * @return the config file path
 	 */
 	public String getxmlfilepath()
