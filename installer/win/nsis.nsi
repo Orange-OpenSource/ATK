@@ -523,7 +523,10 @@ Section -post SEC0001
     ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\AT&T ARO" "InstallLocation"
     DetailPrint "Found ARO in $R0"
     ${StrRep} '$0' $R0 '\' '\\'
+    #Update the config.properties
     ${ConfigWrite} "$PROFILE\.atk\Config.properties" "aroPath=" $0 $3
+    Call UpdateProperties
+    RmDir /r $INSTDIR\backup
     WriteRegStr HKLM "${REGKEY}" Path $INSTDIR
     SetOutPath $INSTDIR
     WriteUninstaller $INSTDIR\uninstall.exe
