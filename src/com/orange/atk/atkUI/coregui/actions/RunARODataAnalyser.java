@@ -1,21 +1,17 @@
 package com.orange.atk.atkUI.coregui.actions;
 
+import com.orange.atk.atkUI.corecli.Configuration;
+import org.apache.log4j.Logger;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.Icon;
-
-import org.apache.log4j.Logger;
-
-import com.orange.atk.atkUI.corecli.Configuration;
-
 public class RunARODataAnalyser extends MatosAbstractAction {
 
 	private static final String AROPATH = Configuration.getProperty(Configuration.AROPATH);
-	// private static final String LAUNCHARO =
-	// "cmd /c start aro.bat -d \"C:\\Temp\\ARO\\2013-06-06-OCC\"";
-	private static final String LAUNCHARO = "cmd /c start aro.bat";
+	private static final String LAUNCHARO = AROPATH + "\\bin\\aro.exe";
 
 	public RunARODataAnalyser(String name, Icon icon, String shortDescription) {
 		super(name, icon, shortDescription);
@@ -25,10 +21,15 @@ public class RunARODataAnalyser extends MatosAbstractAction {
 	public void actionPerformed(ActionEvent arg0) {
 		try {
 			Logger.getLogger(getClass()).info(LAUNCHARO + " from " + AROPATH);
-			Runtime.getRuntime().exec(LAUNCHARO, null, new File(AROPATH + "\\bin"));
+            ProcessBuilder pb = new ProcessBuilder(LAUNCHARO);
+            pb.directory(new File(AROPATH + "\\bin"));
+            Process p = pb.start();
+			Runtime.getRuntime().exec(LAUNCHARO, null, new File("\""+AROPATH + "\\bin\""));
 		} catch (IOException e) {
 			Logger.getLogger(this.getClass()).error("Unable to start ARODataAnalyzer", e);
-		}
+		}  catch(Exception e) {
+            Logger.getLogger(this.getClass()).error("Unable to start ARODataAnalyzer", e);
+        }
 	}
 
 }
