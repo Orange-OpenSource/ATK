@@ -47,6 +47,9 @@ import java.util.regex.Pattern;
 
 import javax.swing.event.EventListenerList;
 
+import com.att.aro.main.ApplicationResourceOptimizer;
+import com.att.aro.main.DatacollectorBridge;
+import com.orange.atk.atkUI.coregui.CoreGUIPlugin;
 import org.apache.log4j.Logger;
 
 import com.android.ddmlib.AdbCommandRejectedException;
@@ -58,6 +61,7 @@ import com.android.ddmlib.MultiLineReceiver;
 import com.android.ddmlib.RawImage;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
+
 import com.orange.atk.atkUI.anaHopper.HopperStep;
 import com.orange.atk.atkUI.corecli.Configuration;
 import com.orange.atk.error.ErrorManager;
@@ -142,6 +146,8 @@ public class AndroidPhone implements PhoneInterface {
 		};
 	};
 	protected static final HashMap<String, KeyValue> keysAssociations = new HashMap<String, KeyValue>();
+
+    private DatacollectorBridge aroDataCollectorBridge;
 
 	// only use by child class
 	protected AndroidPhone() {
@@ -1057,6 +1063,7 @@ public class AndroidPhone implements PhoneInterface {
 	@Override
 	public void startTestingMode(String resultDirectory, String confFilename) throws PhoneException {
 		MonitoringConfig config;
+        Logger.getLogger(this.getClass()).info("startTestingMode :"+confFilename);
 		try {
 			config = MonitoringConfig.fromFile(confFilename);
 			if (config.getAroSettings() != null && config.getAroSettings().isEnabled()) {
@@ -1071,6 +1078,11 @@ public class AndroidPhone implements PhoneInterface {
 						Logger.getLogger(this.getClass()).error(e);
 					}
 				}
+                aroDataCollectorBridge = new DatacollectorBridge(
+                        CoreGUIPlugin.mainFrame);
+                Logger.getLogger(this.getClass()).info("starting ARO");
+                aroDataCollectorBridge.startARODataCollector("samplesample", false);
+                //aroDataCollectorBridge.startARODataCollector();
 			}
 
 		} catch (IOException e) {
@@ -1255,6 +1267,10 @@ public class AndroidPhone implements PhoneInterface {
 
 	public void stopTestingMode() {
 		isStarted = false;
+        if (aroDataCollectorBridge != null) {
+            aroDataCollectorBridge.stopARODataCollector();
+            aroDataCollectorBridge=null;
+        }
 		try {
 			if (inMonitor != null)
 				inMonitor.close();

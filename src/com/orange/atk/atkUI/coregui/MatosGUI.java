@@ -34,6 +34,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -51,6 +52,9 @@ import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.att.aro.main.AROEnabledFrame;
+import com.att.aro.main.DatacollectorBridge;
+import com.att.aro.model.TraceData;
 import org.apache.log4j.Logger;
 
 import com.orange.atk.atkUI.corecli.Alert;
@@ -66,7 +70,7 @@ import com.orange.atk.phone.detection.AutomaticPhoneDetection;
  * @author Aurore PENAULT
  * @since JDK5.0
  */
-public class MatosGUI extends JFrame {
+public class MatosGUI extends AROEnabledFrame {
 
 	/**
 	 * 
@@ -639,7 +643,7 @@ public class MatosGUI extends JFrame {
 	}
 
 	/**
-	 * @param object
+	 * @param newCLFileName
 	 */
 	public void setCheckListFileName(String newCLFileName) {
 		checkListFileName = newCLFileName;
@@ -680,4 +684,30 @@ public class MatosGUI extends JFrame {
 		}
 		return selectedCampaign;
 	}
+
+    @Override
+    public TraceData getTraceData() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void clearTrace() throws IOException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void openTrace(File file) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void dataCollectorStatusCallBack(DatacollectorBridge.Status status) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void dataCollectorStatusCallBack(boolean b, boolean b2) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }
