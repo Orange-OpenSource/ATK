@@ -59,6 +59,7 @@ jar {
 task getInstallerResources(type: Copy) {
     from('libs'){
         into 'lib'
+        exclude 'forget_*'
     }
     from('ConfigFiles'){
         into 'ConfigFiles'
