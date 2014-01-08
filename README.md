@@ -3,16 +3,12 @@ ATK  [![Build Status](https://travis-ci.org/Orange-OpenSource/ATK.png)](https://
 
 The Accelerator Test Kit is a software designed for testing applications on Android devices.
 
-Screenshots
-===========
-+ main UI:
+ATK measures device resources consumption (cpu, power, memory etc ...) in real-time, and then provides graph report (pdf and html format) as a result. It is basically made of two parts:
 
-<img width='600px' src='http://dev-ice.orange-labs.fr/atk/docv2/images/ATK_main_ui.png'/>
++ Graph Analyzer
 
-+ monitoring UI:
+ This tool enables you to map together different sources of data graph and events in order to perform correlation.
 
-<img width='600px' src='http://dev-ice.orange-labs.fr/atk/docv2/images/tools_analyzer_description1.png'/>
++ Script Recorder"
 
-+ scripting UI:
-
-<img src='http://dev-ice.orange-labs.fr/atk/docv2/images/tools_recorder_autocompletion.png'/>
+ It let you to record actions performed on the mobile device (touch screen, key press ...). These actions are translated into script language commands, and saved into test script file. Other script commands can be manually added to the script to perform special actions such as taking screenshot, make a loop on a set of actions, including another script file etc...
