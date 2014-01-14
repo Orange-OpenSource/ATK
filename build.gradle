@@ -1,7 +1,9 @@
 apply plugin: 'java'
 apply plugin: 'groovy'
+apply plugin:'application'
 version = '2.2.0'
 archivesBaseName = 'atk'
+mainClassName = "com.orange.atk.launcher.LaunchGUIJATK"
 
 def nsisPath = "C:\\DevProgramFiles\\NSIS"
 launch4jDir = new File(rootDir, 'installer/win')

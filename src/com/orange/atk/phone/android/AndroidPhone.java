@@ -1081,7 +1081,7 @@ public class AndroidPhone implements PhoneInterface {
                 aroDataCollectorBridge = new DatacollectorBridge(
                         CoreGUIPlugin.mainFrame);
                 Logger.getLogger(this.getClass()).info("starting ARO");
-                aroDataCollectorBridge.startARODataCollector("samplesample", false);
+                aroDataCollectorBridge.startARODataCollectorCmd("samplesample", false);
                 //aroDataCollectorBridge.startARODataCollector();
 			}
 

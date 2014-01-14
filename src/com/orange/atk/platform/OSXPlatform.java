@@ -1,5 +1,7 @@
 package com.orange.atk.platform;
 
+import org.apache.log4j.Logger;
+
 public class OSXPlatform extends Platform {
 
 	@Override
@@ -9,8 +11,8 @@ public class OSXPlatform extends Platform {
 
 	@Override
 	public String getDefaultADBLocation() {
-		// suppose it is in the PATH for now
-		return "adb";
+        String path="/Developer/SDKs/Android.sdk/platform-tools/";
+		return path+"adb";
 	}
 
 	@Override
@@ -39,8 +41,10 @@ public class OSXPlatform extends Platform {
 
 	@Override
 	public String getUserConfigDirPath() {
-		// TODO Auto-generated method stub
-		return null;
+        String homePath = System.getenv("HOME");
+        String userConfigDirPath = homePath + Platform.FILE_SEPARATOR + ".atk";
+        Logger.getLogger(OSXPlatform.class).debug("HOME is : "+userConfigDirPath);
+        return userConfigDirPath;
 	}
 
 }

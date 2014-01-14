@@ -24,18 +24,20 @@
 package com.orange.atk.launcher;
 
 import java.io.File;
-
-
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-
+import com.orange.atk.atkUI.coregui.MatosGUI;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import com.orange.atk.atkUI.corecli.Configuration;
 import com.orange.atk.atkUI.coregui.CoreGUIPlugin;
+import com.orange.atk.atkUI.coregui.AboutDialog;
 import com.orange.atk.platform.Platform;
 import com.orange.atk.system.WebServer;
 import com.orange.atk.util.FileUtil;
@@ -65,8 +67,26 @@ public class LaunchGUIJATK {
 
 		try {
 			try {
+                if (System.getProperty("os.name").contains("Mac")) {
+                    System.setProperty("apple.laf.useScreenMenuBar", "true");
+                    System.setProperty(
+                            "com.apple.mrj.application.apple.menu.about.name", "ATK");
+                    try {
+                        Object app = Class.forName("com.apple.eawt.Application").getMethod("getApplication",
+                                (Class[]) null).invoke(null, (Object[]) null);
+
+                        Object al = Proxy.newProxyInstance(Class.forName("com.apple.eawt.AboutHandler")
+                                .getClassLoader(), new Class[] { Class.forName("com.apple.eawt.AboutHandler") },
+                                new AboutListener());
+                        app.getClass().getMethod("setAboutHandler", new Class[] {
+                                Class.forName("com.apple.eawt.AboutHandler") }).invoke(app, new Object[] { al });
+                    } catch (Exception e) {
+                        //fail quietly
+                    }
+                }
 				// Set System L&F
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
 			} catch (UnsupportedLookAndFeelException e) {
 				// handle exception
 			} catch (ClassNotFoundException e) {
@@ -83,5 +103,12 @@ public class LaunchGUIJATK {
 		}
 
 	}
+    private static class AboutListener implements InvocationHandler {
+
+        public Object invoke(Object proxy, Method method, Object[] args) {
+            new AboutDialog(null).setVisible(true);
+            return null;
+        }
+    }
 
 }

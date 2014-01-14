@@ -39,7 +39,7 @@ public enum MatosAction {
 			CoreGUIPlugin.getIconURL("tango/filenew.png")), "Create a new check-list")),
 
 	OPEN("open", new OpenAction("open", new ImageIcon(
-			CoreGUIPlugin.getIconURL("tango/folder_green.png")), "Open a check-list.")),
+			CoreGUIPlugin.getIconURL("tango/folder-green.png")), "Open a check-list.")),
 
 	SAVEALLALL("saveAllAll", new SaveAction("saveAllAll", new ImageIcon(
 			CoreGUIPlugin.getIconURL("tango/filesave.png")), "Save the current check-list.")),

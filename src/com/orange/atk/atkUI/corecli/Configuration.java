@@ -55,7 +55,7 @@ public class Configuration {
 	private static SortedProperties properties = new SortedProperties();
 	private static Vector<String> defaultPhoneConfigs;
 	private HashMap<String, String> defaultConfig;
-	public static String defaultPhoneConfigPath = Platform.getInstance().getJATKPath()
+	public static String defaultPhoneConfigPath = Platform.getInstance().getUserConfigDirPath()
 			+ Platform.FILE_SEPARATOR + "ConfigFiles" + Platform.FILE_SEPARATOR;
 	private static String configFileName = null;
 
@@ -141,7 +141,7 @@ public class Configuration {
 	public static boolean loadConfigurationFile(String configFileName) {
 		
 		String userConfigDirPath = Platform.getInstance().getUserConfigDirPath();
-		Configuration.configFileName = userConfigDirPath+configFileName;		
+		Configuration.configFileName = userConfigDirPath+Platform.FILE_SEPARATOR+configFileName;
 		String atkPath = Platform.getInstance().getJATKPath();	
 		File atkConfigDir = new File(userConfigDirPath);
 		

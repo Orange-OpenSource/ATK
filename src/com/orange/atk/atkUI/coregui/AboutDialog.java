@@ -53,7 +53,7 @@ public class AboutDialog extends JDialog {
 	private boolean autoscroll = false;
 	private static String version = "2.17";
 	
-	protected static final String HELP_DOC_PATH=Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"doc"+File.separator+"help"+File.separator;
+	protected static final String HELP_DOC_PATH=Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"docs"+File.separator+"help"+File.separator;
 
 	public AboutDialog(JFrame owner) {
 		super(owner); // to have the same icon than the owner
@@ -74,7 +74,8 @@ public class AboutDialog extends JDialog {
 		editorPane.setEditable(false);
 		String aboutURL = HELP_DOC_PATH+"about.html";
 		try {
-			editorPane.setPage("file:///"+aboutURL);
+            File file = new File(aboutURL);
+            editorPane.setPage(file.toURI().toURL());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -122,10 +123,14 @@ public class AboutDialog extends JDialog {
 		contentPaneFrame.add(textPanel, BorderLayout.CENTER);
 		pack(); 
 
-		int dec_x = (owner.getWidth()-this.getWidth())/2;
-		int dec_y = (owner.getHeight()-this.getHeight())/2;
-		this.setLocation(owner.getLocation().x+dec_x,
+        if(owner != null){
+		    int dec_x = (owner.getWidth()-this.getWidth())/2;
+		    int dec_y = (owner.getHeight()-this.getHeight())/2;
+		    this.setLocation(owner.getLocation().x+dec_x,
 				owner.getLocation().y+dec_y);
+        }else{
+            this.setLocationRelativeTo(getOwner());
+        }
 
 		setVisible(true);
 	}
