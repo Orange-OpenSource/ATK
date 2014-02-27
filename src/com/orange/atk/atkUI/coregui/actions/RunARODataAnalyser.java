@@ -24,7 +24,6 @@ public class RunARODataAnalyser extends MatosAbstractAction {
             ProcessBuilder pb = new ProcessBuilder(LAUNCHARO);
             pb.directory(new File(AROPATH + "\\bin"));
             Process p = pb.start();
-			Runtime.getRuntime().exec(LAUNCHARO, null, new File("\""+AROPATH + "\\bin\""));
 		} catch (IOException e) {
 			Logger.getLogger(this.getClass()).error("Unable to start ARODataAnalyzer", e);
 		}  catch(Exception e) {
