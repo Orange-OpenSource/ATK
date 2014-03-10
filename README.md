@@ -12,3 +12,5 @@ ATK measures device resources consumption (cpu, power, memory etc ...) in real-t
 + Script Recorder"
 
  It let you to record actions performed on the mobile device (touch screen, key press ...). These actions are translated into script language commands, and saved into test script file. Other script commands can be manually added to the script to perform special actions such as taking screenshot, make a loop on a set of actions, including another script file etc...
+
+New: we are working on an ARO integration with ATK. This is still a work in progress but the first hooks are in place.
