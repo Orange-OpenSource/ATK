@@ -47,20 +47,12 @@ import java.util.regex.Pattern;
 
 import javax.swing.event.EventListenerList;
 
+import com.android.ddmlib.*;
+import static com.android.ddmlib.FileListingService.FileEntry;
 import com.att.aro.main.ApplicationResourceOptimizer;
 import com.att.aro.main.DatacollectorBridge;
 import com.orange.atk.atkUI.coregui.CoreGUIPlugin;
 import org.apache.log4j.Logger;
-
-import com.android.ddmlib.AdbCommandRejectedException;
-import com.android.ddmlib.DdmPreferences;
-import com.android.ddmlib.IDevice;
-import com.android.ddmlib.IShellOutputReceiver;
-import com.android.ddmlib.InstallException;
-import com.android.ddmlib.MultiLineReceiver;
-import com.android.ddmlib.RawImage;
-import com.android.ddmlib.ShellCommandUnresponsiveException;
-import com.android.ddmlib.TimeoutException;
 
 import com.orange.atk.atkUI.anaHopper.HopperStep;
 import com.orange.atk.atkUI.corecli.Configuration;
@@ -135,8 +127,9 @@ public class AndroidPhone implements PhoneInterface {
 		}
 
 	};
+    private boolean aroRunning = false;
 
-	// duplet for Key Value
+    // duplet for Key Value
 	class KeyValue {
 		public String iconpath;
 		public int code;
@@ -926,7 +919,6 @@ public class AndroidPhone implements PhoneInterface {
 		try {
 			String[] result = executeShellCommand(startCmd, true);
 			for (String res : result) {
-				Logger.getLogger(this.getClass()).debug(res);
 				if (res.contains(packagename)) {
 					return 0;
 				}
@@ -1063,6 +1055,7 @@ public class AndroidPhone implements PhoneInterface {
 	@Override
 	public void startTestingMode(String resultDirectory, String confFilename) throws PhoneException {
 		MonitoringConfig config;
+        String resultDirectoryName = new File(resultDirectory).getName();
         Logger.getLogger(this.getClass()).info("startTestingMode :"+confFilename);
 		try {
 			config = MonitoringConfig.fromFile(confFilename);
@@ -1078,11 +1071,11 @@ public class AndroidPhone implements PhoneInterface {
 						Logger.getLogger(this.getClass()).error(e);
 					}
 				}
-                aroDataCollectorBridge = new DatacollectorBridge(
-                        CoreGUIPlugin.mainFrame);
+                aroRunning = true;
                 Logger.getLogger(this.getClass()).info("starting ARO");
-                aroDataCollectorBridge.startARODataCollectorCmd("samplesample", false);
-                //aroDataCollectorBridge.startARODataCollector();
+                String startCmd= "am start -n com.att.android.arodatacollector/com.att.android.arodatacollector.activities.AROCollectorSplashActivity " +
+                        "-e ERRORDIALOGID 100 -e TraceFolderName "+ resultDirectoryName +" -e TraceStopDuration 10";
+                executeShellCommand(startCmd, false);
 			}
 
 		} catch (IOException e) {
@@ -1267,10 +1260,7 @@ public class AndroidPhone implements PhoneInterface {
 
 	public void stopTestingMode() {
 		isStarted = false;
-        if (aroDataCollectorBridge != null) {
-            aroDataCollectorBridge.stopARODataCollector();
-            aroDataCollectorBridge=null;
-        }
+
 		try {
 			if (inMonitor != null)
 				inMonitor.close();
@@ -1294,10 +1284,76 @@ public class AndroidPhone implements PhoneInterface {
 				Logger.getLogger(this.getClass()).error(e);
 			}
 		}
-		Logger.getLogger(this.getClass()).debug("End of Testing Mode");
-		// AutomaticPhoneDetection.getInstance().resumeDetection();
+        if(aroRunning){
+            Logger.getLogger(this.getClass()).debug("Stopping ARO");
+            String stopCmd="am start -n com.att.android.arodatacollector/com.att.android.arodatacollector.activities.AROCollectorHomeActivity -e StopCollector yes";
+            try {
+                executeShellCommand(stopCmd, false);
+            } catch (PhoneException e) {
+                Logger.getLogger(this.getClass()).error(e);
+            }
+            aroRunning = false;
+        }
+        Logger.getLogger(this.getClass()).debug("End of Testing Mode");
 
-	}
+    }
+
+    public void pullData(String source,String destination){
+        Logger.getLogger(this.getClass()).info("pulling data from "+source+" to "+destination);
+        FileListingService.FileEntry aroData[];
+        FileListingService fileListingService = adevice.getFileListingService();
+        FileListingService.FileEntry fileEntry = fileListingService.getRoot();
+        String[] sourcePaths = source.split("/");
+        for ( String subdir : sourcePaths ) {
+            fileListingService.getChildren( fileEntry, true, null );
+            fileEntry = fileEntry.findChild( subdir );
+            if ( fileEntry == null ){
+                Logger.getLogger(this.getClass()).info("could not find "+ subdir);
+                return;
+            }
+        }
+        new File(destination).mkdirs();
+        try {
+            aroData = fileListingService.getChildrenSync(fileEntry);
+            adevice.getSyncService().pull(aroData,destination,new SyncService.ISyncProgressMonitor() {
+                @Override
+                public void start(int i) {
+
+                }
+
+                @Override
+                public void stop() {
+
+                }
+
+                @Override
+                public boolean isCanceled() {
+                    return false;
+                }
+
+                @Override
+                public void startSubTask(String s) {
+
+                }
+
+                @Override
+                public void advance(int i) {
+
+                }
+            });
+        } catch (SyncException e) {
+            Logger.getLogger(this.getClass()).error(e);
+        } catch (IOException e) {
+            Logger.getLogger(this.getClass()).error(e);
+        } catch (TimeoutException e) {
+            Logger.getLogger(this.getClass()).error(e);
+        } catch (AdbCommandRejectedException e) {
+            Logger.getLogger(this.getClass()).error(e);
+        } catch (ShellCommandUnresponsiveException e) {
+            Logger.getLogger(this.getClass()).error(e);
+        }
+        // AutomaticPhoneDetection.getInstance().resumeDetection();
+    }
 
 	public void useCpu(int percentUse) throws PhoneException {
 		// TODO Auto-generated method stub

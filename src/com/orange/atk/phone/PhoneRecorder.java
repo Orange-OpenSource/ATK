@@ -389,6 +389,11 @@ public class PhoneRecorder implements PhoneInterface {
 
 	}
 
+    public void stopTestingMode(String directory) {
+        // TODO Auto-generated method stub
+
+    }
+
 	public void stopExecution() throws PhoneException {
 		// TODO Auto-generated method stub
 
@@ -506,5 +511,10 @@ public class PhoneRecorder implements PhoneInterface {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    @Override
+    public void pullData(String source, String destination) {
+
+    }
 
 }

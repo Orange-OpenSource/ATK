@@ -696,4 +696,6 @@ public interface PhoneInterface {
 
 	// for jenkins plugin
 	public String getSerialNumber();
+
+    public void pullData(String source,String destination);
 }

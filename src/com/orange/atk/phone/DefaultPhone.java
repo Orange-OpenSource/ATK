@@ -203,6 +203,11 @@ public class DefaultPhone implements PhoneInterface {
 
 	}
 
+    public void stopTestingMode(String directory) {
+        // Nothing to do
+
+    }
+
 	public PhoneInterface getInstance(Object... params) {
 		return new DefaultPhone();
 	}
@@ -475,5 +480,10 @@ public class DefaultPhone implements PhoneInterface {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    @Override
+    public void pullData(String source, String destination) {
+
+    }
 
 }
