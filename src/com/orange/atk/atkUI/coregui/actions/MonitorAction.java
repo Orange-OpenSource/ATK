@@ -33,6 +33,7 @@ import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -47,15 +48,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import com.orange.atk.atkUI.coregui.*;
 import org.apache.log4j.Logger;
 
 import com.orange.atk.atkUI.corecli.Configuration;
-import com.orange.atk.atkUI.coregui.CheckListTable;
-import com.orange.atk.atkUI.coregui.CoreGUIPlugin;
-import com.orange.atk.atkUI.coregui.FileViewDialog;
-import com.orange.atk.atkUI.coregui.JATKcomboBoxListener;
-import com.orange.atk.atkUI.coregui.MatosGUI;
-import com.orange.atk.atkUI.coregui.SelectDialog;
 import com.orange.atk.graphAnalyser.CreateGraph;
 import com.orange.atk.graphAnalyser.GraphMarker;
 import com.orange.atk.graphAnalyser.LectureJATKResult;
@@ -89,6 +85,7 @@ public class MonitorAction extends MatosAbstractAction {
 	private Map<String, GraphMarker> mapAction = null;
 	private JFrame frame;
 	private JButton buttonStart, buttonStop, buttonCancel, buttonReport, buttonGraph;
+    public InfiniteProgressPanel glassPane= new InfiniteProgressPanel();
 
 	public MonitorAction(String name, Icon icon, String shortDescription) {
 		super(name, icon, shortDescription);
@@ -214,6 +211,11 @@ public class MonitorAction extends MatosAbstractAction {
 				LectureJATKResult analyser = new LectureJATKResult();
 				analyser.setParameters(logDir);
 				analyser.setVisible(true);
+                String aroDataPath=logDir+File.separator+"ARO";
+                if(new File(aroDataPath).exists()){
+                    AROLauncher.start(aroDataPath);
+                }
+
 			}
 		});
 		buttonGraph.setEnabled(false);
@@ -243,6 +245,7 @@ public class MonitorAction extends MatosAbstractAction {
 			}
 		};
 		frame.addWindowListener(windowListener);
+        frame.setGlassPane(glassPane);
 	}
 
 	private TcpdumpLineListener tcpdumpLineListener = new TcpdumpLineListener() {
@@ -324,9 +327,29 @@ public class MonitorAction extends MatosAbstractAction {
 			buttonReport.setToolTipText(logDir);
 			buttonGraph.setEnabled(true);
 			buttonGraph.setToolTipText(logDir);
+            postExecution();
 		}
 
 	}
+
+    private void postExecution(){
+        glassPane.setText("downloading ARO files");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    Logger.getLogger(this.getClass()).error(e);
+                }
+                String testName = new File(logDir).getName();
+                currentPhone.pullData("mnt/sdcard/ARO/"+testName,logDir+File.separator+"ARO");
+                glassPane.stop();
+            }
+        }).start();
+        glassPane.setVisible(true);
+        glassPane.start();
+    }
 
 	private void createPDFFile()
 	{

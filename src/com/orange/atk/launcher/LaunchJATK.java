@@ -354,15 +354,14 @@ public class LaunchJATK implements ErrorListener {
 	}
 
 	public void stopExecution() {
-		if (currentPhone != null) {
-			if (currentPhone.isInTestingMode())
-				currentPhone.stopTestingMode();
-			currentPhone = null;
-		}
-		documentGenerator = null;
-		currentPhone = null;
-		mapPerfGraph = null;
-		mapAction = null;
+        if (currentPhone != null) {
+            if (currentPhone.isInTestingMode()){
+                currentPhone.stopTestingMode();
+            }
+        }
+        documentGenerator = null;
+        mapPerfGraph = null;
+        mapAction = null;
 	}
 
 	/**
@@ -406,6 +405,14 @@ public class LaunchJATK implements ErrorListener {
 			logger = null;
 
 		}
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            Logger.getLogger(this.getClass()).error(e);
+        }
+        String testName = new File(logDir).getName();
+        currentPhone.pullData("mnt/sdcard/ARO/"+testName,logDir+File.separator+"ARO");
+        currentPhone = null;
 	}
 
 	public void setIncludeDir(String dir) {
