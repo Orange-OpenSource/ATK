@@ -51,9 +51,9 @@ public class AboutDialog extends JDialog {
 	private JEditorPane editorPane;
 	protected boolean stop=false;
 	private boolean autoscroll = false;
-	private static String version = "2.17";
+	private static String version = "2.2.0";
 	
-	protected static final String HELP_DOC_PATH=Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"docs"+File.separator+"help"+File.separator;
+	protected static final String HELP_DOC_PATH=Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"doc"+File.separator+"help"+File.separator;
 
 	public AboutDialog(JFrame owner) {
 		super(owner); // to have the same icon than the owner
@@ -62,7 +62,7 @@ public class AboutDialog extends JDialog {
 
 		JPanel frontPanel = new JPanel(new BorderLayout());
 		String header = "<html><br><center><b>ATK - release "+version+"</b></center>"+
-		"<center>Copyright (C) 2007 - 2012 France Télécom – All rights reserved</center>"+ "<br>" + 
+		"<center>Copyright (C) 2007 - 2012 Orange Labs – All rights reserved</center>"+ "<br>" +
 		"</html>";
 		frontPanel.add(new JLabel(header, JLabel.CENTER), BorderLayout.CENTER);
 		JPanel textPanel = new JPanel(new BorderLayout());
