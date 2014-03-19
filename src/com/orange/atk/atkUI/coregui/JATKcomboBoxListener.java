@@ -84,15 +84,13 @@ public class JATKcomboBoxListener implements ActionListener, MouseListener {
 				return;
 			if(!nameFile.endsWith(".xml"))
 				nameFile+=".xml";
-			file = new File(Configuration.getProperty(Configuration.CONFIGDIRECTORY)+
-					File.separator+nameFile);
+			file = new File(Configuration.getMonitoringConfigDir()+File.separator+nameFile);
 
 			String defaultFileName = AutomaticPhoneDetection.getInstance().getxmlfilepath();
 
 			File defaultFile = new File(defaultFileName);
 
 			FileUtil.copyfile(file, defaultFile);
-
 
 			// Loop to determine where to insert the new element at the correct place
 			for (int i = 0; i < _jcomBox.getItemCount();i++) {
@@ -111,9 +109,9 @@ public class JATKcomboBoxListener implements ActionListener, MouseListener {
 				_monitorAction.setXmlfilepath(file.toString());
 		}
 		else{
-			if (Configuration.getInstance().defaultPhoneConfigNames().contains(((String)_jcomBox.getSelectedItem())))
-				file = new File(Configuration.defaultPhoneConfigPath+_jcomBox.getSelectedItem());
-			else file = new File(Configuration.getProperty(Configuration.CONFIGDIRECTORY)+File.separator+_jcomBox.getSelectedItem());
+			if (Configuration.getInstance().defaultMonitoringConfigNames().contains(((String)_jcomBox.getSelectedItem())))
+				file = new File(Configuration.getMonitoringConfigDir()+File.separator+_jcomBox.getSelectedItem());
+			else file = new File(Configuration.getMonitoringConfigDir()+File.separator+_jcomBox.getSelectedItem());
 			if(step!=null)
 				step.setXmlfilepath(file.toString());
 			else if(_monitorAction!=null)
@@ -130,9 +128,9 @@ public class JATKcomboBoxListener implements ActionListener, MouseListener {
 			String selectedItem = (String) _jcomBox.getSelectedItem();
 			if(JatkCheckListTable.ADD_NEW_CONFIG_FILE == selectedItem)
 				return;
-			if (Configuration.getInstance().defaultPhoneConfigNames().contains(selectedItem))
-				new PhoneConfigurationWizard(Configuration.defaultPhoneConfigPath+selectedItem, true);
-			else new PhoneConfigurationWizard(Configuration.getProperty(Configuration.CONFIGDIRECTORY)+	File.separator+selectedItem, false);
+			if (Configuration.getInstance().defaultMonitoringConfigNames().contains(selectedItem))
+				new PhoneConfigurationWizard(Configuration.getMonitoringConfigDir()+selectedItem, true);
+			else new PhoneConfigurationWizard(Configuration.getMonitoringConfigDir()+File.separator+selectedItem, false);
 
 		}
 	}

@@ -25,13 +25,15 @@
 package com.orange.atk.platform;
 
 
+import java.io.File;
+
 /**
  * Class which stores all platform dependant values.
  */
 
 public abstract class Platform {
 
-	private static Platform instance;
+    private static Platform instance;
 
 	/**
 	 * Equal to the default line separator
@@ -69,6 +71,5 @@ public abstract class Platform {
 	public abstract String getRemoveSignature();
 	public abstract String getZipalignLocation();
 	public abstract String getAtkKeyLocation();
-	public abstract String getUserConfigDirPath();
-
+	public abstract String getUserConfigDir();
 }

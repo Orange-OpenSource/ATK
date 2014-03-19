@@ -33,7 +33,6 @@ import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -122,13 +121,13 @@ public class MonitorAction extends MatosAbstractAction {
 		comboBoxPhoneConfig.addItem(CheckListTable.ADD_NEW_CONFIG_FILE);
 		comboBoxPhoneConfig.addItem(CheckListTable.NOT_SELECTED);
 
-		String defaultConfigFileName = Configuration.getInstance().getDefaultConfig()
+		String defaultConfigFileName = Configuration.getInstance().getDefaultMonitoringConfig()
 				.get(currentPhone.getClass().getName());
 		comboBoxPhoneConfig.setSelectedItem(CheckListTable.NOT_SELECTED);
 		for (String name : readListPhoneConfig) {
 			if (name.equals(defaultConfigFileName)) {
 				comboBoxPhoneConfig.setSelectedItem(defaultConfigFileName);
-				xmlfilepath = Configuration.defaultPhoneConfigPath + defaultConfigFileName;
+				xmlfilepath = Configuration.getMonitoringConfigDir() + File.separator + defaultConfigFileName;
 				break;
 			}
 		}

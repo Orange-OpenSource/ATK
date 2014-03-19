@@ -133,7 +133,7 @@ public class WindowsPlatform extends Platform {
 	}
 
 	@Override
-	public String getUserConfigDirPath() {
+	public String getUserConfigDir() {
 		String homePath = System.getenv("USERPROFILE");
 		String userConfigDirPath = homePath + Platform.FILE_SEPARATOR + ".atk"
 				+ Platform.FILE_SEPARATOR;

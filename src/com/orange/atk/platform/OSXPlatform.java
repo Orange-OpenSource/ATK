@@ -40,7 +40,7 @@ public class OSXPlatform extends Platform {
 	}
 
 	@Override
-	public String getUserConfigDirPath() {
+	public String getUserConfigDir() {
         String homePath = System.getenv("HOME");
         String userConfigDirPath = homePath + Platform.FILE_SEPARATOR + ".atk";
         Logger.getLogger(OSXPlatform.class).debug("HOME is : "+userConfigDirPath);

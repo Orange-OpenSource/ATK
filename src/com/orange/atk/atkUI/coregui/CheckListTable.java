@@ -778,7 +778,7 @@ public abstract class CheckListTable  extends AbstractCheckListTable {
 	}
 
 	public static Vector<String> readListPhoneConfig() {
-		File folder = new File(Configuration.getProperty(Configuration.CONFIGDIRECTORY));
+		File folder = new File(Configuration.getMonitoringConfigDir());
 		if(!folder.exists()){
 			if(!folder.mkdir())
 				Logger.getLogger("CheckListTable").debug("Didn't manage to create the folder");
@@ -792,8 +792,8 @@ public abstract class CheckListTable  extends AbstractCheckListTable {
 		};
 		String[] listFiles = folder.list(filter);
 		
-		folder = new File(Configuration.defaultPhoneConfigPath);
-		Logger.getLogger("CheckListTable").debug("defaultPhoneConfigPath="+Configuration.defaultPhoneConfigPath);
+		folder = new File(Configuration.getMonitoringConfigDir());
+		Logger.getLogger("CheckListTable").debug("defaultPhoneConfigPath="+folder.getAbsolutePath());
 		String[] defaultFiles = folder.list(filter);
 		
 		Vector<String> resultFiles = new Vector<String>();

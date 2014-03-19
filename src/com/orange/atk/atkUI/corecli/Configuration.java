@@ -33,13 +33,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-
 import org.apache.log4j.Logger;
 
 import com.orange.atk.atkUI.corecli.utils.FileResolver;
-import com.orange.atk.atkUI.corecli.utils.FileUtilities;
 import com.orange.atk.atkUI.corecli.utils.SortedProperties;
 import com.orange.atk.platform.Platform;
 import com.orange.atk.util.FileUtil;
@@ -55,8 +51,6 @@ public class Configuration {
 	private static SortedProperties properties = new SortedProperties();
 	private static Vector<String> defaultPhoneConfigs;
 	private HashMap<String, String> defaultConfig;
-	public static String defaultPhoneConfigPath = Platform.getInstance().getUserConfigDirPath()
-			+ Platform.FILE_SEPARATOR + "ConfigFiles" + Platform.FILE_SEPARATOR;
 	private static String configFileName = null;
 
 	/** A file resolver to get back file from URI */
@@ -70,7 +64,7 @@ public class Configuration {
 	public static final String PROXYPORT = "proxyPort";
 	public static final String OUTPUTDIRECTORY = "outputDir";
 	public static final String INPUTDIRECTORY = "inputDir";
-	public static final String CONFIGDIRECTORY = "configDir";
+	//public static final String CONFIGDIRECTORY = "configDir";
 	public static final String CSS = "reportCSSFile";
 	public static final String KEEPREPORT = "keepReport";
 	public static final String OUTPUTDIRECTORYCONVERTS60 = "outputDirS60";
@@ -103,6 +97,9 @@ public class Configuration {
 	public static final String GUI_LOCATION_X = "gui.locationX";
 	public static final String GUI_LOCATION_Y = "gui.locationY";
 
+    private static final String MONITORING_CONFIG_DIR = "ConfigFiles";
+    private static final Object PHONE_CONFIG_DIR = "AndroidTools"+File.separator+"config";
+
 	private static Configuration instance;
 
 	public static Configuration getInstance() {
@@ -118,7 +115,6 @@ public class Configuration {
 		defaultConfig.put("com.orange.atk.phone.android.AndroidMonkeyDriver", "android.xml");
 		defaultConfig.put("com.orange.atk.phone.android.AndroidICSDriver", "android.xml");
 		defaultConfig.put("com.orange.atk.phone.android.AndroidJBDriver", "android.xml");
-		defaultConfig.put("com.orange.atk.phone.mediatek.MediatekPhone", "mediatek.xml");
 		defaultPhoneConfigs = new Vector<String>();
 		Iterator<String> configNames = defaultConfig.values().iterator();
 		while (configNames.hasNext()) {
@@ -130,17 +126,24 @@ public class Configuration {
 
 	}
 
-	public HashMap<String, String> getDefaultConfig() {
+    public static String getMonitoringConfigDir(){
+        return Platform.getInstance().getUserConfigDir()+ File.separator + MONITORING_CONFIG_DIR;
+    }
+    public static String getPhoneConfigDir(){
+        return Platform.getInstance().getUserConfigDir() + File.separator + PHONE_CONFIG_DIR;
+    }
+
+	public HashMap<String, String> getDefaultMonitoringConfig() {
 		return defaultConfig;
 	}
 
-	public Vector<String> defaultPhoneConfigNames() {
+	public Vector<String> defaultMonitoringConfigNames() {
 		return defaultPhoneConfigs;
 	}
 
 	public static boolean loadConfigurationFile(String configFileName) {
 		
-		String userConfigDirPath = Platform.getInstance().getUserConfigDirPath();
+		String userConfigDirPath = Platform.getInstance().getUserConfigDir();
 		Configuration.configFileName = userConfigDirPath+Platform.FILE_SEPARATOR+configFileName;
 		String atkPath = Platform.getInstance().getJATKPath();	
 		File atkConfigDir = new File(userConfigDirPath);

@@ -67,7 +67,7 @@ public class LinuxPlatform extends Platform {
 	}
 
 	@Override
-	public String getUserConfigDirPath() {
+	public String getUserConfigDir() {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -539,11 +539,11 @@ public class HopperCheckListTable extends CheckListTable {
 					rowData.add(configfile.getName());
 				} else {
 					PhoneInterface phone = AutomaticPhoneDetection.getInstance().getDevice();
-					String defaultConfigFileName = Configuration.getInstance().getDefaultConfig()
+					String defaultConfigFileName = Configuration.getInstance().getDefaultMonitoringConfig()
 							.get(phone.getClass().getName());
 					if (defaultConfigFileName != null) {
 						rowData.add(defaultConfigFileName);
-						File file = new File(Configuration.defaultPhoneConfigPath
+						File file = new File(Configuration.getMonitoringConfigDir()+File.separator
 								+ defaultConfigFileName);
 						flashStep.setXmlfilepath(file.toString());
 					} else
