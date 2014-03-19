@@ -459,6 +459,7 @@ Call StrContains
 Pop $0
 DetailPrint "AndroidEnvPath: $0"
 
+Goto enddownload
 StrCmp $0 ""  downloadandroid
 
 ;truedetect:
@@ -515,8 +516,8 @@ endinstall:
 SectionEnd
 
 Section "ARO" SEC02
-  File "setup-ARO-2.4.exe"
-  ExecWait "$INSTDIR\setup-ARO-2.4.exe /norun"
+  File "setup-ARO-3.0.exe"
+  ExecWait "$INSTDIR\setup-ARO-3.0.exe /norun"
 SectionEnd
 
 Section -post SEC0001
