@@ -15,4 +15,7 @@ ATK measures device resources consumption (cpu, power, memory etc ...) in real-t
 
 New: we are working on an ARO integration with ATK. This is still a work in progress but the first hooks are in place. Right now, ARO needs a few tweaks to work with ATK. The code is available here:
 http://github.com/pcrepieux/ARO
+original repository is here:
+https://github.com/attdevsupport/ARO
+
 
