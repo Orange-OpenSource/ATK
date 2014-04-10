@@ -104,6 +104,8 @@ public class AndroidPhone implements PhoneInterface {
 	protected byte[] CR = {13};
 	private boolean disabledPhone = true;
 
+    protected String mPhoneConfigFile=null;
+
 	private IShellOutputReceiver shellOutputReceiver = new IShellOutputReceiver() {
 		public void addOutput(byte[] data, int offset, int length) {
 		}
@@ -1741,6 +1743,10 @@ public class AndroidPhone implements PhoneInterface {
 	public String getConfigFile() {
 		return "android.xml";
 	}
+
+    public String getPhoneConfigFile() {
+        return mPhoneConfigFile;
+    }
 
 	// add Robotium task
 	protected String[] executeShellCommand(String cmd) throws PhoneException {

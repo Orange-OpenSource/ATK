@@ -469,6 +469,10 @@ public class PhoneRecorder implements PhoneInterface {
 		return null;
 	}
 
+    public String getPhoneConfigFile() {
+        return null;
+    }
+
 	@Override
 	public boolean isDisabledPhone() {
 		return false;

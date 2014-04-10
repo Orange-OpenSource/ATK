@@ -78,12 +78,24 @@ public class JPhoneStatusButton extends JButton implements DeviceDetectionListen
 		setText(phone.getName()+" ");
 		repaint();		
 	}
+
+    private void setPhoneUnconfiguredStatus() {
+        setIcon(new ImageIcon(CoreGUIPlugin.getIconURL("tango/phonenotconfigured.png")));
+        setText(phone.getName()+" ");
+        repaint();
+    }
 	
 	public void devicesConnectedChanged() {
-		if (phone.getCnxStatus() == PhoneInterface.CNX_STATUS_AVAILABLE) {
-			setPhoneConnectedStatus();
-		} else {
-			setPhoneNotAvailableStatus();
+		switch(phone.getCnxStatus()){
+            case PhoneInterface.CNX_STATUS_AVAILABLE:
+                if(phone.getPhoneConfigFile().equals("default.xml")){
+                    setPhoneUnconfiguredStatus();
+                }else{
+			        setPhoneConnectedStatus();
+                }
+                break;
+            default:
+			    setPhoneNotAvailableStatus();
 		}
 	}
 

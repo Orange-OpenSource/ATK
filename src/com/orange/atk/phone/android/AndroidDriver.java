@@ -125,12 +125,17 @@ public class AndroidDriver extends AndroidPhone implements PhoneInterface {
 		Logger.getLogger(this.getClass()).debug("Configuration file :"+conffile.getName());
 		if (!conffile.exists()) {
 			Logger.getLogger(this.getClass()).warn("No file  found for configuration");
-			new AndroidWizard(this, d,confFileName);
+			//new AndroidWizard(this, d,confFileName);
+            String defaultConfFileName = Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"AndroidTools"+Platform.FILE_SEPARATOR+
+                    "conf"+Platform.FILE_SEPARATOR+"default.xml";
+            File defaultconffile = new File(defaultConfFileName);
+            init(phoneModel,defaultconffile);
 			return;
 		} else init(phoneModel, conffile);
 	}
 
 	private void init(String phoneModel, File conffile) throws PhoneException {
+        mPhoneConfigFile = conffile.getName();
 		gestionnaire = new AndroidConfHandler();
 		try {
 			SAXParserFactory fabrique = SAXParserFactory.newInstance();

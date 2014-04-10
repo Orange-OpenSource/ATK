@@ -681,6 +681,7 @@ public interface PhoneInterface {
 
 	public String getIncludeDir();
 	public String getConfigFile();
+    public String getPhoneConfigFile();
 
 	public boolean isDisabledPhone();
 
