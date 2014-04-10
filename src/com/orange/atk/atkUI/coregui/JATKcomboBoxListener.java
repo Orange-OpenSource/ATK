@@ -90,7 +90,12 @@ public class JATKcomboBoxListener implements ActionListener, MouseListener {
 
 			File defaultFile = new File(defaultFileName);
 
-			FileUtil.copyfile(file, defaultFile);
+			boolean isCopied = FileUtil.copyfile(file, defaultFile);
+            if(!isCopied){
+                JOptionPane.showMessageDialog(CoreGUIPlugin.mainFrame, "Could not create monitoring configuration","Error !",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
 			// Loop to determine where to insert the new element at the correct place
 			for (int i = 0; i < _jcomBox.getItemCount();i++) {

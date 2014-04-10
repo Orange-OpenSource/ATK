@@ -44,15 +44,14 @@ public class FileUtil {
 			{
 				if(!newfile.delete())
 					Logger.getLogger(LaunchJATK.class ).warn("Can't delete dir "+newfile.getPath());
-
 			}
 
 			//copy file to output dir	
 			try {
 				newfile.createNewFile();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+                Logger.getLogger(LaunchJATK.class ).error("Could not create "+newfile.getPath());
+                return false;
 			}
 			FileChannel in = null; // canal d'entrée
 			FileChannel out = null; // canal de sortie
@@ -65,8 +64,9 @@ public class FileUtil {
 				// Copie depuis le in vers le out
 				in.transferTo(0, in.size(), out);
 			} catch (Exception e) {
-				e.printStackTrace(); // n'importe quelle exception
-			} finally { // finalement on ferme
+                Logger.getLogger(LaunchJATK.class ).error("Could not copy "+newfile.getPath());
+                return false;
+			} finally {
 				if(in != null) {
 					try {
 						in.close();
@@ -79,9 +79,7 @@ public class FileUtil {
 				}
 			}
 		}
-
 		return true;
-
 	}
 
 	// Deletes all files and subdirectories under dir.
