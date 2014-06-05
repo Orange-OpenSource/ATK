@@ -134,7 +134,7 @@ public class JATKcomboBoxListener implements ActionListener, MouseListener {
 			if(JatkCheckListTable.ADD_NEW_CONFIG_FILE == selectedItem)
 				return;
 			if (Configuration.getInstance().defaultMonitoringConfigNames().contains(selectedItem))
-				new PhoneConfigurationWizard(Configuration.getMonitoringConfigDir()+selectedItem, true);
+				new PhoneConfigurationWizard(Configuration.getMonitoringConfigDir()+File.separator+selectedItem, true);
 			else new PhoneConfigurationWizard(Configuration.getMonitoringConfigDir()+File.separator+selectedItem, false);
 
 		}
