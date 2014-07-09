@@ -1,4 +1,4 @@
-/*
+package com.orange.atk.interpreter.atkCore;/*
  * Software Name : ATK
  *
  * Copyright (C) 2007 - 2012 France Télécom
@@ -16,12 +16,11 @@
  * limitations under the License.
  * 
  * ------------------------------------------------------------------
- * File Name   : TestVariableClass.java
+ * File Name   : com.orange.atk.interpreter.atkCore.TestVariableClass.java
  *
  * Created     : 16/05/2008
  * Author(s)   : France Telecom
  */
-package com.orange.atk.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -32,18 +31,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.orange.atk.interpreter.atkCore.Variable;
-
 
 /**
  * Unit tests associated to the interpreter.Variable
  * class.
  */
 
-public class TestVariableClass{
+public class VariableTest {
 	// To allow the test runner to run this test class
 	public static junit.framework.Test suite() {
-		return new JUnit4TestAdapter(TestVariableClass.class);
+		return new JUnit4TestAdapter(VariableTest.class);
 	}
 	@Before
 	public void setUp() {

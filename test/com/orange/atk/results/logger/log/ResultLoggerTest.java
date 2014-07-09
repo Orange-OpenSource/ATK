@@ -1,4 +1,4 @@
-/*
+package com.orange.atk.results.logger.log;/*
  * Software Name : ATK
  *
  * Copyright (C) 2007 - 2012 France Télécom
@@ -16,12 +16,11 @@
  * limitations under the License.
  * 
  * ------------------------------------------------------------------
- * File Name   : TestLogger.java
+ * File Name   : com.orange.atk.results.logger.log.TestLogger.java
  *
  * Created     : 16/05/2008
  * Author(s)   : France Telecom
  */
-package com.orange.atk.tests;
 
 
 import java.io.File;
@@ -37,7 +36,7 @@ import com.orange.atk.results.logger.documentGenerator.TextGenerator;
 import com.orange.atk.results.logger.log.ResultLogger;
 
 
-public class TestLogger {
+public class ResultLoggerTest {
 	DefaultPhone dp = new DefaultPhone();
 	@Test(expected = NullPointerException.class)
 	public void testConstructor1() throws FileNotFoundException {
