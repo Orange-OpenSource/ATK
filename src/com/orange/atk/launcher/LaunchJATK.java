@@ -456,7 +456,7 @@ public class LaunchJATK implements ErrorListener {
 
 	public void errorOccured() {
 		this.cancelExecution();
-		CoreGUIPlugin.mainFrame.statusBar.setStop();
+        CoreGUIPlugin.mainFrame.statusBar.setStop();
 		// Launch Autodetect after a Cancel
 		AutomaticPhoneDetection.getInstance().resumeDetection();
 		CoreGUIPlugin.mainFrame.statusBar.displayErrorMessage();
@@ -492,23 +492,20 @@ public class LaunchJATK implements ErrorListener {
 			result = 3;
 			return;
 		}
-		// Default ATK logs are stored in file <ATK_install>/log/logJATK.log
-		// For command line debugging, just replace <ATK_install>/log4j.xml, by
-		// the Eclipse_projet_ATK/log4j.xml
-		DOMConfigurator.configure(Platform.getInstance().getJATKPath() + "\\log4j.xml");
+
+		DOMConfigurator.configure(Platform.getInstance().getJATKPath() + Platform.FILE_SEPARATOR + "log4j.xml");
 
 		AutomaticPhoneDetection.getInstance(false).checkDevices();
 
 		List<PhoneInterface> devices = AutomaticPhoneDetection.getInstance().getDevices();
 		if (devices.size() == 0) {
-			System.out.println("FAILED: no device detected.");
+            Logger.getLogger(LaunchJATK.class).error("FAILED: no device detected.");
 		} else {
 			AutomaticPhoneDetection.getInstance().setSelectedDevice(devices.get(0));
 			LaunchJATK launcher = new LaunchJATK();
 			String result = launcher.parseArguments(args);
 			if (result != null) {
 				Logger.getLogger(LaunchJATK.class).debug(result);
-				System.out.println(result);
 			}
 
 		}
@@ -631,10 +628,8 @@ public class LaunchJATK implements ErrorListener {
 				System.out.println(result + ": test " + testFile);
 			} catch (FileNotFoundException e) {
 				return ("FAILED: test " + testFile);
-				// e.printStackTrace();
 			} catch (PhoneException e) {
 				return ("FAILED: test " + testFile);
-				// e.printStackTrace();
 			}
 		}
 		return null;
