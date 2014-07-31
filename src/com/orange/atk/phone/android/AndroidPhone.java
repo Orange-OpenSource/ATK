@@ -48,10 +48,6 @@ import java.util.regex.Pattern;
 import javax.swing.event.EventListenerList;
 
 import com.android.ddmlib.*;
-import static com.android.ddmlib.FileListingService.FileEntry;
-import com.att.aro.main.ApplicationResourceOptimizer;
-import com.att.aro.main.DatacollectorBridge;
-import com.orange.atk.atkUI.coregui.CoreGUIPlugin;
 import org.apache.log4j.Logger;
 
 import com.orange.atk.atkUI.anaHopper.HopperStep;
@@ -141,8 +137,6 @@ public class AndroidPhone implements PhoneInterface {
 		};
 	};
 	protected static final HashMap<String, KeyValue> keysAssociations = new HashMap<String, KeyValue>();
-
-    private DatacollectorBridge aroDataCollectorBridge;
 
 	// only use by child class
 	protected AndroidPhone() {
