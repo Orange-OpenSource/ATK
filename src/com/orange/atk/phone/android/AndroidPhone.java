@@ -75,7 +75,9 @@ public class AndroidPhone implements PhoneInterface {
 
 	private RobotiumTask robotiumTask = null;
 
-	private static final String ARO_APK_PATH = "ARO\\ARODataCollector_OpenSource_v2.2.1.1.apk";
+	private static final String ARO_APK_PATH = Platform.getInstance().getJATKPath() + Platform.FILE_SEPARATOR + "AndroidTools"
+            + Platform.FILE_SEPARATOR +"ARODataCollector.apk";
+
 	private final static EventListenerList listeners = new EventListenerList();
 	private final static String ATK_MONITOR_VERSION = "2.9";
 	private boolean isInitResDone = false;
