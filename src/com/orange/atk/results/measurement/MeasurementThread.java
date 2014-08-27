@@ -38,7 +38,7 @@ import com.orange.atk.results.logger.log.ResultLogger;
 
 
 /**
- * This class is the thread which periodically measure values from battery,
+ * This class is the thread which periodically measures values from battery,
  * memory, ..
  */
 
