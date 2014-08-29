@@ -136,7 +136,7 @@ public class LaunchJATK implements ErrorListener {
         ErrorManager.getInstance().addErrorListener(this);
         this.logDir = Platform.TMP_DIR + Platform.FILE_SEPARATOR;
         this.includeDir = JATKdir;
-        this.currentPhone = monkeyDevice;
+        currentPhone = monkeyDevice;
         this.init();
         Logger.getLogger(this.getClass()).debug("LaunchJATK(monkeyDevice)");
     }
@@ -189,8 +189,7 @@ public class LaunchJATK implements ErrorListener {
 			}
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
-			return;
-		}
+			}
 
 	}
 
@@ -524,7 +523,7 @@ public class LaunchJATK implements ErrorListener {
 
 	public void errorOccured() {
 		this.cancelExecution();
-		CoreGUIPlugin.mainFrame.statusBar.setStop();
+        CoreGUIPlugin.mainFrame.statusBar.setStop();
 		// Launch Autodetect after a Cancel
 		AutomaticPhoneDetection.getInstance().resumeDetection();
 		CoreGUIPlugin.mainFrame.statusBar.displayErrorMessage();
@@ -561,10 +560,8 @@ public class LaunchJATK implements ErrorListener {
 			result = 3;
 			return;
 		}
-		// Default ATK logs are stored in file <ATK_install>/log/logJATK.log
-		// For command line debugging, just replace <ATK_install>/log4j.xml, by
-		// the Eclipse_projet_ATK/log4j.xml
-		DOMConfigurator.configure(Platform.getInstance().getJATKPath() + "\\log4j.xml");
+
+		DOMConfigurator.configure(Platform.getInstance().getJATKPath() + Platform.FILE_SEPARATOR + "log4j.xml");
 
         if ((args.length>1 && !(args[1].equals("-translate")))||(args.length==0)) {
             AutomaticPhoneDetection.getInstance(false).checkDevices();
@@ -589,6 +586,7 @@ public class LaunchJATK implements ErrorListener {
             String result = launcher.parseArguments(args);
             AutomaticPhoneDetection.getInstance().stopAllDetection();
         }
+
 	}
 
 	private String parseArguments(String[] args) {
@@ -739,10 +737,8 @@ public class LaunchJATK implements ErrorListener {
 				System.out.println(result + ": test " + testFile);
 			} catch (FileNotFoundException e) {
 				return ("FAILED: test " + testFile);
-				// e.printStackTrace();
 			} catch (PhoneException e) {
 				return ("FAILED: test " + testFile);
-				// e.printStackTrace();
 			}
 		}
 		return null;

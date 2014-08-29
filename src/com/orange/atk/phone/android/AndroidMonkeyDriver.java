@@ -44,7 +44,7 @@ import com.orange.atk.util.Position;
 
 public class AndroidMonkeyDriver extends AndroidDriver {
 	SyncService syncService;
-	private final String localScript = Platform.TMP_DIR+Platform.FILE_SEPARATOR+"scriptfile";
+	private final String localScript = Platform.TMP_DIR+"scriptfile";
 	private final String remoteScript = "/sdcard/scriptfile";
 
 	public void setDevice(IDevice d) throws PhoneException{
@@ -165,25 +165,25 @@ public class AndroidMonkeyDriver extends AndroidDriver {
 
 	public void touchScreenPress(Position click) throws PhoneException  {
 		if (USE_MONKEY_FOR_PRESS) {
-			FileWriter fw=null;
+            FileWriter fw=null;
 			try {
 				Logger.getLogger(this.getClass()).debug("Generating monkey scriptfile : "+localScript);
-				fw = new FileWriter(new File(localScript));
-				fw.write("type= raw event\n");
-				fw.write("count= 3\n");
-				fw.write("speed= 1.0\n");
-				fw.write("start data >>\n");
-				fw.write("DispatchPointer(0,0,0,"+click.getX()+".0,"+click.getY()+".0,1.0,0.1,0,0.1,0.1,0,0)\n");
-				fw.write("UserWait("+click.getTime()+")\n");
-				fw.write("DispatchPointer(0,0,1,"+click.getX()+".0,"+click.getY()+".0,1.0,0.1,0,0.1,0.1,0,0)\n");
+                fw = new FileWriter(new File(localScript));
+                fw.write("type= raw event\n");
+                fw.write("count= 3\n");
+                fw.write("speed= 1.0\n");
+                fw.write("start data >>\n");
+                fw.write("DispatchPointer(0,0,0,"+click.getX()+".0,"+click.getY()+".0,1.0,0.1,0,0.1,0.1,0,0)\n");
+                fw.write("UserWait("+click.getTime()+")\n");
+                fw.write("DispatchPointer(0,0,1,"+click.getX()+".0,"+click.getY()+".0,1.0,0.1,0,0.1,0.1,0,0)\n");
 			} catch (IOException e) {
 				String error = ResourceManager.getInstance().getString("WRITING_FILE_FAILURE",localScript);
 				ErrorManager.getInstance().addError(getClass().getName(), error, e); 
 				throw new PhoneException(error);
 			} finally{
 				try {
-					if(fw!=null)
-						fw.close();
+                    if(fw!=null)
+                        fw.close();
 				} catch (IOException e) { }
 			}
 

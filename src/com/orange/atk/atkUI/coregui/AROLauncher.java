@@ -24,19 +24,20 @@
 package com.orange.atk.atkUI.coregui;
 
 import com.orange.atk.atkUI.corecli.Configuration;
+import com.orange.atk.platform.Platform;
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 
 public class AROLauncher {
-    private static final String AROPATH = Configuration.getProperty(Configuration.AROPATH);
-    private static final String LAUNCHARO = AROPATH + "\\bin\\aro.exe";
+    private static final String LAUNCHARO = Configuration.getProperty(Configuration.AROPATH);
+    private static final String AROPATH = LAUNCHARO.substring(0,LAUNCHARO.lastIndexOf("aro")-1);
 
     private static ProcessBuilder initProcessBuilder(){
         Logger.getLogger(AROLauncher.class).info(LAUNCHARO + " from " + AROPATH);
         ProcessBuilder pb = new ProcessBuilder();
-        pb.directory(new File(AROPATH + "\\bin"));
+        pb.directory(new File(AROPATH));
         pb.inheritIO();
         return pb;
     }

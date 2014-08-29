@@ -53,7 +53,7 @@ public class AboutDialog extends JDialog {
 	private boolean autoscroll = false;
 	private static String version = "2.2.0";
 	
-	protected static final String HELP_DOC_PATH=Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"doc"+File.separator+"help"+File.separator;
+	protected static final String HELP_DOC_PATH=Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"docs"+File.separator+"help"+File.separator;
 
 	public AboutDialog(JFrame owner) {
 		super(owner); // to have the same icon than the owner

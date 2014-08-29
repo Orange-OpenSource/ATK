@@ -451,11 +451,15 @@ public class ATKMonitorService extends ATKService implements Runnable{
 			setFlightMode(true);
 			return "OK";
 		}
-		else if (inputline.matches("DISABLEFLIGHTMODE")) {
-			Log.v(TAG,"DISABLEFLIGHTMODE");
-			setFlightMode(false);
-			return "OK";
-		}
+        else if (inputline.matches("DISABLEFLIGHTMODE")) {
+            Log.v(TAG,"DISABLEFLIGHTMODE");
+            setFlightMode(false);
+            return "OK";
+        }
+        else if (inputline.matches("OFFLINE")) {
+            Log.v(TAG,"OFFLINE");
+            return "OK";
+        }
 		else {
 			Log.v(TAG,"Unknown command");
 			return "Unknown";

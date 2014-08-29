@@ -1,4 +1,4 @@
-/*
+package com.orange.atk.results.logger.log;/*
  * Software Name : ATK
  *
  * Copyright (C) 2007 - 2012 France Télécom
@@ -16,12 +16,11 @@
  * limitations under the License.
  * 
  * ------------------------------------------------------------------
- * File Name   : TestIntegrationLogger.java
+ * File Name   : com.orange.atk.results.logger.log.TestIntegrationLogger.java
  *
  * Created     : 20/05/2008
  * Author(s)   : France Telecom
  */
-package com.orange.atk.tests;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -39,16 +38,13 @@ import com.orange.atk.interpreter.atkCore.JATKInterpreter;
 import com.orange.atk.phone.DefaultPhone;
 import com.orange.atk.platform.Platform;
 import com.orange.atk.results.logger.documentGenerator.DocumentGenerator;
-import com.orange.atk.results.logger.log.DocumentLogger;
-import com.orange.atk.results.logger.log.Message;
-import com.orange.atk.results.logger.log.ResultLogger;
 import com.orange.atk.results.measurement.PlotList;
 
-public class TestIntegrationLogger {
+public class LoggerIntegrationTest {
 
 	// To allow the test runner to run this test class
 	public static junit.framework.Test suite() {
-		return new JUnit4TestAdapter(TestIntegrationLogger.class);
+		return new JUnit4TestAdapter(LoggerIntegrationTest.class);
 	}
 
 	ResultLogger l = null;

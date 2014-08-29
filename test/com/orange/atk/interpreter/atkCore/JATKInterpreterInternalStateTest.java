@@ -16,12 +16,12 @@
  * limitations under the License.
  * 
  * ------------------------------------------------------------------
- * File Name   : TestJATKInterpreterInternalState.java
+ * File Name   : com.orange.atk.interpreter.atkCore.TestJATKInterpreterInternalState.java
  *
  * Created     : 16/05/2008
  * Author(s)   : France Telecom
  */
-package com.orange.atk.tests;
+package com.orange.atk.interpreter.atkCore;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -33,15 +33,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.orange.atk.interpreter.atkCore.JATKInterpreterInternalState;
-
-public class TestJATKInterpreterInternalState {
+public class JATKInterpreterInternalStateTest {
 
 	JATKInterpreterInternalState oiis = null;
 
 	// To allow the test runner to run this test class
 	public static junit.framework.Test suite() {
-		return new JUnit4TestAdapter(TestJATKInterpreterInternalState.class);
+		return new JUnit4TestAdapter(JATKInterpreterInternalStateTest.class);
 	}
 
 	@Before
