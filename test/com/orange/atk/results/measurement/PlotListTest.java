@@ -1,4 +1,4 @@
-/*
+package com.orange.atk.results.measurement;/*
  * Software Name : ATK
  *
  * Copyright (C) 2007 - 2012 France Télécom
@@ -16,12 +16,11 @@
  * limitations under the License.
  * 
  * ------------------------------------------------------------------
- * File Name   : TestPlotList.java
+ * File Name   : com.orange.atk.results.measurement.TestPlotList.java
  *
  * Created     : 16/05/2008
  * Author(s)   : France Telecom
  */
-package com.orange.atk.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -33,20 +32,19 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.orange.atk.platform.Platform;
-import com.orange.atk.results.measurement.PlotList;
 
 
 /**
  * Unit tests associated to {@link PlotList}
  * 
  */
-public class TestPlotList {
+public class PlotListTest {
 	private static String logDir = Platform.TMP_DIR;
 	PlotList list1 = null;
 
 	// To allow the test runner to run this test class
 	public static junit.framework.Test suite() {
-		return new JUnit4TestAdapter(TestPlotList.class);
+		return new JUnit4TestAdapter(PlotListTest.class);
 	}
 
 	@Before

@@ -44,6 +44,7 @@ import com.orange.atk.graphAnalyser.GraphMarker;
 import com.orange.atk.graphAnalyser.PerformanceGraph;
 import com.orange.atk.interpreter.ast.ASTStart;
 import com.orange.atk.interpreter.atkCore.JATKInterpreter;
+import com.orange.atk.interpreter.atkCore.JATKTranslator;
 import com.orange.atk.interpreter.estimators.ValidateSyntax;
 import com.orange.atk.interpreter.parser.ATKScriptParser;
 import com.orange.atk.interpreter.parser.ParseException;
@@ -60,6 +61,8 @@ import com.orange.atk.results.logger.log.DocumentLogger;
 import com.orange.atk.results.logger.log.ResultLogger;
 import com.orange.atk.util.FileUtil;
 import com.orange.atk.util.NetworkAnalysisUtils;
+
+import com.orange.atk.phone.android.AndroidMonkeyTranslatorDriver;
 
 /**
  * Entry point of JATK interpreter.
@@ -118,17 +121,27 @@ public class LaunchJATK implements ErrorListener {
 		Logger.getLogger(this.getClass()).debug("LaunchJATK()");
 	}
 
-	public LaunchJATK(String logDir, String includeDir, String testFile, String realTestFile,
-			String logType) {
-		this();
-		this.logDir = logDir;
-		this.includeDir = includeDir;
-		this.testFile = testFile;
-		this.realTestFile = realTestFile;
-		this.logType = logType;
-	}
+    public LaunchJATK(String logDir, String includeDir, String testFile, String realTestFile,
+                      String logType) {
+        this();
+        this.logDir = logDir;
+        this.includeDir = includeDir;
+        this.testFile = testFile;
+        this.realTestFile = realTestFile;
+        this.logType = logType;
+    }
 
-	private String init() {
+    public LaunchJATK(PhoneInterface monkeyDevice) {
+        super();
+        ErrorManager.getInstance().addErrorListener(this);
+        this.logDir = Platform.TMP_DIR + Platform.FILE_SEPARATOR;
+        this.includeDir = JATKdir;
+        currentPhone = monkeyDevice;
+        this.init();
+        Logger.getLogger(this.getClass()).debug("LaunchJATK(monkeyDevice)");
+    }
+
+    private String init() {
 		// check in java path win32com.dll
 		File win32 = new File(System.getenv("java.home") + Platform.FILE_SEPARATOR + "win32com.dll");
 
@@ -176,8 +189,7 @@ public class LaunchJATK implements ErrorListener {
 			}
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
-			return;
-		}
+			}
 
 	}
 
@@ -260,6 +272,61 @@ public class LaunchJATK implements ErrorListener {
 
 		return result;
 	}
+
+    /*
+    François 8/7/2014
+    Translation of the .tst file into a monkey script
+     */
+    private int translateTestFile(String wdname) throws FileNotFoundException {
+        int result = 0;
+        try {
+            System.out.println("parsing start : "+realTestFile);
+            // start Parsing .tst file
+            ATKScriptParser parser = new ATKScriptParser(new java.io.FileReader(realTestFile));
+            System.out.println("parsing start");
+            ASTStart expr = parser.start();
+            System.out.println("parsing ok");
+            if (expr.jjtGetNumChildren() == 0) {
+                Logger.getLogger(this.getClass()).warn(
+                        "Script empty ...");
+            } else {
+                // Syntax validation
+                String output = (String) expr.jjtAccept( new ValidateSyntax(realTestFile, false), "");
+
+                if (output.length() >= 1) {
+                    result = 3;
+                    Logger.getLogger(this.getClass()).warn(
+                            "Script not valid, please check the report file");
+                } else {
+                    // Syntax is OK, let's translate
+                    JATKTranslator translator = new JATKTranslator(currentPhone, realTestFile, logDir, includeDir);
+                    System.out.println("translator created");
+
+                    // Start of translator
+                    Boolean res = (Boolean) expr.jjtAccept(translator, null);
+                    // End of translator
+
+                    if (res.booleanValue()) {
+                        result = 0;
+                    } else {
+                        result = 1;
+                        Logger.getLogger(this.getClass()).warn(
+                                "Translation failed, ...");
+                    }
+                }
+            }
+        } catch (ParseException e) {
+            result = 3;
+            hasParseException = true;
+            Logger.getLogger(this.getClass()).warn("Parse error, please check the report file");
+        } catch (TokenMgrError e) {
+            result = 3;
+            hasParseException = true;
+            Logger.getLogger(this.getClass()).warn("Lexical error, please check the report file");
+        }
+
+        return result;
+    }
 
 	public String launchNewTest(String xmlconfilepath, boolean noGUI) throws FileNotFoundException,
 			PhoneException {
@@ -456,7 +523,7 @@ public class LaunchJATK implements ErrorListener {
 
 	public void errorOccured() {
 		this.cancelExecution();
-		CoreGUIPlugin.mainFrame.statusBar.setStop();
+        CoreGUIPlugin.mainFrame.statusBar.setStop();
 		// Launch Autodetect after a Cancel
 		AutomaticPhoneDetection.getInstance().resumeDetection();
 		CoreGUIPlugin.mainFrame.statusBar.displayErrorMessage();
@@ -485,6 +552,7 @@ public class LaunchJATK implements ErrorListener {
 		String usage = "Usage : \n" + "test <test_options> WHERE test_options are :\n"
 				+ "\t -tf <test_file.tst> -c <monitoring_config.xml>\n"
 				+ "\t -td <test_dir> -c <monitoring_config.xml>\n" + "\t -rd <result_dir>\n"
+                + "\t -translate <test_file.tst> -wd <working directory (must exist)>\n"
 				+ "\t -device [optional device_serial_number]";
 
 		if (args.length == 0 || (args.length == 1 && args[0].equals("-h"))) {
@@ -492,28 +560,33 @@ public class LaunchJATK implements ErrorListener {
 			result = 3;
 			return;
 		}
-		// Default ATK logs are stored in file <ATK_install>/log/logJATK.log
-		// For command line debugging, just replace <ATK_install>/log4j.xml, by
-		// the Eclipse_projet_ATK/log4j.xml
-		DOMConfigurator.configure(Platform.getInstance().getJATKPath() + "\\log4j.xml");
 
-		AutomaticPhoneDetection.getInstance(false).checkDevices();
+		DOMConfigurator.configure(Platform.getInstance().getJATKPath() + Platform.FILE_SEPARATOR + "log4j.xml");
 
-		List<PhoneInterface> devices = AutomaticPhoneDetection.getInstance().getDevices();
-		if (devices.size() == 0) {
-			System.out.println("FAILED: no device detected.");
-		} else {
-			AutomaticPhoneDetection.getInstance().setSelectedDevice(devices.get(0));
-			LaunchJATK launcher = new LaunchJATK();
-			String result = launcher.parseArguments(args);
-			if (result != null) {
-				Logger.getLogger(LaunchJATK.class).debug(result);
-				System.out.println(result);
-			}
+        if ((args.length>1 && !(args[1].equals("-translate")))||(args.length==0)) {
+            AutomaticPhoneDetection.getInstance(false).checkDevices();
+            List<PhoneInterface> devices = AutomaticPhoneDetection.getInstance().getDevices();
+            if (devices.size() == 0) {
+                System.out.println("FAILED: no device detected.");
+            } else {
+                AutomaticPhoneDetection.getInstance().setSelectedDevice(devices.get(0));
+                LaunchJATK launcher = new LaunchJATK();
+                String result = launcher.parseArguments(args);
+                if (result != null) {
+                    Logger.getLogger(LaunchJATK.class).debug(result);
+                }
+                AndroidDebugBridge.disconnectBridge();
+                AndroidDebugBridge.terminate();
+            }
+        }
+        else{
+ //         -translate is set
+            AndroidMonkeyTranslatorDriver monkeyDevice = new AndroidMonkeyTranslatorDriver();
+            LaunchJATK launcher = new LaunchJATK(monkeyDevice);
+            String result = launcher.parseArguments(args);
+            AutomaticPhoneDetection.getInstance().stopAllDetection();
+        }
 
-		}
-		AndroidDebugBridge.disconnectBridge();
-		AndroidDebugBridge.terminate();
 	}
 
 	private String parseArguments(String[] args) {
@@ -599,6 +672,40 @@ public class LaunchJATK implements ErrorListener {
 
 					}
 				}
+            } else if (args[i].equals("-translate")) {
+                String wdname = ""; //working directory name
+                i++;
+                if (i == args.length)
+                    return ("FAILED: [-translate option] missing test file.");
+                else {
+                    File file = new File(args[i]);
+                    if (!file.exists())
+                        return ("FAILED: [-translate option] test file " + args[i] + " not found.");
+                    else {
+                        this.testFile = args[i];
+                        this.realTestFile = testFile;
+
+                        i++;
+                        if (i == args.length) return ("FAILED: [-wd option] missing working directory.");
+                        else if (!(args[i].equals("-wd"))) return ("FAILED: [-wd option] missing working directory.");
+                        else {
+                            i++;
+                            if (i == args.length) return ("FAILED: [-wd option] missing working directory path.");
+                            else {
+                                File wd = new File(args[i]);
+                                if (!wd.exists()) return ("FAILED: [-wd option] working directory does not exist.");
+                                else wdname = args[i];
+                            }
+                        }
+                        try {
+                            ((AndroidMonkeyTranslatorDriver)currentPhone).setWorkingDirectory(wdname);
+                            int res = translateTestFile(wdname);
+                        } catch (FileNotFoundException e) {
+                            return ("FAILED: translation " + testFile);
+                        }
+                        return null;
+                    }
+                }
 			} else if (args[i].equals("-device")) {
 				i++;
 				if (i < args.length) {
@@ -614,7 +721,6 @@ public class LaunchJATK implements ErrorListener {
 				}
 			}
 		}
-
 		if (result_dir == null)
 			return ("FAILED: -rd <result_directory> option must be specified.");
 		if (test_files.size() == 0)
@@ -631,14 +737,13 @@ public class LaunchJATK implements ErrorListener {
 				System.out.println(result + ": test " + testFile);
 			} catch (FileNotFoundException e) {
 				return ("FAILED: test " + testFile);
-				// e.printStackTrace();
 			} catch (PhoneException e) {
 				return ("FAILED: test " + testFile);
-				// e.printStackTrace();
 			}
 		}
 		return null;
 	}
+
 	public class SuffixFilter implements FilenameFilter {
 		private String suffix;
 		public SuffixFilter(String suffix) {

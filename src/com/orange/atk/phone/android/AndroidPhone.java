@@ -48,10 +48,6 @@ import java.util.regex.Pattern;
 import javax.swing.event.EventListenerList;
 
 import com.android.ddmlib.*;
-import static com.android.ddmlib.FileListingService.FileEntry;
-import com.att.aro.main.ApplicationResourceOptimizer;
-import com.att.aro.main.DatacollectorBridge;
-import com.orange.atk.atkUI.coregui.CoreGUIPlugin;
 import org.apache.log4j.Logger;
 
 import com.orange.atk.atkUI.anaHopper.HopperStep;
@@ -79,7 +75,9 @@ public class AndroidPhone implements PhoneInterface {
 
 	private RobotiumTask robotiumTask = null;
 
-	private static final String ARO_APK_PATH = "ARO\\ARODataCollector_OpenSource_v2.2.1.1.apk";
+	private static final String ARO_APK_PATH = Platform.getInstance().getJATKPath() + Platform.FILE_SEPARATOR + "AndroidTools"
+            + Platform.FILE_SEPARATOR +"ARODataCollector.apk";
+
 	private final static EventListenerList listeners = new EventListenerList();
 	private final static String ATK_MONITOR_VERSION = "2.9";
 	private boolean isInitResDone = false;
@@ -141,8 +139,6 @@ public class AndroidPhone implements PhoneInterface {
 		};
 	};
 	protected static final HashMap<String, KeyValue> keysAssociations = new HashMap<String, KeyValue>();
-
-    private DatacollectorBridge aroDataCollectorBridge;
 
 	// only use by child class
 	protected AndroidPhone() {

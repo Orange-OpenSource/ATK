@@ -1,4 +1,4 @@
-/*
+package com.orange.atk.results.measurement;/*
  * Software Name : ATK
  *
  * Copyright (C) 2007 - 2012 France Télécom
@@ -16,12 +16,11 @@
  * limitations under the License.
  * 
  * ------------------------------------------------------------------
- * File Name   : TestMeasurementThread.java
+ * File Name   : com.orange.atk.results.measurement.TestMeasurementThread.java
  *
  * Created     : 16/05/2008
  * Author(s)   : France Telecom
  */
-package com.orange.atk.tests;
 
 import static org.junit.Assert.assertFalse;
 
@@ -38,13 +37,12 @@ import org.junit.Test;
 import com.orange.atk.platform.Platform;
 import com.orange.atk.results.logger.documentGenerator.TextGenerator;
 import com.orange.atk.results.logger.log.ResultLogger;
-import com.orange.atk.results.measurement.MeasurementThread;
 
 
-public class TestMeasurementThread {
+public class MeasurementThreadTest {
 	// To allow the test runner to run this test class
 	public static junit.framework.Test suite() {
-		return new JUnit4TestAdapter(TestMeasurementThread.class);
+		return new JUnit4TestAdapter(MeasurementThreadTest.class);
 	}
 	
 	@Before

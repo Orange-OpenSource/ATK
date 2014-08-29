@@ -24,8 +24,6 @@
 package com.orange.atk.results.measurement;
 
 
-import javax.swing.SwingUtilities;
-
 import org.apache.log4j.Logger;
 
 import com.orange.atk.error.ErrorManager;
@@ -38,7 +36,7 @@ import com.orange.atk.results.logger.log.ResultLogger;
 
 
 /**
- * This class is the thread which periodically measure values from battery,
+ * This class is the thread which periodically measures values from battery,
  * memory, ..
  */
 
@@ -118,14 +116,9 @@ public class MeasurementThread implements Runnable {
 		interval = iInterval;
 		logThread = new Thread(this);
 		setRunning(true);
-		SwingUtilities.invokeLater(new Runnable() {
 
-			public void run() {
-				listener=new	MyListener( logger);   
-				listener.addMyListeners();
-			}
-		});
-
+		listener=new MyListener( logger);
+		listener.addMyListeners();
 
 		logThread.setName("MeasurmentThread");  
 		logThread.start();

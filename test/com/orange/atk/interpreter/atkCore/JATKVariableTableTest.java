@@ -16,12 +16,13 @@
  * limitations under the License.
  * 
  * ------------------------------------------------------------------
- * File Name   : TestJATKVariableTableClass.java
+ * File Name   : com.orange.atk.interpreter.atkCore.TestJATKVariableTableClass.java
  *
  * Created     : 16/05/2008
  * Author(s)   : France Telecom
  */
-package com.orange.atk.tests;
+package com.orange.atk.interpreter.atkCore;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -31,17 +32,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.orange.atk.interpreter.atkCore.JATKVariableTable;
-
 
 /**
  * Unit tests associated to interpreter.JATKVariableTable
  * class
  */
-public class TestJATKVariableTableClass{
+public class JATKVariableTableTest {
 	// To allow the test runner to run this test class
 	public static junit.framework.Test suite() {
-		return new JUnit4TestAdapter(TestJATKVariableTableClass.class);
+		return new JUnit4TestAdapter(JATKVariableTableTest.class);
 	}
 	@Before
 	public void setUp(){

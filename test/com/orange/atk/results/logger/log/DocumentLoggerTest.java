@@ -16,12 +16,12 @@
  * limitations under the License.
  * 
  * ------------------------------------------------------------------
- * File Name   : TestDocumentLogger.java
+ * File Name   : com.orange.atk.results.logger.log.TestDocumentLogger.java
  *
  * Created     : 20/05/2008
  * Author(s)   : France Telecom
  */
-package com.orange.atk.tests;
+package com.orange.atk.results.logger.log;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -39,13 +39,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.orange.atk.platform.Platform;
-import com.orange.atk.results.logger.log.DocumentLogger;
-import com.orange.atk.results.logger.log.Message;
 
-public class TestDocumentLogger {
+public class DocumentLoggerTest {
 	// To allow the test runner to run this test class
 	public static junit.framework.Test suite() {
-		return new JUnit4TestAdapter(TestDocumentLogger.class);
+		return new JUnit4TestAdapter(DocumentLoggerTest.class);
 	}
 
 	private static final String LOG_DIR = Platform.TMP_DIR;
@@ -53,7 +51,7 @@ public class TestDocumentLogger {
 
 	@Before
 	public void setUp() {
-		URL configfile = TestDocumentLogger.class.getResource("file/config.xml");
+		URL configfile = DocumentLoggerTest.class.getResource("/config.xml");
 		dl = new DocumentLogger(LOG_DIR);
 		dl.load(configfile.getFile());
 
