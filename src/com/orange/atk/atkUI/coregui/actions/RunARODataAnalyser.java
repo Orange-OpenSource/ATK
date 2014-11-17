@@ -34,9 +34,6 @@ import java.io.IOException;
 
 public class RunARODataAnalyser extends MatosAbstractAction {
 
-	private static final String AROPATH = Configuration.getProperty(Configuration.AROPATH);
-	private static final String LAUNCHARO = AROPATH + "\\bin\\aro.exe";
-
 	public RunARODataAnalyser(String name, Icon icon, String shortDescription) {
 		super(name, icon, shortDescription);
 	}

@@ -2,6 +2,8 @@ package com.orange.atk.platform;
 
 import org.apache.log4j.Logger;
 
+import java.io.File;
+
 public class OSXPlatform extends Platform {
 
 	@Override
@@ -11,7 +13,11 @@ public class OSXPlatform extends Platform {
 
 	@Override
 	public String getDefaultADBLocation() {
-        String path="/Developer/SDKs/Android.sdk/platform-tools/";
+        String sdkPath = System.getenv("ANDROID_HOME");
+        if(sdkPath == null){
+            sdkPath="/Applications/Android Studio.app/sdk";
+        }
+        String path=sdkPath+Platform.FILE_SEPARATOR+"platform-tools/";
 		return path+"adb";
 	}
 

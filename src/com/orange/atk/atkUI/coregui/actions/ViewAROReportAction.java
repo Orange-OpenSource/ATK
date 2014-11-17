@@ -38,8 +38,8 @@ import org.apache.log4j.Logger;
 import com.orange.atk.atkUI.corecli.Configuration;
 
 public class ViewAROReportAction extends MatosAbstractAction {
-    private static final String AROPATH = Configuration.getProperty(Configuration.AROPATH);
-    private static final String LAUNCHARO = AROPATH + "\\bin\\aro.exe";
+    private static final String LAUNCHARO = Configuration.getProperty(Configuration.AROPATH);
+    private static final String AROPATH = LAUNCHARO.substring(0,LAUNCHARO.lastIndexOf("aro")-1);
 
     public ViewAROReportAction(String name, Icon icon, String shortDescription) {
         super(name, icon, shortDescription);

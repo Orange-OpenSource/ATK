@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin:'application'
-version = '2.2.0'
+version = '2.2.1'
 archivesBaseName = 'atk'
 mainClassName = "com.orange.atk.launcher.LaunchGUIJATK"
 
@@ -176,7 +176,7 @@ task release (dependsOn: [jar,androidPluginJar,getInstallerResources]) << {
     try{
         copy {
             from 'installer/win/nsis.nsi'
-            from 'installer/win/setup-ARO-3.0.exe'
+            from 'installer/win/setup-ARO-3.1.exe'
             into "$explodedDistDir"
         }
         ant.taskdef(name: "nsis",

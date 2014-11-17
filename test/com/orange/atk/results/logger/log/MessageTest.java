@@ -1,4 +1,4 @@
-/*
+package com.orange.atk.results.logger.log;/*
  * Software Name : ATK
  *
  * Copyright (C) 2007 - 2012 France Télécom
@@ -16,12 +16,12 @@
  * limitations under the License.
  * 
  * ------------------------------------------------------------------
- * File Name   : TestLogMessage.java
+ * File Name   : com.orange.atk.results.logger.log.TestLogMessage.java
  *
  * Created     : 16/05/2008
  * Author(s)   : France Telecom
  */
-package com.orange.atk.tests;
+
 import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
@@ -30,13 +30,11 @@ import junit.framework.JUnit4TestAdapter;
 
 import org.junit.Test;
 
-import com.orange.atk.results.logger.log.Message;
 
-
-public class TestLogMessage{
+public class MessageTest {
 	// To allow the test runner to run this test class
 	public static junit.framework.Test suite() {
-		return new JUnit4TestAdapter(TestLogMessage.class);
+		return new JUnit4TestAdapter(MessageTest.class);
 	}
 	@Test
 	public void testCreateErrorMessage() {

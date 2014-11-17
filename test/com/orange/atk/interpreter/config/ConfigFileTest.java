@@ -14,14 +14,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * ------------------------------------------------------------------
- * File Name   : TestConfigFile.java
+ * File Name   : com.orange.atk.interpreter.config.TestConfigFile.java
  *
  * Created     : 16/05/2008
  * Author(s)   : France Telecom
  */
-package com.orange.atk.tests;
+package com.orange.atk.interpreter.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -34,17 +34,15 @@ import junit.framework.JUnit4TestAdapter;
 
 import org.junit.Test;
 
-import com.orange.atk.interpreter.config.ConfigFile;
 import com.orange.atk.platform.Platform;
 
 
-
-public class TestConfigFile {
+public class ConfigFileTest {
 	private static final String BIN_SH = "/bin/sh";
 
 	// To allow the test runner to run this test class
 	public static junit.framework.Test suite() {
-		return new JUnit4TestAdapter(TestConfigFile.class);
+		return new JUnit4TestAdapter(ConfigFileTest.class);
 	}
 	
 	@Test 

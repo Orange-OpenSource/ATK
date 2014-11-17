@@ -15,6 +15,7 @@ Name ATK
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
 
 # Included files
+!include "TextFunc.nsh"
 !include Sections.nsh
 !include MUI2.nsh
 
@@ -57,6 +58,10 @@ Var AndroidEnvPath
 Var downloadURLandroid
 Var downloadJava
 
+Var previousConfigFile
+Var legacyBackupFile
+Var userProfileFile
+
 #parse a line a return the text before "="
 #The line must contains "="
 !macro GET_CONFIG_NAME Line Propertie
@@ -72,7 +77,7 @@ loop_:
   ${endif}
   StrCmp $R1 "=" 0 loop_
   #sub 1 to get "=" in the result
-  IntOp ${Propertie} ${Propertie} - 1
+  #IntOp ${Propertie} ${Propertie} - 1
   StrCpy ${Propertie} ${Line} -${Propertie}
 Goto done_
 error_:
@@ -80,166 +85,6 @@ error_:
 done_:
   Pop $R1
 !macroend
-
-#Read a specific parameter from a file
-Function ConfigRead
-    !define ConfigRead `!insertmacro ConfigReadCall`
- 
-    !macro ConfigReadCall _FILE _ENTRY _RESULT
-        Push `${_FILE}`
-        Push `${_ENTRY}`
-        Call ConfigRead
-        Pop ${_RESULT}
-    !macroend
- 
-    Exch $1
-    Exch
-    Exch $0
-    Exch
-    Push $2
-    Push $3
-    Push $4
-    ClearErrors
- 
-    FileOpen $2 $0 r
-    IfErrors error
-    StrLen $0 $1
-    StrCmp $0 0 error
- 
-    readnext:
-    FileRead $2 $3
-    IfErrors error
-    StrCpy $4 $3 $0
-    StrCmp $4 $1 0 readnext
-    StrCpy $0 $3 '' $0
-    StrCpy $4 $0 1 -1
-    StrCmp $4 '$\r' +2
-    StrCmp $4 '$\n' 0 close
-    StrCpy $0 $0 -1
-    goto -4
- 
-    error:
-    SetErrors
-    StrCpy $0 ''
- 
-    close:
-    FileClose $2
- 
-    Pop $4
-    Pop $3
-    Pop $2
-    Pop $1
-    Exch $0
-FunctionEnd
-
-#Write a specific parameter in a file
-Function ConfigWrite
-    !define ConfigWrite `!insertmacro ConfigWriteCall`
- 
-    !macro ConfigWriteCall _FILE _ENTRY _VALUE _RESULT
-        Push `${_FILE}`
-        Push `${_ENTRY}`
-        Push `${_VALUE}`
-        Call ConfigWrite
-        Pop ${_RESULT}
-    !macroend
- 
-    Exch $2
-    Exch
-    Exch $1
-    Exch
-    Exch 2
-    Exch $0
-    Exch 2
-    Push $3
-    Push $4
-    Push $5
-    Push $6
-    ClearErrors
- 
-    IfFileExists $0 0 error
-    FileOpen $3 $0 a
-    IfErrors error
- 
-    StrLen $0 $1
-    StrCmp $0 0 0 readnext
-    StrCpy $0 ''
-    goto close
- 
-    readnext:
-    FileRead $3 $4
-    IfErrors add
-    StrCpy $5 $4 $0
-    StrCmp $5 $1 0 readnext
- 
-    StrCpy $5 0
-    IntOp $5 $5 - 1
-    StrCpy $6 $4 1 $5
-    StrCmp $6 '$\r' -2
-    StrCmp $6 '$\n' -3
-    StrCpy $6 $4
-    StrCmp $5 -1 +3
-    IntOp $5 $5 + 1
-    StrCpy $6 $4 $5
- 
-    StrCmp $2 '' change
-    StrCmp $6 '$1$2' 0 change
-    StrCpy $0 SAME
-    goto close
- 
-    change:
-    FileSeek $3 0 CUR $5
-    StrLen $4 $4
-    IntOp $4 $5 - $4
-    FileSeek $3 0 END $6
-    IntOp $6 $6 - $5
- 
-    System::Alloc /NOUNLOAD $6
-    Pop $0
-    FileSeek $3 $5 SET
-    System::Call /NOUNLOAD 'kernel32::ReadFile(i r3, i r0, i $6, t.,)'
-    FileSeek $3 $4 SET
-    StrCmp $2 '' +2
-    FileWrite $3 '$1$2$\r$\n'
-    System::Call /NOUNLOAD 'kernel32::WriteFile(i r3, i r0, i $6, t.,)'
-    System::Call /NOUNLOAD 'kernel32::SetEndOfFile(i r3)'
-    System::Free $0
-    StrCmp $2 '' +3
-    StrCpy $0 CHANGED
-    goto close
-    StrCpy $0 DELETED
-    goto close
- 
-    add:
-    StrCmp $2 '' 0 +3
-    StrCpy $0 SAME
-    goto close
-    FileSeek $3 -1 END
-    FileRead $3 $4
-    IfErrors +4
-    StrCmp $4 '$\r' +3
-    StrCmp $4 '$\n' +2
-    FileWrite $3 '$\r$\n'
-    FileWrite $3 '$1$2$\r$\n'
-    StrCpy $0 ADDED
- 
-    close:
-    FileClose $3
-    goto end
- 
-    error:
-    SetErrors
-    StrCpy $0 ''
- 
-    end:
-    Pop $6
-    Pop $5
-    Pop $4
-    Pop $3
-    Pop $2
-    Pop $1
-    Exch $0
-FunctionEnd
 
 !define StrRep "!insertmacro StrRep"
 !macro StrRep output string old new
@@ -309,42 +154,85 @@ FunctionEnd
 !insertmacro Func_StrRep "un."
 
 Function UpdateProperties
-DetailPrint "Restore all parameter from Config.properties"
+StrCpy $legacyBackupFile "$INSTDIR\backup\config.properties"
+StrCpy $userProfileFile "$PROFILE\.atk\config.properties"
+
+DetailPrint "Restore all parameter from config.properties"
 push $R0
 push $R1
+push $R2
 push $1
 push $2
 push $3
+
+IfFileExists $legacyBackupFile setLegacyBackupFile setUserProfileFile
+
+setLegacyBackupFile:
+    DetailPrint "Found $legacyBackupFile"
+    IfFileExists $userProfileFile setUserProfileFile
+    StrCpy $previousConfigFile $legacyBackupFile
+    goto restore
+
+setUserProfileFile:
+    DetailPrint "Found $userProfileFile"
+    StrCpy $previousConfigFile $userProfileFile
+
+restore:
+
+IfFileExists $userProfileFile copy create
+create:
+FileOpen $0 "$userProfileFile" w
+FileClose $0
+
+copy:
 #We need to copy config.properties to be able to read it and write at the same time
-CopyFiles $INSTDIR\Config.properties $INSTDIR\backup\NewConfig.properties
-FileOpen $1 $INSTDIR\backup\NewConfig.properties r
+CopyFiles $previousConfigFile "$PROFILE\.atk\config.back"
+FileOpen $1 $INSTDIR\config.properties r
 
 ClearErrors
 IfErrors endloop
+
 loop:
     FileRead $1 $2
-    StrCmp $2 "" endloop #We have parsed all the file
+    IfErrors endloop #We have parsed all the file
     #First we read the name of the propertie
-    !insertmacro GET_CONFIG_NAME $2 $3 
+    !insertmacro GET_CONFIG_NAME $2 $3
     StrCmp $3 "error" loop
-    ${ConfigRead} "$INSTDIR\backup\Config.properties" $3 $R0    
+    #for ARO, we have a slightly different logic
+    #we retrieve it from the registry when available
+    StrCmp $3 "aroPath" aro
+    ${ConfigRead} "$PROFILE\.atk\config.back" $3 $R0
     ${ConfigRead} "$INSTDIR\Config.properties" $3 $R1
-    StrCmp $R0 $R1 loop
-    #if it doesn't exist in the old file, we ignore it
-    StrCmp $R0 "" loop 
-    DetailPrint $3
-    DetailPrint $R0
-    DetailPrint $R1
-    ${ConfigWrite} "$PROFILE\.atk\Config.properties" $3 $R0 $3
-    DetailPrint $3
+    #if it doesn't exist in the old file, we add it and
+    #set the value from the installer
+    StrCmp $R0 "" add
+    #if it already exists, we keep the previous user config
+    #file value
+    DetailPrint "writing $3 $R0 in $userProfileFile"
+    ${ConfigWrite} $userProfileFile $3 $R0 $3
     goto loop
-endloop:
+add:
+    DetailPrint "adding $3 $R1 in $userProfileFile"
+    ${ConfigWrite} $userProfileFile $3 $R1 $3
+    goto loop
+aro:
+    ReadRegStr $R2 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\AT&T ARO" "InstallLocation"
+    DetailPrint "Found ARO in $R2"
+    ${StrRep} '$0' $R2 '\' '\\'
+    ${StrRep} '$R2' $0 ':' '\:'
+    ${ConfigWrite} $userProfileFile "aroPath" "=$R2\\bin\\aro.exe" $3
+    DetailPrint "$3"
+    goto loop
 
+endloop:
 FileClose $1 ; and close the file
+Delete "$PROFILE\.atk\config.back"
+Delete "$INSTDIR\config.properties"
 
 pop $3
 pop $2
 pop $1
+pop $R2
 pop $R1
 pop $R0
 FunctionEnd
@@ -504,10 +392,6 @@ enddownload:
     CreateShortcut $SMPROGRAMS\$StartMenuGroup\ScreenShotComparator.lnk $INSTDIR\ScreenshotComparator.exe "" $INSTDIR\screencomp.exe 0
     ; Processing [HKEY_LOCAL_MACHINE\SOFTWARE\ATK\Components]
 
-   #Update the config.properties
-   Call UpdateProperties
-   RmDir /r $INSTDIR\backup
-
    DumpLog::DumpLog "$INSTDIR\nsislog.txt" .R3
   
 endinstall:
@@ -516,16 +400,12 @@ endinstall:
 SectionEnd
 
 Section "ARO" SEC02
-  File "setup-ARO-3.0.exe"
-  ExecWait "$INSTDIR\setup-ARO-3.0.exe /norun"
+  File "setup-ARO-3.1.exe"
+  ExecWait "$INSTDIR\setup-ARO-3.1.exe /norun"
 SectionEnd
 
 Section -post SEC0001
-    ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\AT&T ARO" "InstallLocation"
-    DetailPrint "Found ARO in $R0"
-    ${StrRep} '$0' $R0 '\' '\\'
     #Update the config.properties
-    ${ConfigWrite} "$PROFILE\.atk\Config.properties" "aroPath=" $0 $3
     Call UpdateProperties
     RmDir /r $INSTDIR\backup
     WriteRegStr HKLM "${REGKEY}" Path $INSTDIR
@@ -561,13 +441,8 @@ Section /o -un.Main UNSEC0000
     Delete /REBOOTOK $SMPROGRAMS\$StartMenuGroup\Analyser.bat.lnk
     Delete /REBOOTOK $SMPROGRAMS\$StartMenuGroup\ATK.bat.lnk
     Delete /REBOOTOK $SMPROGRAMS\$StartMenuGroup\Analyser.bat.lnk
-    Delete /REBOOTOK $SMPROGRAMS\$StartMenuGroup\ScreenShotComparator.bat.lnk    
-    #save Config.properties
-    CopyFiles $INSTDIR\Config.properties $PROGRAMFILES 
+    Delete /REBOOTOK $SMPROGRAMS\$StartMenuGroup\ScreenShotComparator.bat.lnk
     RmDir /r $INSTDIR
-    CreateDirectory $INSTDIR\backup
-    CopyFiles $PROGRAMFILES\Config.properties $INSTDIR\backup\Config.properties
-    Delete $PROGRAMFILES\Config.properties
     DeleteRegValue HKLM "${REGKEY}\Components" Main
 SectionEnd
 

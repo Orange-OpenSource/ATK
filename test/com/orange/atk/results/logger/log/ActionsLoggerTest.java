@@ -21,7 +21,7 @@
  * Created     : 10/07/2008
  * Author(s)   : PHELIZOT Yvan
  */
-package com.orange.atk.tests;
+package com.orange.atk.results.logger.log;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -37,10 +37,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.orange.atk.platform.Platform;
-import com.orange.atk.results.logger.log.Action;
-import com.orange.atk.results.logger.log.ActionsLogger;
 
-public class TestActionsLogger {
+public class ActionsLoggerTest {
 	ActionsLogger actionLogger = null;
 
 	/**
@@ -48,7 +46,7 @@ public class TestActionsLogger {
 	 */
 	@Before
 	public void setUp() {
-		actionLogger = new ActionsLogger("");
+		actionLogger = new ActionsLogger(Platform.TMP_DIR);
 	}
 
 	/**
