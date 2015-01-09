@@ -6,10 +6,10 @@ archivesBaseName = 'atk'
 mainClassName = "com.orange.atk.launcher.LaunchGUIJATK"
 
 def nsisPath = "C:\\DevProgramFiles\\NSIS"
-launch4jDir = new File(rootDir, 'installer/win')
-launch4jVersion = '3.1.0-beta2-win32'
+def launch4jDir = new File(rootDir, 'installer/win')
+def launch4jVersion = '3.1.0-beta2-win32'
 
-explodedDistDir = new File(distsDir, 'exploded')
+def explodedDistDir = new File(distsDir, 'exploded')
 
 sourceSets {
     main {
