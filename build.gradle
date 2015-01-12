@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin:'application'
-version = '2.2.1'
+version = '2.2.2'
 archivesBaseName = 'atk'
 mainClassName = "com.orange.atk.launcher.LaunchGUIJATK"
 
@@ -106,7 +106,7 @@ task release (dependsOn: [jar,androidPluginJar,getInstallerResources]) << {
         }
         into explodedDistDir
     }
-    distToolDir = new File(distsDir, 'tools')
+    def distToolDir = new File(distsDir, 'tools')
 
     File distLaunch4jToolDir = new File(distToolDir, 'launch4j')
     distLaunch4jToolDir.mkdirs()
@@ -176,7 +176,7 @@ task release (dependsOn: [jar,androidPluginJar,getInstallerResources]) << {
     try{
         copy {
             from 'installer/win/nsis.nsi'
-            from 'installer/win/setup-ARO-3.1.exe'
+            from 'installer/win/setup-ARO-4.0.exe'
             into "$explodedDistDir"
         }
         ant.taskdef(name: "nsis",
