@@ -4,22 +4,22 @@
     <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
         <!-- Cette librairie peut aussi être ajoutée dans le répertoire ${ANT_HOME\}/lib -->
         <!-- Dans ce cas, le node classpath ci-dessous est inutile. -->
-        <classpath path="C:/DevProgramFiles/jar/sonar-ant-task-2.1.jar" /> 
+        <classpath path="C:/DevProgramFiles/jar/sonar-ant-task-2.1.jar" />
     </taskdef>
-    
+
     <!-- Propriétés propres à Sonar, par exemple pour MySQL : -->
-    <property name="sonar.jdbc.url" 
-        value="jdbc:h2:tcp://localhost:9092/sonar" />
+    <property name="sonar.jdbc.url"
+              value="jdbc:h2:tcp://localhost:9092/sonar" />
     <property name="sonar.jdbc.driverClassName" value="org.h2.Driver" />
     <property name="sonar.jdbc.username" value="sonar" />
     <property name="sonar.jdbc.password" value="sonar" />
-    
-	<!-- import distrib directory properties-->
-	<property file="build.properties" />
 
-	
-	<target name="unittest">
-	    <tstamp>
+    <!-- import distrib directory properties-->
+    <property file="build.properties" />
+
+
+    <target name="unittest">
+        <tstamp>
             <format property="PRECISE_TIMESATMP" pattern="yyyy-MM-dd_H:mm:ss" locale="en,FR" />
         </tstamp>
         <property name="testreport_now" value="${basedir}/testreport_${PRECISE_TIMESATMP}" />
@@ -27,12 +27,12 @@
             <fileset dir="plugins">
                 <include name="**/TEST-*.xml" />
             </fileset>
-        <report format="frames" todir="${basedir}/testreport/html" />
+            <report format="frames" todir="${basedir}/testreport/html" />
         </junitreport>
         <echo>Test report generated in ${basedir}/testreport/html/index.html</echo>
-	</target>
-	
-	<target name="sonar">
+    </target>
+
+    <target name="sonar">
         <!-- On définit les propriétés obligatoires pour Sonar -->
         <property name="sonar.sources" value="src" />
 
@@ -46,17 +46,17 @@
         <sonar:sonar xmlns:sonar="antlib:org.sonar.ant"/>
     </target>
 
-	<!-- print some help -->
-	<target name="help">
-		<echo>Matos's build.xml:</echo>
-		<echo>--- Main targets ---</echo>
-		<echo>clean      : clean artifacts builded with ant</echo>
-		<echo>clean_dist : remove distrib. directory</echo>
-		<echo>clean_all  : clean all builded artifacts (including eclipse's ones) and clean_dist</echo>
-		<echo>build      : compile all plugins</echo>
-		<echo>dist       : create distrib directories and copy all builded artifacts (jar files, xml files, ...) (distrib directory is defined in build.properties)</echo>
-		<echo>test       : runs junit tests</echo>
-		<echo>help       : print this help</echo>
-	</target>
+    <!-- print some help -->
+    <target name="help">
+        <echo>Matos's build.xml:</echo>
+        <echo>--- Main targets ---</echo>
+        <echo>clean      : clean artifacts builded with ant</echo>
+        <echo>clean_dist : remove distrib. directory</echo>
+        <echo>clean_all  : clean all builded artifacts (including eclipse's ones) and clean_dist</echo>
+        <echo>build      : compile all plugins</echo>
+        <echo>dist       : create distrib directories and copy all builded artifacts (jar files, xml files, ...) (distrib directory is defined in build.properties)</echo>
+        <echo>test       : runs junit tests</echo>
+        <echo>help       : print this help</echo>
+    </target>
 
 </project>

@@ -122,13 +122,23 @@ public class AutomaticPhoneDetection {
 		}
 	}
 
-	public void stopDetection(DeviceDetectionListener listener) {
-		deviceDetectionListeners.remove(listener);
-		if (deviceDetectionListeners.size()<=1){
-			deviceDetectionThread.exit();
-			close();
-		}
-	}
+    public void stopDetection(DeviceDetectionListener listener) {
+        deviceDetectionListeners.remove(listener);
+        if (deviceDetectionListeners.size()<=1){
+            deviceDetectionThread.exit();
+            close();
+        }
+    }
+    public void stopAllDetection() {
+        for(DeviceDetectionListener l: deviceDetectionListeners) {
+            deviceDetectionListeners.remove(l);
+            if (deviceDetectionListeners.size() <= 1) {
+                deviceDetectionThread.exit();
+                close();
+            }
+        }
+        deviceDetectionThread.exit();
+    }
 
 	/**
 	 * Fabric which return the phone currently connected to the PC
