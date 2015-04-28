@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Android-config>     
+	<!-- HTC Magic -->
+	<KeyMapping canal="keyboard">
+    
+        <Key name="VOLUME_UP" code="115" />
+        <Key name="VOLUME_DOWN" code="114" />
+        
+        <Key name="BACK" code="158" />
+        <Key name="MENU" code="139" />
+        <Key name="SEARCH" code="217" />
+	</KeyMapping>
+	
+    <KeyMapping canal="keyboard2">
+       <Key name="HOME" code="102" />
+    </KeyMapping>
+
+	<CanalPattern>
+        <Pattern canal="keyboard" value="device-keypad" />
+        <Pattern canal="touchscreen" value="synaptics-rmi-touchscren" />
+	</CanalPattern>
+        
+	<Touchscreen>
+        <Pattern name="Y" value="3 1 " />
+        <Pattern name="X" value="3 0 " />
+        <Pattern name="down" value="1 330 1" />
+        <Pattern name="up" value="1 330 0" />
+        <Pattern name="flush" value="0 0 0" />
+        <Pattern name="ratio" value="1.0" />
+        <Threshold name="move" value="1.0" />
+	</Touchscreen>
+
+</Android-config>

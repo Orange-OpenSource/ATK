@@ -400,8 +400,8 @@ endinstall:
 SectionEnd
 
 Section "ARO" SEC02
-  File "setup-ARO-3.1.exe"
-  ExecWait "$INSTDIR\setup-ARO-3.1.exe /norun"
+  File "setup-ARO-4.0.exe"
+  ExecWait "$INSTDIR\setup-ARO-4.0.exe /norun"
 SectionEnd
 
 Section -post SEC0001
