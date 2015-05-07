@@ -1,41 +1,188 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$" external.system.id="GRADLE" external.system.module.group="" external.system.module.version="2.2.0" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" inherit-compiler-output="true">
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/build/classes/main" />
+    <output-test url="file://$MODULE_DIR$/build/classes/test" />
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/main/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidPlugin/groovy" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidPlugin/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/groovy" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/groovy" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidPlugin/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
       <excludeFolder url="file://$MODULE_DIR$/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
+      <excludeFolder url="file://$MODULE_DIR$/test" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="Gradle: bcpkix-jdk15on-1.48" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: castor-1.1-xml" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: bcprov-jdk15on-1.48" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: ARO" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: fop" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: log4j-1.2.15" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: dom4j-1.6.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: xpp3_min-1.1.4c" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: jai_core" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: jcommon-1.0.12" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: avalon-framework-cvs-20020806" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: ddmlib" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: swtgraphics2d" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: xstream-1.4.4" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: xmlpull-1.1.3.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: jakarta-regexp" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: jfreechart-1.0.9" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: iText-2.0.8" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: forget_ARO" level="project" />
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: avalon-framework-cvs-20020806">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/avalon-framework-cvs-20020806.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: bcpkix-jdk15on-1.48">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/bcpkix-jdk15on-1.48.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: bcprov-jdk15on-1.48">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/bcprov-jdk15on-1.48.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: castor-1.1-xml">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/castor-1.1-xml.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: ddmlib">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/ddmlib.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: dom4j-1.6.1">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/dom4j-1.6.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: fop">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/fop.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: forget_ARO">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/forget_ARO.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: iText-2.0.8">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/iText-2.0.8.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: jai_core">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/jai_core.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: jakarta-regexp">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/jakarta-regexp.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: jcommon-1.0.12">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/jcommon-1.0.12.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: jfreechart-1.0.9">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/jfreechart-1.0.9.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: log4j-1.2.15">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/log4j-1.2.15.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: swtgraphics2d">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/swtgraphics2d.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: xmlpull-1.1.3.1">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/xmlpull-1.1.3.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: xpp3_min-1.1.4c">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/xpp3_min-1.1.4c.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: xstream-1.4.4">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/xstream-1.4.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">
@@ -231,4 +378,3 @@
     </option>
   </component>
 </module>
-
