@@ -67,7 +67,7 @@ task getInstallerResources(type: Copy) {
         into 'ConfigFiles'
     }
     from('docs'){
-        into 'doc'
+        into 'docs'
     }
 
     from('res'){
