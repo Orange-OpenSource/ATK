@@ -849,7 +849,6 @@ public class AndroidPhone implements PhoneInterface {
 		}
 		return h;
 	}
-
 	private void initRes(List<String> listRes) throws PhoneException {
 		Logger.getLogger(this.getClass()).debug("Resource monitoring initialization");
 		String command = null;
@@ -858,22 +857,30 @@ public class AndroidPhone implements PhoneInterface {
 			command = "INIT ";
 			List<String> listProcess = new LinkedList<String>();
 			for (int i = 0; i < listRes.size(); i++) {
-				String[] n = listRes.get(i).split("_");
-				if ((n[0].equals("Cpu") || n[0].equals("Memory") || n[0].equals("Data sent") || n[0]
-						.equals("Data received"))
-						&& n.length > 1) {
+				String measurementType;
+				String processName="";
+				Integer underscorePos = listRes.get(i).indexOf("_");
+				if (underscorePos>0){
+					measurementType = listRes.get(i).substring(0, underscorePos);
+					processName = listRes.get(i).substring(underscorePos+1);
+				}
+				else {
+					measurementType = listRes.get(i);
+				}
+				if ((measurementType.equals("Cpu") || measurementType.equals("Memory") || measurementType.equals("Data sent") || measurementType
+						.equals("Data received"))) {
 					// We check that the process is not already in the list
 					// to avoid to initialize twice the same process
 					boolean alreadypresent = false;
 					for (int j = 0; j < listProcess.size(); j++) {
-						if (listProcess.get(j).equals(n[1])) {
+						if (listProcess.get(j).equals(processName)) {
 							alreadypresent = true;
 							break;
 						}
 					}
 					if (!alreadypresent) {
-						command += n[1] + " ";
-						listProcess.add(n[1]);
+						command += processName + " ";
+						listProcess.add(processName);
 					}
 				}
 			}
@@ -893,6 +900,7 @@ public class AndroidPhone implements PhoneInterface {
 		}
 
 	}
+
 
 	private int checkMonitor() {
 		return checkPackage("com.orange.atk.monitor");
