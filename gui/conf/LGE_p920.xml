@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--  Android LG configuration file  = LG-P920 -->
+<!--   Screen resolution 480x800 - Android v2.2.2  -->
+<Android-config>
+	    <CanalPattern>
+		 <!--<Pattern canal="keyboard" value="/dev/input/event1" />-->
+        <Pattern canal="keyboard" value="omap-keypad" />
+       <!--<Pattern canal="keyboard2" value="/dev/input/event3" />-->
+	    <Pattern canal="keyboard2" value="twl4030_pwrbutton" />
+	   <!--<Pattern canal="keyboard3" value="/dev/input/event2" />-->
+	    <Pattern canal="keyboard3" value="heaven_synaptics_touch" />
+       <!--<Pattern canal="touchscreen" value="/dev/input/event2" />-->
+        <Pattern canal="touchscreen" value="heaven_synaptics_touch" />
+	    </CanalPattern>
+       
+        <KeyMapping  canal="keyboard">
+        <Key name="VOLUME_UP" code="115" />
+        <Key name="VOLUME_DOWN" code="114" />   
+		<Key name="CAMERA" code="249"/>
+	    </KeyMapping>
+	    
+		 <KeyMapping canal="keyboard2">
+				<Key name="POWER" code="116" />         
+	    </KeyMapping>
+		<KeyMapping canal="keyboard3">
+				<Key name="MENU" code="139" />     
+				<Key name="HOME" code="102" />  
+				<Key name="BACK" code="158" />  
+				<Key name="SEARCH" code="217" />  
+	    </KeyMapping>
+      
+        <Touchscreen  canal="touchscreen" >
+      	<Pattern name="flush" value="0 0 0" />
+        <Pattern name="flush2" value="0 2 0" />
+        <Pattern name="X" value="3 53 " />
+        <Pattern name="Y" value="3 54 " />
+        <Pattern name="ratio" value="2.34" />  
+        <Option name="sendMouseDownForMove" value="true" />
+		<Option name="useSmartTouchDetection" value="true" />
+        <!--<Option name="sendMouseEventFirst" value="true" />-->
+		<!--<Option name="useMonkeyForPress" value="true" /> -->
+		<Threshold name="move" value="15" />
+      </Touchscreen>
+  </Android-config>

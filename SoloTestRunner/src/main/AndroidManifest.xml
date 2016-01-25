@@ -1,0 +1,15 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.orange.atk.solotestrunner">
+    <uses-sdk android:minSdkVersion="4" />
+    <instrumentation
+            android:name="android.test.InstrumentationTestRunner"
+            android:targetPackage="packageToTest" />
+
+    <application
+            android:allowBackup="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name" >
+        <uses-library android:name="android.test.runner" />
+    </application>
+
+</manifest>
