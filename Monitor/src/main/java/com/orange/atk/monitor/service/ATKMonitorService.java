@@ -25,7 +25,6 @@ package com.orange.atk.monitor.service;
 
 
 import android.app.ActivityManager;
-import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -44,6 +43,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
+import com.jaredrummler.android.processes.models.AndroidAppProcess;
 import com.orange.atk.monitor.IATKMonitorCom;
 import com.orange.atk.monitor.IATKMonitorEventListener;
 import com.orange.atk.monitor.R;
@@ -54,6 +54,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.*;
+import com.jaredrummler.android.processes.ProcessManager;
 
 public class ATKMonitorService extends ATKService implements Runnable{
 	private static final String TAG = "ATKMonitorService";
@@ -706,12 +707,14 @@ public class ATKMonitorService extends ATKService implements Runnable{
 	 * @return The PID of the process (return -1 if the process was not found)
 	 */
 	public int getPidFromName(String NameProcess){
+        Log.v(TAG,"ProcessName: " + NameProcess);
 		ActivityManager activityManager = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
-		List<RunningAppProcessInfo> procInfos = activityManager.getRunningAppProcesses();
+		List<AndroidAppProcess> procInfos = ProcessManager.getRunningAppProcesses();;
 		int PIDfound = -1;
 		for(int i = 0; i < procInfos.size(); i++)
 		{
-			if(NameProcess.equals(procInfos.get(i).processName)){
+			Log.d(TAG,"pkg: "+procInfos.get(i).getPackageName());
+			if(NameProcess.equals(procInfos.get(i).getPackageName())){
 				PIDfound = procInfos.get(i).pid;
 				break;
 			}

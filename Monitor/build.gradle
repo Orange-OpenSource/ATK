@@ -19,7 +19,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 21
         versionCode 7
-        versionName '2.9.2'
+        versionName '2.9'
     }
 
     lintOptions {
@@ -32,6 +32,7 @@ repositories {
 }
 
 dependencies {
+    compile 'com.jaredrummler:android-processes:1.0.4'
 }
 
 def appName
@@ -48,7 +49,8 @@ android.applicationVariants.all { variant ->
             def newApkName
             //If there's no ZipAlign task it means that our artifact will be unaligned and we need to mark it as such.
             if (output.zipAlign) {
-                newApkName = "${appName}-${output.baseName}-${variant.versionName}.apk"
+                //newApkName = "${appName}-${output.baseName}-${variant.versionName}.apk"
+                newApkName = "ATK${appName}.apk"
             } else {
                 newApkName = "${appName}-${output.baseName}-${variant.versionName}-unaligned.apk"
             }

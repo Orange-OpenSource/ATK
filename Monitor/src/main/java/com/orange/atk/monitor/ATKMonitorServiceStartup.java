@@ -38,7 +38,7 @@ public class ATKMonitorServiceStartup extends BroadcastReceiver {
 		Log.v(TAG,"onReceive");
 
 		//Intent atk_i = new Intent(this,ATKMonitorService.class);	
-		 context.startService(new Intent("com.orange.atk.monitor.MONITOR"));
+		 context.startService(new Intent("com.orange.atk.monitor.MONITOR").setPackage(context.getPackageName()));
 
 	}
 

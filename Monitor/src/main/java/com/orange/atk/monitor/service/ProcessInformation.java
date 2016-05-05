@@ -25,6 +25,9 @@ package com.orange.atk.monitor.service;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.util.Log;
+import com.jaredrummler.android.processes.ProcessManager;
+import com.jaredrummler.android.processes.models.AndroidAppProcess;
 
 import java.util.List;
 
@@ -58,11 +61,11 @@ public class ProcessInformation {
 	}
 
 	public boolean isRunning(Context context) {
-		ActivityManager am = (ActivityManager) context.getSystemService("activity");
-		List<ActivityManager.RunningAppProcessInfo> raps = am.getRunningAppProcesses();
+
+		List<AndroidAppProcess> raps = ProcessManager.getRunningAppProcesses();
 		for (int i=0; i< raps.size(); i++) {
-			ActivityManager.RunningAppProcessInfo rap = raps.get(i);
-			if (rap.processName.equals(process_name)) return true;
+			AndroidAppProcess rap = raps.get(i);
+			if (process_name.equals(rap.getPackageName())) return true;
 			/*for (int j=0; j<rap.pkgList.length; j++) {
 				Log.v(TAG,"   pkg =>"+rap.pkgList[j]);
 			}*/
