@@ -33,19 +33,13 @@ import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 import com.orange.atk.atkUI.coregui.*;
 import org.apache.log4j.Logger;
@@ -226,7 +220,12 @@ public class MonitorAction extends MatosAbstractAction {
 
 		frame = new JFrame();
 		frame.setTitle("Select a configuration file...");
-		frame.setSize(300, 200);
+
+        URL iconURL = CoreGUIPlugin.getMainIcon();
+        ImageIcon icon = new ImageIcon(iconURL, "");
+        frame.setIconImage(icon.getImage());
+
+        frame.setSize(300, 200);
 		frame.setLocationRelativeTo(CoreGUIPlugin.mainFrame);
 		frame.setVisible(true);
 		frame.add(panel);
