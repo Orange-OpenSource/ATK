@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.orange.atk.solotestrecorder"
+          android:versionCode="1"
+          android:versionName="1.0" >
+
+    <uses-sdk android:minSdkVersion="4"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+    <application
+            android:allowBackup="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme" >
+        <service android:name="com.orange.atk.solotestrecorder.ServiceSendEvent" android:exported="true"/>
+        <service android:name="com.orange.atk.solotestrecorder.ServiceGetAllAPK" android:exported="true"/>
+        <service android:name="com.orange.atk.solotestrecorder.ServiceGetForegroundApp" android:exported="true"/>
+        <activity
+                android:name="com.orange.atk.solotestrecorder.ClientSendEvent"
+                android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <receiver android:name="com.orange.atk.solotestrecorder.BReceiverForGetForeGroundApp">
+            <intent-filter>
+                <action android:name="com.orange.atk.serviceSendEventToSolo.FOREGROUNDAPP" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.orange.atk.solotestrecorder.BReceiverForGetAllAPK">
+            <intent-filter>
+                <action android:name="com.orange.atk.serviceSendEventToSolo.ALLAPK" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

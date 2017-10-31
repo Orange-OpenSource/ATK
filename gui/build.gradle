@@ -1,0 +1,227 @@
+apply plugin: 'java'
+apply plugin:'application'
+version = '2.2.2'
+archivesBaseName = 'atk'
+mainClassName = "com.orange.atk.launcher.LaunchGUIJATK"
+allprojects {
+    apply plugin: 'java'
+    sourceCompatibility = 1.7
+}
+
+def nsisPath = "C:\\DevProgramFiles\\NSIS"
+def launch4jDir = new File(projectDir, 'installer/win')
+//def launch4jVersion = '3.8-win32'
+def launch4jVersion = "3.8-macosx-x86-10.8"
+def icoDir = new File(projectDir, 'installer/win/res')
+
+def explodedDistDir = new File(distsDir, 'exploded')
+
+sourceSets {
+    androidPlugin {
+        java {
+            srcDir 'src'
+            include 'com/orange/atk/phone/android/**'
+        }
+    }
+}
+
+repositories{
+    flatDir name: 'libs', dirs:"$launch4jDir"
+    repositories {
+        jcenter()
+    }
+}
+
+configurations {
+    launch4j
+    nsis
+}
+dependencies {
+    testCompile 'junit:junit:4.11'
+    compile fileTree(include: '*.jar', dir: 'libs')
+    launch4j ":launch4j:$launch4jVersion@tgz"
+    nsis files('installer/win/nsisant-1.3.jar')
+}
+
+task androidPluginJar(type: Jar, dependsOn: compileJava) {
+    manifest {
+        attributes firstKey: 'firstValue', secondKey: 'secondValue'
+    }
+    archiveName = 'android.jar'
+    from sourceSets.main.output.classesDir
+    include('com/orange/atk/phone/android/**')
+}
+
+jar {
+    dependsOn classes
+    from sourceSets.main.output
+    exclude 'com/orange/atk/phone/android/**'
+}
+
+distributions {
+    main {
+        contents {
+            from('conf') {
+                into "conf"
+            }
+            from("$buildDir/libs"){
+                include 'android.jar'
+                into 'lib'
+            }
+            from "log4j.xml"
+        }
+    }
+}
+
+startScripts {
+    classpath += files('$buildDir/libs/android.jar')
+}
+
+task getInstallerResources(type: Copy) {
+    from('libs'){
+        into 'lib'
+        exclude 'forget_*'
+    }
+    from('conf'){
+        into 'conf'
+    }
+    from('docs'){
+        into 'doc'
+    }
+
+    from('res'){
+        into 'res'
+    }
+    from('AndroidTools'){
+        into 'AndroidTools'
+        exclude 'ATKGetViewAPKWithRobotium'
+        exclude 'ATKGetViewAPKWithRobotium_Source'
+        exclude 'ATKMonitor'
+        exclude 'ATKServiceSendEventToSolo'
+        exclude 'ATKTestingAPKWithRobotium'
+        exclude 'ATKTestingAPKWithRobotium_Source'
+        exclude 'ATKWizard'
+    }
+    from(projectDir){
+        include 'config.properties'
+        include 'LICENSE.txt'
+        include 'NOTICE.txt'
+    }
+    from('installer'){
+        include 'log4j.xml'
+    }
+    into "$explodedDistDir"
+}
+
+
+task releaseWin (dependsOn: [jar,androidPluginJar,getInstallerResources]) << {
+    println "info:  $projectDir.parent"
+    copy {
+        from(jar.archivePath){
+            into 'lib'
+        }
+        from("$buildDir/libs"){
+            include 'android.jar'
+            into 'plugin'
+        }
+        into explodedDistDir
+    }
+    def distToolDir = new File(distsDir, 'tools')
+
+    File distLaunch4jToolDir = new File(distToolDir, 'launch4j')
+    distLaunch4jToolDir.mkdirs()
+    ant {
+        logger.info('Generate lib dir')
+
+        configurations.launch4j.files.each { File file ->
+            copy(file: file, todir: distLaunch4jToolDir)
+        }
+    }
+        logger.info('Generate launch4j windows exe.')
+        String launch4jDistName = "launch4j-" + launch4jVersion
+        //untar(src: "$distLaunch4jToolDir/launch4j-${launch4jVersion}.tgz", dest: "$distLaunch4jToolDir/$launch4jDistName", compression: "gzip")
+        ant.gunzip(src: "$distLaunch4jToolDir/launch4j-${launch4jVersion}.tgz", dest: "$distLaunch4jToolDir/${launch4jDistName}.tar")
+        copy {
+            from tarTree("$distLaunch4jToolDir/${launch4jDistName}.tar")
+            into "$distLaunch4jToolDir/$launch4jDistName"
+        }
+        try {
+            ant.taskdef(
+                    name: "launch4j",
+                    classname: "net.sf.launch4j.ant.Launch4jTask",
+                    classpath: "$distLaunch4jToolDir/$launch4jDistName/launch4j/launch4j.jar:$distLaunch4jToolDir/$launch4jDistName/launch4j/lib/xstream.jar")
+            ant.launch4j() {
+                config(headerType: "gui", outfile: "$explodedDistDir/atk.exe",
+                        chdir:".",icon:"$icoDir/atk.ico",
+                        dontWrapJar: "true" ) {
+                    classPath(mainClass:"com.orange.atk.launcher.LaunchGUIJATK"){
+                        cp("./lib/*")
+                        cp("./plugin/*")
+                    }
+                    jre(minVersion: "1.7.0", jdkPreference: 'preferJdk')
+                }
+            }
+            ant.launch4j() {
+                config(headerType: "gui", outfile: "$explodedDistDir/analyser.exe",
+                        chdir:".",icon:"$icoDir/analyser.ico",
+                        dontWrapJar: "true" ) {
+                    classPath(mainClass:"com.orange.atk.graphAnalyser.LectureJATKResult"){
+                        cp("./lib/*")
+                        cp("./plugin/*")
+                    }
+                    jre(minVersion: "1.7.0", jdkPreference: 'preferJdk')
+                }
+            }
+            ant.launch4j() {
+                config(headerType: "gui", outfile: "$explodedDistDir/screencmp.exe",
+                        chdir:".",icon:"$icoDir/screencmp.ico",
+                        dontWrapJar: "true" ) {
+                    classPath(mainClass:"com.orange.atk.compUI.launchScreenShotComparison"){
+                        cp("./lib/*")
+                        cp("./plugin/*")
+                    }
+                    jre(minVersion: "1.7.0", jdkPreference: 'preferJdk')
+                }
+            }
+            ant.launch4j() {
+                config(headerType: "gui", outfile: "$explodedDistDir/scriptrecorder.exe",
+                        chdir:".",icon:"$icoDir/scriptrecorder.ico",
+                        dontWrapJar: "true" ) {
+                    classPath(mainClass:"com.orange.atk.scriptRecorder.LaunchScriptRecorder"){
+                        cp("./lib/*")
+                        cp("./plugin/*")
+                    }
+                    jre(minVersion: "1.7.0", jdkPreference: 'preferJdk')
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Could not run Launch4j")
+            logger.warn(e.getMessage());
+        }
+
+    try{
+        copy {
+            from 'installer/win/nsis.nsi'
+            from 'installer/win/setup-ARO-4.0.exe'
+            into "$explodedDistDir"
+        }
+        ant.taskdef(name: "nsis",
+                classname: "com.danielreese.nsisant.Task",
+                classpath: configurations.nsis.asPath)
+        ant.nsis(script: "$explodedDistDir/nsis.nsi") {
+            define(name: "VERSION", value: "${version}")
+            define(name: "RELEASE_DIR", value: "$distsDir")
+            define(name: "RESOURCES_DIR", value: "$icoDir")
+            define(name: "LICENSE_FILE", value: "$projectDir.parent/LICENSE.txt")
+            define(name: "PLUGIN_DIR", value: "$projectDir/installer/win/plugin")
+        }
+    }catch (Exception e) {
+        logger.warn("Could not run NSIS.")
+        logger.warn(e.getMessage());
+    }
+}
+
+project.afterEvaluate {
+    println "AfterEvaluate GUI"
+    getInstallerResources.dependsOn project(':Monitor').assemble
+}

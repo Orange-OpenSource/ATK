@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Android-config>     
+    <!-- Huawei Ivy u8100 Android v2.1 -->        
+    <!-- Validated with ATK 2.10.4 -->
+	<KeyMapping canal="keyboard">
+      
+        <Key name="UP" code="103" />
+        <Key name="DOWN" code="108" />
+        <Key name="LEFT" code="105" />
+        <Key name="RIGHT" code="106" />
+        <Key name="CENTER" code="232" />
+	    
+        <Key name="CALL" code="231" />
+        <Key name="END_CALL" code="62" />
+    
+        <Key name="VOLUME_UP" code="115" />
+        <Key name="VOLUME_DOWN" code="114" />
+		
+    </KeyMapping>
+	
+    <KeyMapping canal="keyboard2">
+        
+ 		<Key name="BACK" code="158" />
+        <Key name="HOME" code="102" />
+        <Key name="MENU" code="139" />
+        
+    </KeyMapping>
+        
+
+	<CanalPattern>
+
+        <Pattern canal="keyboard" value="keypad" />
+       <Pattern canal="keyboard2" value="" />
+        <Pattern canal="touchscreen" value="touchscreen" />
+	</CanalPattern>
+        
+	<Touchscreen>
+        <Pattern name="Y" value="3 1 " />
+        <Pattern name="X" value="3 0 " />
+        <Pattern name="down" value="1 330 1" />
+        <Pattern name="up" value="1 330 0" />
+        <Pattern name="flush" value="0 0 0" />
+        <Pattern name="ratioX" value="4.0" />
+        <Pattern name="ratioY" value="2.875" />
+        <Threshold name="move" value="15" />
+	</Touchscreen>
+
+</Android-config>
