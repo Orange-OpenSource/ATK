@@ -10,7 +10,9 @@ allprojects {
 
 def nsisPath = "C:\\DevProgramFiles\\NSIS"
 def launch4jDir = new File(projectDir, 'installer/win')
-def launch4jVersion = '3.1.0-beta2-win32'
+//def launch4jVersion = '3.8-win32'
+def launch4jVersion = "3.8-macosx-x86-10.8"
+def icoDir = new File(projectDir, 'installer/win/res')
 
 def explodedDistDir = new File(distsDir, 'exploded')
 
@@ -36,8 +38,8 @@ configurations {
 }
 dependencies {
     testCompile 'junit:junit:4.11'
-    compile fileTree(dir: 'libs', include: '*.jar')
-    launch4j ":launch4j:$launch4jVersion@zip"
+    compile fileTree(include: '*.jar', dir: 'libs')
+    launch4j ":launch4j:$launch4jVersion@tgz"
     nsis files('installer/win/nsisant-1.3.jar')
 }
 
@@ -54,6 +56,25 @@ jar {
     dependsOn classes
     from sourceSets.main.output
     exclude 'com/orange/atk/phone/android/**'
+}
+
+distributions {
+    main {
+        contents {
+            from('conf') {
+                into "conf"
+            }
+            from("$buildDir/libs"){
+                include 'android.jar'
+                into 'lib'
+            }
+            from "log4j.xml"
+        }
+    }
+}
+
+startScripts {
+    classpath += files('$buildDir/libs/android.jar')
 }
 
 task getInstallerResources(type: Copy) {
@@ -94,6 +115,7 @@ task getInstallerResources(type: Copy) {
 
 
 task releaseWin (dependsOn: [jar,androidPluginJar,getInstallerResources]) << {
+    println "info:  $projectDir.parent"
     copy {
         from(jar.archivePath){
             into 'lib'
@@ -111,12 +133,18 @@ task releaseWin (dependsOn: [jar,androidPluginJar,getInstallerResources]) << {
     ant {
         logger.info('Generate lib dir')
 
-        configurations.launch4j.files.each {File file ->
+        configurations.launch4j.files.each { File file ->
             copy(file: file, todir: distLaunch4jToolDir)
         }
+    }
         logger.info('Generate launch4j windows exe.')
         String launch4jDistName = "launch4j-" + launch4jVersion
-        unzip(src: "$distLaunch4jToolDir/launch4j-${launch4jVersion}.zip", dest: "$distLaunch4jToolDir/$launch4jDistName")
+        //untar(src: "$distLaunch4jToolDir/launch4j-${launch4jVersion}.tgz", dest: "$distLaunch4jToolDir/$launch4jDistName", compression: "gzip")
+        ant.gunzip(src: "$distLaunch4jToolDir/launch4j-${launch4jVersion}.tgz", dest: "$distLaunch4jToolDir/${launch4jDistName}.tar")
+        copy {
+            from tarTree("$distLaunch4jToolDir/${launch4jDistName}.tar")
+            into "$distLaunch4jToolDir/$launch4jDistName"
+        }
         try {
             ant.taskdef(
                     name: "launch4j",
@@ -124,7 +152,7 @@ task releaseWin (dependsOn: [jar,androidPluginJar,getInstallerResources]) << {
                     classpath: "$distLaunch4jToolDir/$launch4jDistName/launch4j/launch4j.jar:$distLaunch4jToolDir/$launch4jDistName/launch4j/lib/xstream.jar")
             ant.launch4j() {
                 config(headerType: "gui", outfile: "$explodedDistDir/atk.exe",
-                        chdir:".",icon:"res/atk.ico",
+                        chdir:".",icon:"$icoDir/atk.ico",
                         dontWrapJar: "true" ) {
                     classPath(mainClass:"com.orange.atk.launcher.LaunchGUIJATK"){
                         cp("./lib/*")
@@ -135,7 +163,7 @@ task releaseWin (dependsOn: [jar,androidPluginJar,getInstallerResources]) << {
             }
             ant.launch4j() {
                 config(headerType: "gui", outfile: "$explodedDistDir/analyser.exe",
-                        chdir:".",icon:"res/analyser.ico",
+                        chdir:".",icon:"$icoDir/analyser.ico",
                         dontWrapJar: "true" ) {
                     classPath(mainClass:"com.orange.atk.graphAnalyser.LectureJATKResult"){
                         cp("./lib/*")
@@ -146,7 +174,7 @@ task releaseWin (dependsOn: [jar,androidPluginJar,getInstallerResources]) << {
             }
             ant.launch4j() {
                 config(headerType: "gui", outfile: "$explodedDistDir/screencmp.exe",
-                        chdir:".",icon:"res/screencmp.ico",
+                        chdir:".",icon:"$icoDir/screencmp.ico",
                         dontWrapJar: "true" ) {
                     classPath(mainClass:"com.orange.atk.compUI.launchScreenShotComparison"){
                         cp("./lib/*")
@@ -157,7 +185,7 @@ task releaseWin (dependsOn: [jar,androidPluginJar,getInstallerResources]) << {
             }
             ant.launch4j() {
                 config(headerType: "gui", outfile: "$explodedDistDir/scriptrecorder.exe",
-                        chdir:".",icon:"res/scriptrecorder.ico",
+                        chdir:".",icon:"$icoDir/scriptrecorder.ico",
                         dontWrapJar: "true" ) {
                     classPath(mainClass:"com.orange.atk.scriptRecorder.LaunchScriptRecorder"){
                         cp("./lib/*")
@@ -170,7 +198,7 @@ task releaseWin (dependsOn: [jar,androidPluginJar,getInstallerResources]) << {
             logger.warn("Could not run Launch4j")
             logger.warn(e.getMessage());
         }
-    }
+
     try{
         copy {
             from 'installer/win/nsis.nsi'
@@ -180,9 +208,12 @@ task releaseWin (dependsOn: [jar,androidPluginJar,getInstallerResources]) << {
         ant.taskdef(name: "nsis",
                 classname: "com.danielreese.nsisant.Task",
                 classpath: configurations.nsis.asPath)
-        ant.nsis(script: "$explodedDistDir/nsis.nsi", path: nsisPath) {
+        ant.nsis(script: "$explodedDistDir/nsis.nsi") {
             define(name: "VERSION", value: "${version}")
             define(name: "RELEASE_DIR", value: "$distsDir")
+            define(name: "RESOURCES_DIR", value: "$icoDir")
+            define(name: "LICENSE_FILE", value: "$projectDir.parent/LICENSE.txt")
+            define(name: "PLUGIN_DIR", value: "$projectDir/installer/win/plugin")
         }
     }catch (Exception e) {
         logger.warn("Could not run NSIS.")

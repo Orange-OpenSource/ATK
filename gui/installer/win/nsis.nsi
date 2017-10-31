@@ -3,13 +3,14 @@
 
 Name ATK
 
+!addplugindir "${PLUGIN_DIR}"
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
 !define COMPANY "France Telecom"
 !define URL www.francetelecom.com
 
 # MUI Symbol Definitions
-!define MUI_ICON "res\atk.ico"
+!define MUI_ICON "${RESOURCES_DIR}\atk.ico"
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall-colorful.ico"
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
@@ -18,6 +19,7 @@ Name ATK
 !include "TextFunc.nsh"
 !include Sections.nsh
 !include MUI2.nsh
+!include WinVer.nsh
 
 # Variables
 Var StartMenuGroup
@@ -25,7 +27,7 @@ Var StartMenuGroup
 # Installer pages
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_COMPONENTS
-!insertmacro MUI_PAGE_LICENSE license.txt
+!insertmacro MUI_PAGE_LICENSE "${LICENSE_FILE}"
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 !define      MUI_FINISHPAGE_RUN "$INSTDIR\ATK.exe"
@@ -252,41 +254,12 @@ SetOverwrite on
 SetOutPath $INSTDIR
 ;
 
- GetVersion::WindowsType
-  Pop $R0
-  DetailPrint "WindowsType: $R0"
-
- GetVersion::WindowsVersion
-  Pop $R0
-  DetailPrint "WindowsVersion: $R0"
-  
-  GetVersion::WindowsServerName
-  Pop $R0
-  DetailPrint "WindowsServerName: $R0"
-
- GetVersion::WindowsPlatformId
-  Pop $R0
-  DetailPrint "WindowsPlatformId:$R0"
-
- GetVersion::WindowsPlatformArchitecture
-  Pop $R0
-  DetailPrint "WindowsPlatformArchitecture:$R0"
-
- GetVersion::WindowsServicePack
-  Pop $R0
-  DetailPrint "WindowsServicePack: $R0"
-
- GetVersion::WindowsServicePackBuild
-  Pop $R0
-  DetailPrint "WindowsServicePackBuild: $R0"
-
- GetVersion::WindowsServicePackMinor
-  Pop $R0
-  DetailPrint "WindowsServicePackMinor: $R0"
-
- GetVersion::WindowsServicePackMajor
-  Pop $R0
-  DetailPrint "WindowsServicePackMajor: $R0"
+ ${If} ${AtLeastWinXP}
+ ${AndIf} ${AtMostWin7}
+    DetailPrint "Running on compatible OS version"
+ ${Else}
+    DetailPrint "Your OS is currently not supported"
+ ${Endif}
   
 
 android:
@@ -318,12 +291,10 @@ nobuild:
   ;        0 - if it is the same verion
   ; output 2 in case above
 JavaNotInstalled:
-   DetailPrint "Please Update Java to java 1.6 Installation Failed"
-   IEFunctions::OpenBrowser /NOUNLOAD
-   IEFunctions::SurfTo /NOUNLOAD $downloadJava
-    MessageBox MB_ICONSTOP "Please Update Java JRE to java 1.6"
-    MessageBox MB_ICONSTOP  "Installation Failed"
-    Abort
+   DetailPrint "Please Update Java to java 1.7 Installation Failed"
+   MessageBox MB_ICONSTOP "Please Update Java JRE to java 1.7"
+   MessageBox MB_ICONSTOP  "Installation Failed"
+   Abort
 fin:
 
 
@@ -347,22 +318,6 @@ Call StrContains
 Pop $0
 DetailPrint "AndroidEnvPath: $0"
 
-Goto enddownload
-StrCmp $0 ""  downloadandroid
-
-;truedetect:
-;  Goto downloadandroid
-
-;falsedetect:
-downloadandroid:
-MessageBox MB_YESNO "Android SDK is not detected  \
-   Do you want to install android SDK?'" IDYES 0 IDNO enddownload
-;download Android
-inetc::get "$downloadURLandroid" "$TEMP\android.zip"
-ZipDLL::extractall "$TEMP\android.zip" "c:\android-sdk"
-; Always check result on stack
-
-
 ;set path 
 
 Call removeEnvVar
@@ -370,13 +325,6 @@ Call removeEnvVar
   ; WriteRegExpandStr ${env_hklm} "PATH" MYVAL
    ; make sure windows knows about the change
    SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
-
-
-
-;execute
-enddownload:
- 
- 
 
 ; copy all files except the files preceded by /x
     File /r /x .gitignore /x *.svn /x nsislog.txt /x jsmooth /x launch4j /x launch4j.log /x manifest* /x octk.* /x README.txt /x \tests_file /x \Output /x \rxtx /x *.nsi /x setup.* /x atk_*.exe /x *.iss /x setup_*.exe /x \export /x RXTXcomm.jar /x rxtxSerial.dll /x mediatek.jar /x \Salome-script *

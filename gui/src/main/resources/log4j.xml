@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
+
+<appender name="APPENDER_STDOUT" class="org.apache.log4j.ConsoleAppender">
+<param name="target" value="System.out"/>
+<layout class="org.apache.log4j.PatternLayout">
+<!-- param name="ConversionPattern" value="%d %p: %c.%t(%L): %m%n"/ -->
+<param name="ConversionPattern" value="%p[%d{HH:mm:ss}]: %c(%L): %m%n"/>
+</layout>
+</appender>
+<!-- <appender name="files" class="org.apache.log4j.FileAppender">
+    <param name="File" value="logAPI.log" />
+    <param name="Append" value="true" />
+    <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d %p: %c.%t(%L): %m%n"/>
+    </layout>
+</appender>
+-->
+
+<!-- logger sysOUT -->
+<logger name="System.out.log" additivity="false">
+
+    <level value="DEBUG"/>
+</logger>
+
+<!-- logger sysOUT -->
+<logger name="System.err.log" additivity="false">
+
+    <level value="DEBUG"/>
+</logger>
+
+<!-- Example just follow one package (scriptrecorder)
+
+<logger name="scriptrecorder" additivity="true">
+
+    <level value="DEBUG"/>
+</logger>
+
+
+<root>
+    <level value="WARN"/>
+    <appender-ref ref="APPENDER_STDOUT"/>
+
+</root>
+
+  -->
+
+<!-- logger plugin system (JPF) -->
+<logger name="org.java" additivity="true">
+
+    <level value="WARN"/>
+</logger>
+
+
+<root>
+    <level value="DEBUG"/>
+    <appender-ref ref="APPENDER_STDOUT"/>
+
+</root>
+</log4j:configuration>
