@@ -1,1 +1,16 @@
-language: java
+language: android
+jdk:
+  - oraclejdk8
+android:
+  components:
+    - tools
+    - platform-tools
+    - build-tools-26.0.2
+    - tools
+branches:
+  only:
+  - master
+install:
+  - echo yes | sdkmanager "platforms;android-26"
+script:
+  - ./gradlew assemble
