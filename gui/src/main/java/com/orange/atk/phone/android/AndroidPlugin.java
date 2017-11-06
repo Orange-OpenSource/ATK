@@ -148,7 +148,7 @@ public class AndroidPlugin implements Plugin {
 							if (!((AndroidPhone) newPhone).isDisabledPhone())
 								changed = true;
 						} catch (PhoneException e) {
-							// NOTHING TO DO HERE
+							Logger.getLogger(this.getClass()).warn(e);
 						}
 					} else {
 						PhoneInterface newPhone = new AndroidPhone(androidDevice);

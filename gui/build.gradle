@@ -27,9 +27,7 @@ sourceSets {
 
 repositories{
     flatDir name: 'libs', dirs:"$launch4jDir"
-    repositories {
-        jcenter()
-    }
+    jcenter()
 }
 
 configurations {
@@ -41,6 +39,20 @@ dependencies {
     compile fileTree(include: '*.jar', dir: 'libs')
     launch4j ":launch4j:$launch4jVersion@tgz"
     nsis files('installer/win/nsisant-1.3.jar')
+    compile group: 'com.android.tools.ddms', name: 'ddmlib', version: '25.3.0'
+    compile group: 'com.thoughtworks.xstream', name: 'xstream', version: '1.4.4'
+    compile group: 'xpp3', name: 'xpp3_min', version: '1.1.4c'
+    compile group: 'xmlpull', name: 'xmlpull', version: '1.1.3.1'
+    compile group: 'org.jfree', name: 'swtgraphics2d', version: '1.0'
+    compile group: 'log4j', name: 'log4j', version: '1.2.16'
+    compile group: 'org.jfree', name: 'jfreechart', version: '1.0.14'
+    compile group: 'org.jfree', name: 'jcommon', version: '1.0.17'
+    compile 'javax.media.jai:com.springsource.javax.media.jai.core:1.1.3'
+    compile group: 'com.lowagie', name: 'itext', version: '2.0.8'
+    compile group: 'org.apache.xmlgraphics', name: 'fop', version: '0.93'
+    compile group: 'dom4j', name: 'dom4j', version: '1.6.1'
+    compile group: 'org.bouncycastle', name: 'bcprov-jdk15', version: '1.46'
+    compile group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.48'
 }
 
 task androidPluginJar(type: Jar, dependsOn: compileJava) {
@@ -78,7 +90,7 @@ startScripts {
 }
 
 task getInstallerResources(type: Copy) {
-    from('libs'){
+    from(configurations.runtime){
         into 'lib'
         exclude 'forget_*'
     }

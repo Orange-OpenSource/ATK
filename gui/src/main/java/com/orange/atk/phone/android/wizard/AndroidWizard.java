@@ -222,11 +222,8 @@ public class AndroidWizard extends JFrame {
 				if(result!=null){
 					Logger.getLogger(this.getClass()).debug("Result of the uninstall: "+result);
 				}
-				result = device.installPackage(
+				device.installPackage(
 						Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"AndroidTools"+Platform.FILE_SEPARATOR+"ATKWizard.apk", true);
-				if(result!=null){
-					Logger.getLogger(this.getClass()).debug("Result of the push: "+result);
-				}
 			} catch (InstallException e) {
 				e.printStackTrace();
 				throw new PhoneException("ATK Wizard - unable to install ATK Wizard");

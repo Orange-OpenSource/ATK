@@ -231,13 +231,10 @@ public class RobotiumTaskForViewer {
 					Logger.getLogger(this.getClass()).debug("/****resul of uninstall : " + result);
 				}
 			}
-			String result = adevice.installPackage(Platform.getInstance().getJATKPath()
+			adevice.installPackage(Platform.getInstance().getJATKPath()
 					+ Platform.FILE_SEPARATOR + "AndroidTools" + Platform.FILE_SEPARATOR +
 					"UiautomatorViewerTask" + Platform.FILE_SEPARATOR + "TempAPK"
 					+ Platform.FILE_SEPARATOR + "ATKGetViewAPKWithRobotium.apk", true);
-			if (result != null) {
-				Logger.getLogger(this.getClass()).debug("/****resul of install : " + result);
-			}
 		} catch (InstallException e) {
 			Logger.getLogger(this.getClass()).debug("/****error : " + e.getMessage());
 			throw new PhoneException(e.getMessage());
@@ -251,12 +248,9 @@ public class RobotiumTaskForViewer {
 			if (result != null) {
 				Logger.getLogger(this.getClass()).debug("/****resul of uninstall : " + result);
 			}
-			result = adevice.installPackage(Platform.getInstance().getJATKPath()
+			adevice.installPackage(Platform.getInstance().getJATKPath()
 					+ Platform.FILE_SEPARATOR + "AndroidTools" + Platform.FILE_SEPARATOR +
 					"ATKServiceSendEventToSolo.apk", true);
-			if (result != null) {
-				Logger.getLogger(this.getClass()).debug("/****resul of install : " + result);
-			}
 		} catch (InstallException e) {
 			Logger.getLogger(this.getClass()).debug("/****error : " + e.getMessage());
 			throw new PhoneException(e.getMessage());

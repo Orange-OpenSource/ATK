@@ -940,10 +940,7 @@ public class AndroidPhone implements PhoneInterface {
 		String filename = new File(filepath).getName();
 		Logger.getLogger(this.getClass()).debug("Pushing " + filename + " on the device");
 		try {
-			String result = adevice.installPackage(filepath, true);
-			if (result != null) {
-				Logger.getLogger(this.getClass()).debug("Result of the push: " + result);
-			}
+			adevice.installPackage(filepath, true);
 		} catch (InstallException e) {
 			throw new PhoneException("unable to install " + filepath);
 		}

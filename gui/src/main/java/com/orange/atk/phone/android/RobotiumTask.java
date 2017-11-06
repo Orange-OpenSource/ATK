@@ -254,13 +254,10 @@ public class RobotiumTask {
 					Logger.getLogger(this.getClass()).debug("Result of the uninstall: "+result);
 				}
 			}
-			String result = adevice.installPackage(Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+
+			adevice.installPackage(Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+
 					"AndroidTools"+Platform.FILE_SEPARATOR+
 					"UiautomatorViewerTask" +Platform.FILE_SEPARATOR+"TempAPK" +Platform.FILE_SEPARATOR+"" +
 							"ATKTestingAPKWithRobotium.apk", true);
-			if(result!=null){
-				Logger.getLogger(this.getClass()).debug("Result of the push: "+result);
-			}
 		} catch (InstallException e){
 			throw new PhoneException("ATK Solo Test - unable to install ATK Solo Test");
 		}
@@ -277,11 +274,8 @@ public class RobotiumTask {
 			if(result!=null){
 				Logger.getLogger(this.getClass()).debug("Result of the uninstall: "+result);
 			}
-			result = adevice.installPackage(Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"AndroidTools"+Platform.FILE_SEPARATOR+
+			adevice.installPackage(Platform.getInstance().getJATKPath()+Platform.FILE_SEPARATOR+"AndroidTools"+Platform.FILE_SEPARATOR+
 					"ATKServiceSendEventToSolo.apk", true);
-			if(result!=null){
-				Logger.getLogger(this.getClass()).debug("Result of the push: "+result);
-			}
 		} catch (InstallException e) {
 			throw new PhoneException("ATK Send Event Service - unable to install SendEventService");
 		}
