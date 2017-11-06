@@ -319,10 +319,7 @@ public class PrepareApkForRobotiumTest {
 			if(result!=null){
 				Logger.getLogger(PrepareApkForRobotiumTest.class ).debug("/****resul of uninstall : " + result);
 			}
-			result = adevice.installPackage(apkDir, true);
-			if(result!=null){
-				Logger.getLogger(PrepareApkForRobotiumTest.class ).debug("/****resul of install : " + result);
-			}
+			adevice.installPackage(apkDir, true);
 		}catch (InstallException e) {
 			Logger.getLogger(PrepareApkForRobotiumTest.class ).debug("/****error : " + e.getMessage());
 			throw new PhoneException(e.getMessage());

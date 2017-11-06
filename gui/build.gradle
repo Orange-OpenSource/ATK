@@ -39,7 +39,7 @@ dependencies {
     compile fileTree(include: '*.jar', dir: 'libs')
     launch4j ":launch4j:$launch4jVersion@tgz"
     nsis files('installer/win/nsisant-1.3.jar')
-    compile group: 'com.android.tools.ddms', name: 'ddmlib', version: '24.0.1'
+    compile group: 'com.android.tools.ddms', name: 'ddmlib', version: '25.3.0'
     compile group: 'com.thoughtworks.xstream', name: 'xstream', version: '1.4.4'
     compile group: 'xpp3', name: 'xpp3_min', version: '1.1.4c'
     compile group: 'xmlpull', name: 'xmlpull', version: '1.1.3.1'

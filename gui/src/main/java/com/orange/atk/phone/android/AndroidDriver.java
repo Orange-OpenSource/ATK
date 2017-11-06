@@ -158,7 +158,7 @@ public class AndroidDriver extends AndroidPhone implements PhoneInterface {
 		softkeyMap = gestionnaire.getsoftkeymap();
 		keyCanal = gestionnaire.getkeycanal();
 		try {
-			adevice.executeShellCommand("getevent", 
+			adevice.executeShellCommand("getevent -p",
 					new DetectChannelEventfilter(this,
 							gestionnaire.getKeyboardchannel(),
 							gestionnaire.getKeyboardSecondchannel(),
